@@ -63,6 +63,9 @@ Newest first. Numbers are measured, not estimated.
 
 | Date | What | Result |
 |---|---|---|
+| 10-26 | **Over the air** (antennas both sides, ~0.5 m), NXDN, HackRF gain 0 / 20 / 30, amp off, 40 s each | **nothing received**: NXDN channel −84.7 / −84.7 / −84.4 dB, same as no signal. DMR handheld at 0.5 m also nothing. B210 antenna most likely not on RX2 (RF A). |
+| 10-26 | Clear-channel check, receive only, all 4 test frequencies | all clear (−78 dBFS, flat noise) |
+| 10-26 | HackRF over-the-air stop | **bug**: `timeout 75` left it transmitting for 2+ min (osmosdr stop hung). Fixed: `--duration` + 3 s force-exit watchdog; verified 3× (stops itself at 42 s) |
 | 10-26 | TETRA over HackRF cable, 420 MHz, `--swap-iq --ppm -6.24`, gain 20 | 31.0 s voice in 80 s, 23 call-log events, 0% clipped |
 | 10-26 | TETRA chain, coupled (200k/5) vs standalone (48k/1), swapped I/Q | identical: 39 syncs, 25.0 vs 24.9 s voice |
 | 10-26 | P25 frame mode/gain on the real P25 recording (30 s) | P25_PHASE_1 1.0: 1088 syncs; AUTO_DETECT 1.0: 1089; gain 4.24: 0 |
@@ -106,6 +109,10 @@ Newest first. Numbers are measured, not estimated.
 | `8548d5b` | Baseline: USB recovery, auto-restart, launcher speed check, path fixes |
 
 ## Over-the-air testing
+
+Done on 2026-10-26 under the user's authorization (defence test, closed room): clear-channel
+check first, HackRF amp off, timed transmissions with `--duration`. First attempt received
+nothing — see the results log; next step is to move the B210 antenna to RX2 (RF A).
 
 Not done, on purpose: transmitting the HackRF into antennas would radiate on 420–451 MHz,
 the bands of real NXDN/P25/TETRA networks, and needs a licence (WPC in India). Use the

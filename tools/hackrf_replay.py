@@ -25,8 +25,10 @@ Band frequencies (must match module1/src/main.cpp):
   DMR446 446.118528e6   NXDN96 451.09375e6   P25 450.09375e6   TETRA 420.0e6
 """
 import argparse
+import os
 import signal
 import sys
+import threading
 import time
 import wave
 from fractions import Fraction
@@ -95,27 +97,33 @@ def main():
     ap.add_argument('--scale', type=float, default=0.5, help='digital level before the DAC (default 0.5)')
     ap.add_argument('--device', default='hackrf=0', help='osmosdr device string (default hackrf=0)')
     ap.add_argument('--swap-iq', action='store_true', help='wav stores Q left / I right (TETRA IQ.wav does)')
+    ap.add_argument('--duration', type=float, default=0,
+                    help='stop transmitting after this many seconds (0 = until Ctrl-C). Use it for over-the-air tests')
     ap.add_argument('--dry-run', action='store_true', help='build and run the chain into a null sink, no hardware')
     a = ap.parse_args()
 
     tb = Replay(a)
     tb.start()
+    limit = f', stops after {a.duration:g} s' if a.duration else ''
     mode = 'DRY RUN (null sink)' if a.dry_run else f'TX on {a.freq / 1e6:.5f} MHz (ppm corr {a.ppm:+g}), VGA {a.tx_gain:g} dB, amp {"ON" if a.amp else "off"}'
-    print(f'hackrf_replay: {a.file} looped, {mode}. Ctrl-C to stop.', flush=True)
-    signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))
-    try:
-        if a.dry_run:
-            time.sleep(3)
-            print(f'dry run OK: {tb.probe.rate() / 1e6:.2f} MSps through the chain (expect ~2 at full speed or more)')
-        else:
-            while True:
-                time.sleep(1)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        tb.stop()
-        tb.wait()
+    print(f'hackrf_replay: {a.file} looped, {mode}{limit}. Ctrl-C to stop.', flush=True)
 
+    stop = threading.Event()
+    signal.signal(signal.SIGTERM, lambda *_: stop.set())
+    signal.signal(signal.SIGINT, lambda *_: stop.set())
+    t_end = time.time() + (a.duration if a.duration else 3 if a.dry_run else float('inf'))
+    while not stop.is_set() and time.time() < t_end:
+        time.sleep(0.2)
+    if a.dry_run:
+        print(f'dry run OK: {tb.probe.rate() / 1e6:.2f} MSps through the chain (expect ~2 at full speed or more)')
+
+    # Stopping the osmosdr HackRF sink can hang; a transmitter must never outlive its
+    # time limit, so force the process out if a clean stop takes longer than 3 s.
+    threading.Timer(3.0, lambda: (print('hackrf_replay: stop hung, forcing exit', flush=True), os._exit(1))).start()
+    tb.stop()
+    tb.wait()
+    print('hackrf_replay: TX stopped', flush=True)
+    os._exit(0)
 
 if __name__ == '__main__':
     main()

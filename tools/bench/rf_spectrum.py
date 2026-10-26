@@ -44,7 +44,12 @@ def main():
     # noise floor from an empty part of the passband (the B210's filter skirts
     # near +-100 kHz sit far below the real floor and would drag a percentile down)
     floor = float(np.median(sm[(np.abs(f) > 30e3) & (np.abs(f) < 80e3)]))
-    hot = sm > floor + 10
+    # ignore the B210's own DC/LO spike at 0 Hz: it is there with nothing on the air
+    # and would otherwise read as a 'signal' 57 dB up on every band
+    hot = (sm > floor + 10) & (np.abs(f) > 600)
+    # and a real signal must stand clear of the receiver's own floor in a 6.25 kHz window
+    if hot.sum() < int(1000 / (FS / N)):
+        hot[:] = False
     tot = 10 * np.log10(np.mean([np.mean(np.abs(b) ** 2) for b in live]) + 1e-20)
     pk = max(float(np.abs(b).max()) for b in live)
     ch0 = 10 * np.log10(np.sum(P[(f >= -6250) & (f < 6250)]) + 1e-20)

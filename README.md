@@ -564,6 +564,9 @@ python3 tools/bench/tap_audio.py 9102 40       # how much voice the decoder prod
 * **Correct the HackRF's crystal first.** This bench's HackRF transmits 6.24 ppm low
   (-2.8 kHz at 451 MHz), which by itself stopped NXDN decoding. Measure the offset with
   `rf_spectrum.py`, then pass `--ppm offset_Hz/freq_MHz`.
+* **Always pass `--duration` for over-the-air use.** Stopping the osmosdr HackRF sink can
+  hang; a plain `timeout` once left it transmitting for over 2 minutes. `--duration`
+  stops it and a watchdog force-exits if the stop takes more than 3 s.
 * Start at `--tx-gain 0` and raise it; leave the HackRF amp off. 20 dB put NXDN at
   -48.5 dB in channel, which decoded every second on air.
 * `tools/bench/replay_module1.py` + `run_decoder_offline.sh` do the same with no RF at
