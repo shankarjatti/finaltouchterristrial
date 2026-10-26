@@ -1,0 +1,97 @@
+id: tetra_decoder_block
+label: TETRA Decoder (tetra-kit + ACELP)
+category: '[TETRA]'
+
+templates:
+  imports: |-
+    import sys, os
+    def _tetra_runtime():
+        # TETRA_RUNTIME overrides; else walk up from this file to delhi_testing/tetra_test/gr_tetra_decoder
+        env = os.environ.get('TETRA_RUNTIME')
+        if env:
+            return env
+        # __file__ is undefined while GRC evaluates this at compile time; use the cwd then
+        d = os.path.dirname(os.path.abspath(globals().get('__file__', os.path.join(os.getcwd(), '_'))))
+        for _ in range(8):
+            c = os.path.join(d, 'tetra_test', 'gr_tetra_decoder')
+            if os.path.isdir(c):
+                return c
+            d = os.path.dirname(d)
+        raise ImportError('tetra_test/gr_tetra_decoder not found; set TETRA_RUNTIME')
+    sys.path.insert(0, _tetra_runtime())
+    from tetra_decoder_block import tetra_decoder_block
+  make: tetra_decoder_block(log_level=${log_level}, remove_fill_bits=${remove_fill_bits}, wireshark_output=${wireshark_output}, debug=${debug})
+
+parameters:
+- id: log_level
+  label: Log Level (0-4)
+  dtype: int
+  default: '1'
+- id: remove_fill_bits
+  label: Remove Fill Bits
+  dtype: bool
+  default: 'True'
+- id: wireshark_output
+  label: Wireshark Output
+  dtype: bool
+  default: 'False'
+- id: debug
+  label: Debug (trace audio-path packets)
+  dtype: bool
+  default: 'False'
+
+inputs:
+- label: bits
+  domain: stream
+  dtype: byte
+
+outputs:
+- label: tn1
+  domain: stream
+  dtype: float
+- label: tn2
+  domain: stream
+  dtype: float
+- label: tn3
+  domain: stream
+  dtype: float
+- label: tn4
+  domain: stream
+  dtype: float
+- label: call_log
+  domain: message
+  id: call_log
+  optional: true
+
+documentation: |-
+  Decodes a raw pi/4-DQPSK-demodulated TETRA channel bitstream (same format
+  pi4dqpsk_rx.py's blocks_unpack_k_bits_bb produces) directly inside the
+  flowgraph, using tetra-kit's protocol decoder (via libtetrakit_capi.so)
+  and the existing ACELP vocoder (libtetra_codec.so) -- no external
+  `decoder` process, no UDP:42000/42100 hop.
+
+  Feed it unpacked bits (one bit per byte, 0/1).
+
+  Decodio/Procitec-style multi-channel output: 4 separate audio streams
+  (tn1-tn4), one per TETRA timeslot, float32 normalized to [-1, 1] at
+  8 kHz -- so up to 4 simultaneous calls on one carrier stay separate
+  instead of mixing into one stream. Connect each to its own Audio Sink
+  (8000 Hz), or to a file/null sink for slots you don't want to hear live.
+
+  "call_log" message port emits a PMT dict per non-voice report tetra-kit
+  produces -- CMCE call setup/teardown (D-SETUP, D-CONNECT, D-RELEASE,
+  D-TX GRANTED...), MM registration/group attach, MLE network broadcast,
+  SDS status/text messages. Connect to a Message Debug block to see it
+  printed, or to a custom Python message block to build a call-log table.
+
+  Built from delhi_testing/tetra_test/gr_tetra_decoder/
+  -- run `make` there if libtetrakit_capi.so is missing or tetra-kit's
+  decoder sources change.
+
+  Enable Debug to print, per report packet received on the internal
+  loopback path: whether it parsed as JSON, whether it was TCH_S (and if
+  so which timeslot) or call-log, whether audio frames decompressed and
+  were accepted by the ACELP codec -- useful when decode is happening
+  (visible in the console as BSCH/TCH_S lines) but no audio comes out.
+
+file_format: 1

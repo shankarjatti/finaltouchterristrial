@@ -1,0 +1,7440 @@
+options:
+  parameters:
+    author: "AVGARDE SYSTEMS \u2014 SecureCOM M1"
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: "Module 2 \u2014 42-Channel Decoder with Combined Spectrum Analyzer"
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: securecom_module2_decoder
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: "SecureCOM Module 2 \u2014 Multiband Real-Time Receiver"
+    window_size: (1200,800)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [200, 684.0]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: arity
+  id: variable
+  parameters:
+    comment: ''
+    value: '4'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1848, 988.0]
+    rotation: 0
+    state: enabled
+- name: channel_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '36000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1200, 932.0]
+    rotation: 0
+    state: enabled
+- name: constel
+  id: variable_constellation
+  parameters:
+    comment: ''
+    const_points: '[1-1j, 1+1j, -1-1j, 1-1j]'
+    dims: '1'
+    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
+    precision: '8'
+    rot_sym: '4'
+    soft_dec_lut: '''auto'''
+    sym_map: '[0, 1, 3, 2]'
+    type: dqpsk
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3264, 1308.0]
+    rotation: 0
+    state: enabled
+- name: decim
+  id: variable
+  parameters:
+    comment: ''
+    value: '5'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2360, 1148.0]
+    rotation: 0
+    state: enabled
+- name: freq_offset_khz
+  id: variable_qtgui_entry
+  parameters:
+    comment: ''
+    gui_hint: '[1,1]'
+    label: Baseband offset [kHz]
+    type: real
+    value: '-1.714'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2528, 1276.0]
+    rotation: 0
+    state: enabled
+- name: frequency_mhz
+  id: variable_qtgui_entry
+  parameters:
+    comment: ''
+    gui_hint: '[1,0]'
+    label: Frequency [MHz]
+    type: real
+    value: '467.5625'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2384, 1172.0]
+    rotation: 0
+    state: enabled
+- name: gain_demod
+  id: variable_qtgui_range
+  parameters:
+    comment: DMR FM demod gain 1.0 -- measured optimum, offline decode test on real captured IQ (3.93 gave silence)
+    gui_hint: ''
+    label: FM Demod Gain (DMR)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.05'
+    step: '0.01'
+    stop: '10.0'
+    value: '1.0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1960, 1124.0]
+    rotation: 0
+    state: enabled
+- name: gain_demod_nxdn
+  id: variable_qtgui_range
+  parameters:
+    comment: NXDN96 gain = 48k/(2pi*1050Hz) = 7.28 (deviation to verify on air)
+    gui_hint: ''
+    label: FM Demod Gain (NXDN)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.05'
+    step: '0.01'
+    stop: '14.0'
+    value: '7.28'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1960, 1260]
+    rotation: 0
+    state: enabled
+- name: gain_demod_p25
+  id: variable_qtgui_range
+  parameters:
+    comment: P25 C4FM gain = 48k/(2pi*1800Hz) = 4.24
+    gui_hint: ''
+    label: FM Demod Gain (P25)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.05'
+    step: '0.01'
+    stop: '10.0'
+    value: '4.24'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1960, 1396]
+    rotation: 0
+    state: enabled
+- name: nfilts
+  id: variable
+  parameters:
+    comment: ''
+    value: '32'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1256, 892.0]
+    rotation: 0
+    state: enabled
+- name: ppm_corr
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: '[2,0,1,2]'
+    label: PPM correction
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: int
+    start: '-20'
+    step: '1'
+    stop: '15'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2288, 1084.0]
+    rotation: 0
+    state: enabled
+- name: rrc_taps
+  id: variable
+  parameters:
+    comment: ''
+    value: firdes.root_raised_cosine(nfilts, nfilts, 1.0/float(sps), 0.35, 11*sps*nfilts)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2112, 948.0]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: 'TCP IQ from Module 1: 200 kSps'
+    value: '200000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [544, 1052.0]
+    rotation: 0
+    state: enabled
+- name: sps
+  id: variable
+  parameters:
+    comment: ''
+    value: '2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1776, 1052.0]
+    rotation: 0
+    state: enabled
+- name: squelch_thresh
+  id: variable_qtgui_range
+  parameters:
+    comment: "Channel Squelch Threshold (dB) \u2014 mutes idle channels"
+    gui_hint: ''
+    label: Noise Squelch Threshold (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-90'
+    step: '1'
+    stop: '-10'
+    value: '-20'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1760, 1180.0]
+    rotation: 0
+    state: enabled
+- name: variable_adaptive_algorithm_0
+  id: variable_adaptive_algorithm
+  parameters:
+    comment: ''
+    cons: constel
+    delta: '10.0'
+    ffactor: '0.99'
+    modulus: '1'
+    step_size: 10e-3
+    type: cma
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2872, 1300.0]
+    rotation: 0
+    state: true
+- name: volume
+  id: variable_qtgui_range
+  parameters:
+    comment: Audio Speech Output Volume
+    gui_hint: ''
+    label: Audio Volume Boost
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.01'
+    step: '0.01'
+    stop: '20.0'
+    value: '0.04'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2280, 1196.0]
+    rotation: 0
+    state: enabled
+- name: analog_feedforward_agc_cc_0
+  id: analog_feedforward_agc_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_samples: '8'
+    reference: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3224, 2452.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch0
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 3436.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch1
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch1 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 3548.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch10
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch10 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 4636.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch11
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch11 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 4748.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch12
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch12 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 4876.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch13
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch13 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 4988.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch14
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch14 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 5116.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch15
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch15 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 5228.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch2
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch2 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 3676.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch3
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch3 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 3788.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch4
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch4 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 3916.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch5
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch5 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4160, 4036.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch6
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch6 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 4156.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch7
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch7 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 4268.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch8
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch8 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 4396.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_dmr_ch9
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch9 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 4508.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch0
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch0 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 5436.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch1
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch1 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 5548.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch10
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch10 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 6636.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch11
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch11 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 6748.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch12
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch12 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 6876.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch13
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch13 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 6988.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch14
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch14 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 7116.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch15
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch15 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 7228.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch2
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch2 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 5676.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch3
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch3 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 5788.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch4
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch4 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 5916.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch5
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch5 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 6028.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch6
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch6 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 6156.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch7
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch7 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 6268.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch8
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch8 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 6396.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn_ch9
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch9 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4176, 6508.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_p25_ch0
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch0 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4184, 7460.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_p25_ch1
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch1 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4184, 7588.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_p25_ch2
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch2 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4184, 7700.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_p25_ch3
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch3 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4184, 7828.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_p25_ch4
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch4 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4184, 7940.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_p25_ch5
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch5 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4184, 8068.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_p25_ch6
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch6 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4184, 8180.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_p25_ch7
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch7 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4184, 8308.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_p25_ch8
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch8 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4184, 8420.0]
+    rotation: 0
+    state: enabled
+- name: aresamp_p25_ch9
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch9 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4184, 8548.0]
+    rotation: 0
+    state: enabled
+- name: audio_mix_dmr
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR446 16-ch audio mixer @ 48kSps
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    num_inputs: '16'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4656, 4464.0]
+    rotation: 0
+    state: enabled
+- name: audio_mix_nxdn
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN96 16-ch audio mixer @ 48kSps
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    num_inputs: '16'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4616, 6392.0]
+    rotation: 0
+    state: enabled
+- name: audio_mix_p25
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 Phase 1 10-ch audio mixer @ 48kSps
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    num_inputs: '10'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4616, 7896.0]
+    rotation: 0
+    state: enabled
+- name: audio_mix_tetra
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: TETRA 4-timeslot combined audio (for convenience listening)
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    num_inputs: '4'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [5864, 2872.0]
+    rotation: 0
+    state: enabled
+- name: audio_sink_0
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: PulseAudio System Default Audio Sink
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'False'
+    samp_rate: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [5288, 6500.0]
+    rotation: 0
+    state: enabled
+- name: audio_sink_tetra_combined
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: TETRA combined (all 4 slots mixed)
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'True'
+    samp_rate: '8000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [6352, 3084.0]
+    rotation: 0
+    state: enabled
+- name: audio_sink_tn1
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: Timeslot 1
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'True'
+    samp_rate: '8000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [6104, 2572.0]
+    rotation: 0
+    state: enabled
+- name: audio_sink_tn2
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: Timeslot 2
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'True'
+    samp_rate: '8000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [6152, 2628.0]
+    rotation: 0
+    state: enabled
+- name: audio_sink_tn3
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: Timeslot 3
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'True'
+    samp_rate: '8000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [6168, 2684.0]
+    rotation: 0
+    state: enabled
+- name: audio_sink_tn4
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: Timeslot 4
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'True'
+    samp_rate: '8000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [6192, 2756.0]
+    rotation: 0
+    state: enabled
+- name: blocks_add_master
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: Master 3-band audio mixer @ 48kSps
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    num_inputs: '3'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4792, 6632.0]
+    rotation: 0
+    state: enabled
+- name: blocks_message_debug_0
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: TETRA call log
+    en_uvec: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [6280, 2800.0]
+    rotation: 0
+    state: enabled
+- name: blocks_unpack_k_bits_bb_0
+  id: blocks_unpack_k_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: constel.bits_per_symbol()
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [5296, 2716.0]
+    rotation: 0
+    state: enabled
+- name: bridge_zmq_dmr
+  id: zeromq_pub_sink
+  parameters:
+    address: tcp://127.0.0.1:9101
+    affinity: ''
+    alias: ''
+    comment: 'bridge tap: real DMR combined audio @48k'
+    hwm: '-1'
+    key: ''
+    pass_tags: 'False'
+    timeout: '100'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4900, 4464]
+    rotation: 0
+    state: enabled
+- name: bridge_zmq_nxdn
+  id: zeromq_pub_sink
+  parameters:
+    address: tcp://127.0.0.1:9102
+    affinity: ''
+    alias: ''
+    comment: 'bridge tap: real NXDN combined audio @48k'
+    hwm: '-1'
+    key: ''
+    pass_tags: 'False'
+    timeout: '100'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [5112, 6140.0]
+    rotation: 0
+    state: enabled
+- name: bridge_zmq_p25
+  id: zeromq_pub_sink
+  parameters:
+    address: tcp://127.0.0.1:9103
+    affinity: ''
+    alias: ''
+    comment: 'bridge tap: real P25 combined audio @48k'
+    hwm: '-1'
+    key: ''
+    pass_tags: 'False'
+    timeout: '100'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4900, 7896]
+    rotation: 0
+    state: enabled
+- name: bridge_zmq_tetra
+  id: zeromq_pub_sink
+  parameters:
+    address: tcp://127.0.0.1:9104
+    affinity: ''
+    alias: ''
+    comment: 'bridge tap: real TETRA combined audio @8k'
+    hwm: '-1'
+    key: ''
+    pass_tags: 'False'
+    timeout: '100'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [6120, 2872]
+    rotation: 0
+    state: enabled
+- name: bridge_zmq_tetra_events
+  id: zeromq_pub_msg_sink
+  parameters:
+    address: tcp://127.0.0.1:9105
+    affinity: ''
+    alias: ''
+    bind: 'True'
+    comment: 'bridge tap: real TETRA call_log events'
+    timeout: '100'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [6280, 3000]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch0
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 3428.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch1
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch1 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 3556.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch10
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch10 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 4628.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch11
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch11 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 4756.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch12
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch12 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 4868.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch13
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch13 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 4996.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch14
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch14 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 5108.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch15
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch15 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 5236.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch2
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch2 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 3668.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch3
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch3 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 3796.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch4
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch4 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 3908.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch5
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch5 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 4036.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch6
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch6 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 4148.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch7
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch7 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 4276.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch8
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch8 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 4388.0]
+    rotation: 0
+    state: enabled
+- name: demod_dmr_ch9
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch9 FM Demodulator (gain=0.2)
+    gain: gain_demod
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 4516.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch0
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch0 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 5428.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch1
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch1 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 5556.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch10
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch10 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 6628.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch11
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch11 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 6756.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch12
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch12 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 6868.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch13
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch13 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 6996.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch14
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch14 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 7108.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch15
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch15 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 7236.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch2
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch2 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 5668.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch3
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch3 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 5796.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch4
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch4 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 5908.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch5
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch5 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 6036.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch6
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch6 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 6148.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch7
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch7 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 6276.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch8
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch8 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 6388.0]
+    rotation: 0
+    state: enabled
+- name: demod_nxdn_ch9
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch9 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3736, 6516.0]
+    rotation: 0
+    state: enabled
+- name: demod_p25_ch0
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch0 FM Demodulator (gain=0.2)
+    gain: gain_demod_p25
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3744, 7468.0]
+    rotation: 0
+    state: enabled
+- name: demod_p25_ch1
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch1 FM Demodulator (gain=0.2)
+    gain: gain_demod_p25
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3744, 7580.0]
+    rotation: 0
+    state: enabled
+- name: demod_p25_ch2
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch2 FM Demodulator (gain=0.2)
+    gain: gain_demod_p25
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3744, 7708.0]
+    rotation: 0
+    state: enabled
+- name: demod_p25_ch3
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch3 FM Demodulator (gain=0.2)
+    gain: gain_demod_p25
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3744, 7820.0]
+    rotation: 0
+    state: enabled
+- name: demod_p25_ch4
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch4 FM Demodulator (gain=0.2)
+    gain: gain_demod_p25
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3744, 7948.0]
+    rotation: 0
+    state: enabled
+- name: demod_p25_ch5
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch5 FM Demodulator (gain=0.2)
+    gain: gain_demod_p25
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3744, 8060.0]
+    rotation: 0
+    state: enabled
+- name: demod_p25_ch6
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch6 FM Demodulator (gain=0.2)
+    gain: gain_demod_p25
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3744, 8188.0]
+    rotation: 0
+    state: enabled
+- name: demod_p25_ch7
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch7 FM Demodulator (gain=0.2)
+    gain: gain_demod_p25
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3744, 8300.0]
+    rotation: 0
+    state: enabled
+- name: demod_p25_ch8
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch8 FM Demodulator (gain=0.2)
+    gain: gain_demod_p25
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3744, 8428.0]
+    rotation: 0
+    state: enabled
+- name: demod_p25_ch9
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch9 FM Demodulator (gain=0.2)
+    gain: gain_demod_p25
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3744, 8540.0]
+    rotation: 0
+    state: enabled
+- name: digital_constellation_decoder_cb_0
+  id: digital_constellation_decoder_cb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    constellation: constel
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4552, 2828.0]
+    rotation: 0
+    state: enabled
+- name: digital_diff_phasor_cc_0
+  id: digital_diff_phasor_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4368, 2536.0]
+    rotation: 0
+    state: enabled
+- name: digital_fll_band_edge_cc_0
+  id: digital_fll_band_edge_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    filter_size: '45'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    rolloff: '0.35'
+    samps_per_sym: sps
+    type: cc
+    w: '0.03141592653589793'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3496, 2432.0]
+    rotation: 0
+    state: enabled
+- name: digital_linear_equalizer_0
+  id: digital_linear_equalizer
+  parameters:
+    adapt_after_training: 'True'
+    affinity: ''
+    alg: variable_adaptive_algorithm_0
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_taps: '15'
+    sps: sps
+    training_sequence: '[ ]'
+    training_start_tag: corr_est
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4248, 2432.0]
+    rotation: 0
+    state: true
+- name: digital_map_bb_0
+  id: digital_map_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    map: constel.pre_diff_code()
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4992, 2796.0]
+    rotation: 0
+    state: enabled
+- name: digital_pfb_clock_sync_xxx_0
+  id: digital_pfb_clock_sync_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    filter_size: nfilts
+    init_phase: nfilts/2
+    loop_bw: '0.06283185307179586'
+    max_dev: '1.5'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    osps: sps
+    sps: sps
+    taps: rrc_taps
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3984, 2468.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch0
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 3428.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch1
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch1 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 3556.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch10
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch10 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 4628.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch11
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch11 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 4756.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch12
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch12 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 4868.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch13
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch13 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 4996.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch14
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch14 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 5108.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch15
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch15 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 5236.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch2
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch2 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 3668.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch3
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch3 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 3796.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch4
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch4 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 3908.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch5
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch5 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 4036.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch6
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch6 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 4148.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch7
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch7 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 4276.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch8
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch8 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 4388.0]
+    rotation: 0
+    state: enabled
+- name: dsd_dmr_ch9
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch9 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DMR_MOTOTRBO
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 4516.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch0
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch0 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 5428.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch1
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch1 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 5556.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch10
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch10 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 6628.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch11
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch11 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 6756.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch12
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch12 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 6868.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch13
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch13 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 6996.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch14
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch14 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 7108.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch15
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch15 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 7236.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch2
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch2 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 5668.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch3
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch3 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 5796.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch4
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch4 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 5908.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch5
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch5 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 6036.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch6
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch6 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 6148.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch7
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch7 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 6276.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch8
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch8 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 6388.0]
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn_ch9
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch9 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN96
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3960, 6516.0]
+    rotation: 0
+    state: enabled
+- name: dsd_p25_ch0
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch0 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_P25_PHASE_1
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3968, 7468.0]
+    rotation: 0
+    state: enabled
+- name: dsd_p25_ch1
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch1 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_P25_PHASE_1
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3968, 7580.0]
+    rotation: 0
+    state: enabled
+- name: dsd_p25_ch2
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch2 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_P25_PHASE_1
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3968, 7708.0]
+    rotation: 0
+    state: enabled
+- name: dsd_p25_ch3
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch3 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_P25_PHASE_1
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3968, 7820.0]
+    rotation: 0
+    state: enabled
+- name: dsd_p25_ch4
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch4 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_P25_PHASE_1
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3968, 7948.0]
+    rotation: 0
+    state: enabled
+- name: dsd_p25_ch5
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch5 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_P25_PHASE_1
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3968, 8060.0]
+    rotation: 0
+    state: enabled
+- name: dsd_p25_ch6
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch6 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_P25_PHASE_1
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3968, 8188.0]
+    rotation: 0
+    state: enabled
+- name: dsd_p25_ch7
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch7 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_P25_PHASE_1
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3968, 8300.0]
+    rotation: 0
+    state: enabled
+- name: dsd_p25_ch8
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch8 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_P25_PHASE_1
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3968, 8428.0]
+    rotation: 0
+    state: enabled
+- name: dsd_p25_ch9
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch9 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_P25_PHASE_1
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3968, 8540.0]
+    rotation: 0
+    state: enabled
+- name: freq_xlating_fir_filter_xxx_0
+  id: freq_xlating_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    center_freq: freq_offset_khz*1e3
+    comment: ''
+    decim: decim
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    taps: firdes.low_pass(1,samp_rate,12500,12500*0.2)
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2528, 2452.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch0
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch0 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 3428.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch1
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch1 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 3556.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch10
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch10 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 4628.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch11
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch11 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 4756.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch12
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch12 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 4868.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch13
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch13 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 4996.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch14
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch14 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 5108.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch15
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch15 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 5236.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch2
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch2 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 3668.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch3
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch3 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 3796.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch4
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch4 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 3908.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch5
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch5 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 4036.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch6
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch6 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 4148.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch7
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch7 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 4276.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch8
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch8 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 4388.0]
+    rotation: 0
+    state: enabled
+- name: lpf_dmr_ch9
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch9 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 4516.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch0
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch0 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 5428.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch1
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch1 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 5556.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch10
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch10 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 6628.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch11
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch11 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 6756.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch12
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch12 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 6868.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch13
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch13 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 6996.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch14
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch14 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 7108.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch15
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch15 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 7236.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch2
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch2 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 5668.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch3
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch3 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 5796.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch4
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch4 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 5908.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch5
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch5 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 6036.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch6
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch6 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 6148.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch7
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch7 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 6276.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch8
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch8 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 6388.0]
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn_ch9
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: NXDN ch9 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3296, 6516.0]
+    rotation: 0
+    state: enabled
+- name: lpf_p25_ch0
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: P25 ch0 Channel LPF
+    cutoff_freq: '9500'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3304, 7468.0]
+    rotation: 0
+    state: enabled
+- name: lpf_p25_ch1
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: P25 ch1 Channel LPF
+    cutoff_freq: '9500'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3304, 7580.0]
+    rotation: 0
+    state: enabled
+- name: lpf_p25_ch2
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: P25 ch2 Channel LPF
+    cutoff_freq: '9500'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3304, 7708.0]
+    rotation: 0
+    state: enabled
+- name: lpf_p25_ch3
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: P25 ch3 Channel LPF
+    cutoff_freq: '9500'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3304, 7820.0]
+    rotation: 0
+    state: enabled
+- name: lpf_p25_ch4
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: P25 ch4 Channel LPF
+    cutoff_freq: '9500'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3304, 7948.0]
+    rotation: 0
+    state: enabled
+- name: lpf_p25_ch5
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: P25 ch5 Channel LPF
+    cutoff_freq: '9500'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3304, 8060.0]
+    rotation: 0
+    state: enabled
+- name: lpf_p25_ch6
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: P25 ch6 Channel LPF
+    cutoff_freq: '9500'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3304, 8188.0]
+    rotation: 0
+    state: enabled
+- name: lpf_p25_ch7
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: P25 ch7 Channel LPF
+    cutoff_freq: '9500'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3304, 8300.0]
+    rotation: 0
+    state: enabled
+- name: lpf_p25_ch8
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: P25 ch8 Channel LPF
+    cutoff_freq: '9500'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3304, 8428.0]
+    rotation: 0
+    state: enabled
+- name: lpf_p25_ch9
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: P25 ch9 Channel LPF
+    cutoff_freq: '9500'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3304, 8540.0]
+    rotation: 0
+    state: enabled
+- name: mmse_resampler_xx_0
+  id: mmse_resampler_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    phase_shift: '0'
+    resamp_ratio: float(samp_rate)/(float(decim)*float(channel_rate))
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2872, 2440.0]
+    rotation: 0
+    state: enabled
+- name: network_tcp_source_dmr
+  id: network_tcp_source
+  parameters:
+    addr: 127.0.0.1
+    affinity: ''
+    alias: ''
+    comment: "TCP 127.0.0.1:7001 \u2014 DMR446 446.09375MHz"
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    port: '7001'
+    server: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1584, 3684.0]
+    rotation: 0
+    state: enabled
+- name: network_tcp_source_nxdn
+  id: network_tcp_source
+  parameters:
+    addr: 127.0.0.1
+    affinity: ''
+    alias: ''
+    comment: "TCP 127.0.0.1:7002 \u2014 NXDN96 451.09375MHz"
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    port: '7002'
+    server: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1576, 3852.0]
+    rotation: 0
+    state: enabled
+- name: network_tcp_source_p25
+  id: network_tcp_source
+  parameters:
+    addr: 127.0.0.1
+    affinity: ''
+    alias: ''
+    comment: "TCP 127.0.0.1:7003 \u2014 P25 Phase 1 450.09375MHz"
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    port: '7003'
+    server: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1536, 4100.0]
+    rotation: 0
+    state: enabled
+- name: network_tcp_source_tetra
+  id: network_tcp_source
+  parameters:
+    addr: 127.0.0.1
+    affinity: ''
+    alias: ''
+    comment: "TCP 127.0.0.1:7004 \u2014 TETRA 420.0MHz"
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    port: '7004'
+    server: 'False'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1664, 3420.0]
+    rotation: 0
+    state: enabled
+- name: pfb_channelizer_ccf_0
+  id: pfb_channelizer_ccf
+  parameters:
+    affinity: ''
+    alias: ''
+    atten: '100'
+    bus_structure_source: '[[0,],]'
+    ch_map: '[]'
+    comment: DMR446 16ch @ 12.5kSps/ch
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    nchans: '16'
+    osr: '1.0'
+    samp_delay: '0'
+    taps: firdes.low_pass(16.0, samp_rate, (samp_rate/16.0)/2.0, 1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2312, 3664.0]
+    rotation: 0
+    state: enabled
+- name: pfb_channelizer_ccf_0_0
+  id: pfb_channelizer_ccf
+  parameters:
+    affinity: ''
+    alias: ''
+    atten: '100'
+    bus_structure_source: '[[0,],]'
+    ch_map: '[]'
+    comment: P25 Phase 1 10ch @ 20kSps/ch
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    nchans: '10'
+    osr: '1.0'
+    samp_delay: '0'
+    taps: firdes.low_pass(10.0, samp_rate, (samp_rate/10.0)/2.0, 1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2872, 7464.0]
+    rotation: 0
+    state: enabled
+- name: pfb_channelizer_ccf_0_1
+  id: pfb_channelizer_ccf
+  parameters:
+    affinity: ''
+    alias: ''
+    atten: '100'
+    bus_structure_source: '[[0,],]'
+    ch_map: '[]'
+    comment: NXDN96 16ch @ 12.5kSps/ch
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    nchans: '16'
+    osr: '1.0'
+    samp_delay: '0'
+    taps: firdes.low_pass(16.0, samp_rate, (samp_rate/16.0)/2.0, 1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2864, 5432.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_const_sink_x_0_0
+  id: qtgui_const_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: '"blue"'
+    color10: '"red"'
+    color2: '"red"'
+    color3: '"red"'
+    color4: '"red"'
+    color5: '"red"'
+    color6: '"red"'
+    color7: '"red"'
+    color8: '"red"'
+    color9: '"red"'
+    comment: ''
+    grid: 'False'
+    gui_hint: '[4,0,1,2]'
+    label1: Data 0
+    label10: ''
+    label2: other rx
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'False'
+    marker1: '0'
+    marker10: '0'
+    marker2: '0'
+    marker3: '0'
+    marker4: '0'
+    marker5: '0'
+    marker6: '0'
+    marker7: '0'
+    marker8: '0'
+    marker9: '0'
+    name: output
+    nconnections: '1'
+    size: '1024'
+    style1: '0'
+    style10: '0'
+    style2: '0'
+    style3: '0'
+    style4: '0'
+    style5: '0'
+    style6: '0'
+    style7: '0'
+    style8: '0'
+    style9: '0'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    xmax: '2'
+    xmin: '-2'
+    ymax: '2'
+    ymin: '-2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4744, 2492.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_freq_sink_combined
+  id: qtgui_freq_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'True'
+    average: '0.2'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: Combined Spectrum Analyzer for All 3 Bands
+    ctrlpanel: 'False'
+    fc: '0'
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'True'
+    gui_hint: ''
+    label: Power Spectrum Density
+    label1: DMR446 (Port 7001)
+    label10: ''
+    label2: NXDN96 (Port 7002)
+    label3: P25 Phase 1 (Port 7003)
+    label4: TETRA (Port 7004)
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: SecureCOM Live Spectrum Activity (Blue=DMR, Red=NXDN, Green=P25)
+    nconnections: '4'
+    norm_window: 'False'
+    showports: 'False'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_tag: ''
+    type: complex
+    units: dB
+    update_time: '0.10'
+    width1: '2'
+    width10: '1'
+    width2: '2'
+    width3: '2'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    wintype: window.WIN_BLACKMAN_hARRIS
+    ymax: '10'
+    ymin: '-140'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2048, 3544.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_dnp
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'True'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: audio
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: "Audio Time Domain \u2014 DMR/NXDN/P25"
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [6416, 6484.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_tetra
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'True'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: audio
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: "Audio Time Domain \u2014 TETRA"
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [6328, 2980.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_waterfall_sink_x_0
+  id: qtgui_waterfall_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    bw: channel_rate
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: ''
+    fc: '0'
+    fftsize: '256'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: '[3,0,1,2]'
+    int_max: '10'
+    int_min: '-140'
+    label1: Data 0
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '""'
+    nconnections: '1'
+    showports: 'False'
+    type: complex
+    update_time: '0.1'
+    wintype: window.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3064, 2300.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch0
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch0: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 3436.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch1
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch1: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 3548.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch10
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch10: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 4636.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch11
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch11: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 4748.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch12
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch12: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 4876.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch13
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch13: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 4988.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch14
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch14: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 5116.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch15
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch15: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 5228.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch2
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch2: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 3676.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch3
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch3: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 3788.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch4
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch4: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 3916.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch5
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch5: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 4028.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch6
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch6: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 4156.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch7
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch7: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 4268.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch8
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch8: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 4396.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_dmr_ch9
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch9: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 4508.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch0
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch0: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 5436.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch1
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch1: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 5548.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch10
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch10: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 6636.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch11
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch11: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 6748.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch12
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch12: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 6876.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch13
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch13: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 6988.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch14
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch14: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 7116.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch15
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch15: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 7228.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch2
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch2: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 5676.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch3
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch3: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 5788.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch4
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch4: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 5916.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch5
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch5: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 6028.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch6
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch6: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 6156.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch7
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch7: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 6268.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch8
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch8: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 6396.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn_ch9
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'NXDN ch9: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3080, 6508.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_p25_ch0
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'P25 ch0: PFB port -> 48 kHz IQ'
+    decim: '5'
+    fbw: '0.4'
+    interp: '12'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3088, 7460.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_p25_ch1
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'P25 ch1: PFB port -> 48 kHz IQ'
+    decim: '5'
+    fbw: '0.4'
+    interp: '12'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3088, 7588.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_p25_ch2
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'P25 ch2: PFB port -> 48 kHz IQ'
+    decim: '5'
+    fbw: '0.4'
+    interp: '12'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3088, 7700.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_p25_ch3
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'P25 ch3: PFB port -> 48 kHz IQ'
+    decim: '5'
+    fbw: '0.4'
+    interp: '12'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3088, 7828.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_p25_ch4
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'P25 ch4: PFB port -> 48 kHz IQ'
+    decim: '5'
+    fbw: '0.4'
+    interp: '12'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3088, 7940.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_p25_ch5
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'P25 ch5: PFB port -> 48 kHz IQ'
+    decim: '5'
+    fbw: '0.4'
+    interp: '12'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3088, 8068.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_p25_ch6
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'P25 ch6: PFB port -> 48 kHz IQ'
+    decim: '5'
+    fbw: '0.4'
+    interp: '12'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3088, 8180.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_p25_ch7
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'P25 ch7: PFB port -> 48 kHz IQ'
+    decim: '5'
+    fbw: '0.4'
+    interp: '12'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3088, 8308.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_p25_ch8
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'P25 ch8: PFB port -> 48 kHz IQ'
+    decim: '5'
+    fbw: '0.4'
+    interp: '12'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3088, 8420.0]
+    rotation: 0
+    state: enabled
+- name: resamp_iq_p25_ch9
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'P25 ch9: PFB port -> 48 kHz IQ'
+    decim: '5'
+    fbw: '0.4'
+    interp: '12'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3088, 8548.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch0
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch0 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 3436.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch1
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch1 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 3548.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch10
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch10 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 4636.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch11
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch11 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 4748.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch12
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch12 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 4876.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch13
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch13 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 4988.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch14
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch14 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 5116.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch15
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch15 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 5228.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch2
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch2 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 3676.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch3
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch3 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 3788.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch4
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch4 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 3916.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch5
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch5 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 4028.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch6
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch6 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 4156.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch7
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch7 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 4268.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch8
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch8 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 4396.0]
+    rotation: 0
+    state: enabled
+- name: squelch_dmr_ch9
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch9 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 4508.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch0
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch0 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 5436.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch1
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch1 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 5548.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch10
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch10 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 6636.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch11
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch11 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 6748.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch12
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch12 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 6876.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch13
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch13 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 6988.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch14
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch14 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 7116.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch15
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch15 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 7228.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch2
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch2 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 5676.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch3
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch3 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 5788.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch4
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch4 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 5916.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch5
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch5 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 6028.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch6
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch6 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 6156.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch7
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch7 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 6268.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch8
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch8 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 6396.0]
+    rotation: 0
+    state: enabled
+- name: squelch_nxdn_ch9
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: NXDN ch9 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3512, 6508.0]
+    rotation: 0
+    state: enabled
+- name: squelch_p25_ch0
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: P25 ch0 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3520, 7460.0]
+    rotation: 0
+    state: enabled
+- name: squelch_p25_ch1
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: P25 ch1 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3520, 7588.0]
+    rotation: 0
+    state: enabled
+- name: squelch_p25_ch2
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: P25 ch2 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3520, 7700.0]
+    rotation: 0
+    state: enabled
+- name: squelch_p25_ch3
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: P25 ch3 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3520, 7828.0]
+    rotation: 0
+    state: enabled
+- name: squelch_p25_ch4
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: P25 ch4 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3520, 7940.0]
+    rotation: 0
+    state: enabled
+- name: squelch_p25_ch5
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: P25 ch5 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3520, 8068.0]
+    rotation: 0
+    state: enabled
+- name: squelch_p25_ch6
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: P25 ch6 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3520, 8180.0]
+    rotation: 0
+    state: enabled
+- name: squelch_p25_ch7
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: P25 ch7 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3520, 8308.0]
+    rotation: 0
+    state: enabled
+- name: squelch_p25_ch8
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: P25 ch8 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3520, 8420.0]
+    rotation: 0
+    state: enabled
+- name: squelch_p25_ch9
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: P25 ch9 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [3520, 8548.0]
+    rotation: 0
+    state: enabled
+- name: tetra_decoder_block_0
+  id: tetra_decoder_block
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: in-flowgraph tetra-kit + ACELP decode, no external process
+    debug: 'True'
+    log_level: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    remove_fill_bits: 'True'
+    wireshark_output: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [5552, 2640.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 3428.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch1
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch1 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 3556.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch10
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch10 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 4628.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch11
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch11 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 4756.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch12
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch12 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 4868.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch13
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch13 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 4996.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch14
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch14 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 5108.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch15
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch15 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 5236.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch2
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch2 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 3668.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch3
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch3 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 3796.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch4
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch4 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 3908.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch5
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch5 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 4036.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch6
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch6 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 4148.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch7
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch7 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4384, 4308.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch8
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch8 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 4388.0]
+    rotation: 0
+    state: enabled
+- name: vol_dmr_ch9
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch9 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 4516.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch0 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 5428.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch1
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch1 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 5556.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch10
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch10 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 6628.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch11
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch11 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 6756.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch12
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch12 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 6868.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch13
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch13 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 6996.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch14
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch14 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 7108.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch15
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch15 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 7236.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch2
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch2 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 5668.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch3
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch3 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 5796.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch4
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch4 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 5908.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch5
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch5 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 6036.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch6
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch6 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 6148.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch7
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch7 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 6276.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch8
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch8 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 6388.0]
+    rotation: 0
+    state: enabled
+- name: vol_nxdn_ch9
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: NXDN ch9 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4392, 6516.0]
+    rotation: 0
+    state: enabled
+- name: vol_p25_ch0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch0 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4400, 7468.0]
+    rotation: 0
+    state: enabled
+- name: vol_p25_ch1
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch1 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4400, 7580.0]
+    rotation: 0
+    state: enabled
+- name: vol_p25_ch2
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch2 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4400, 7708.0]
+    rotation: 0
+    state: enabled
+- name: vol_p25_ch3
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch3 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4400, 7820.0]
+    rotation: 0
+    state: enabled
+- name: vol_p25_ch4
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch4 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4400, 7948.0]
+    rotation: 0
+    state: enabled
+- name: vol_p25_ch5
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch5 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4400, 8060.0]
+    rotation: 0
+    state: enabled
+- name: vol_p25_ch6
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch6 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4400, 8188.0]
+    rotation: 0
+    state: enabled
+- name: vol_p25_ch7
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch7 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4400, 8300.0]
+    rotation: 0
+    state: enabled
+- name: vol_p25_ch8
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch8 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4400, 8428.0]
+    rotation: 0
+    state: enabled
+- name: vol_p25_ch9
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: P25 ch9 Volume Boost
+    const: volume
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [4400, 8540.0]
+    rotation: 0
+    state: enabled
+
+connections:
+- [analog_feedforward_agc_cc_0, '0', digital_fll_band_edge_cc_0, '0']
+- [aresamp_dmr_ch0, '0', vol_dmr_ch0, '0']
+- [aresamp_dmr_ch1, '0', vol_dmr_ch1, '0']
+- [aresamp_dmr_ch10, '0', vol_dmr_ch10, '0']
+- [aresamp_dmr_ch11, '0', vol_dmr_ch11, '0']
+- [aresamp_dmr_ch12, '0', vol_dmr_ch12, '0']
+- [aresamp_dmr_ch13, '0', vol_dmr_ch13, '0']
+- [aresamp_dmr_ch14, '0', vol_dmr_ch14, '0']
+- [aresamp_dmr_ch15, '0', vol_dmr_ch15, '0']
+- [aresamp_dmr_ch2, '0', vol_dmr_ch2, '0']
+- [aresamp_dmr_ch3, '0', vol_dmr_ch3, '0']
+- [aresamp_dmr_ch4, '0', vol_dmr_ch4, '0']
+- [aresamp_dmr_ch5, '0', vol_dmr_ch5, '0']
+- [aresamp_dmr_ch6, '0', vol_dmr_ch6, '0']
+- [aresamp_dmr_ch7, '0', vol_dmr_ch7, '0']
+- [aresamp_dmr_ch8, '0', vol_dmr_ch8, '0']
+- [aresamp_dmr_ch9, '0', vol_dmr_ch9, '0']
+- [aresamp_nxdn_ch0, '0', vol_nxdn_ch0, '0']
+- [aresamp_nxdn_ch1, '0', vol_nxdn_ch1, '0']
+- [aresamp_nxdn_ch10, '0', vol_nxdn_ch10, '0']
+- [aresamp_nxdn_ch11, '0', vol_nxdn_ch11, '0']
+- [aresamp_nxdn_ch12, '0', vol_nxdn_ch12, '0']
+- [aresamp_nxdn_ch13, '0', vol_nxdn_ch13, '0']
+- [aresamp_nxdn_ch14, '0', vol_nxdn_ch14, '0']
+- [aresamp_nxdn_ch15, '0', vol_nxdn_ch15, '0']
+- [aresamp_nxdn_ch2, '0', vol_nxdn_ch2, '0']
+- [aresamp_nxdn_ch3, '0', vol_nxdn_ch3, '0']
+- [aresamp_nxdn_ch4, '0', vol_nxdn_ch4, '0']
+- [aresamp_nxdn_ch5, '0', vol_nxdn_ch5, '0']
+- [aresamp_nxdn_ch6, '0', vol_nxdn_ch6, '0']
+- [aresamp_nxdn_ch7, '0', vol_nxdn_ch7, '0']
+- [aresamp_nxdn_ch8, '0', vol_nxdn_ch8, '0']
+- [aresamp_nxdn_ch9, '0', vol_nxdn_ch9, '0']
+- [aresamp_p25_ch0, '0', vol_p25_ch0, '0']
+- [aresamp_p25_ch1, '0', vol_p25_ch1, '0']
+- [aresamp_p25_ch2, '0', vol_p25_ch2, '0']
+- [aresamp_p25_ch3, '0', vol_p25_ch3, '0']
+- [aresamp_p25_ch4, '0', vol_p25_ch4, '0']
+- [aresamp_p25_ch5, '0', vol_p25_ch5, '0']
+- [aresamp_p25_ch6, '0', vol_p25_ch6, '0']
+- [aresamp_p25_ch7, '0', vol_p25_ch7, '0']
+- [aresamp_p25_ch8, '0', vol_p25_ch8, '0']
+- [aresamp_p25_ch9, '0', vol_p25_ch9, '0']
+- [audio_mix_dmr, '0', blocks_add_master, '0']
+- [audio_mix_dmr, '0', bridge_zmq_dmr, '0']
+- [audio_mix_nxdn, '0', blocks_add_master, '1']
+- [audio_mix_nxdn, '0', bridge_zmq_nxdn, '0']
+- [audio_mix_p25, '0', blocks_add_master, '2']
+- [audio_mix_p25, '0', bridge_zmq_p25, '0']
+- [audio_mix_tetra, '0', audio_sink_tetra_combined, '0']
+- [audio_mix_tetra, '0', bridge_zmq_tetra, '0']
+- [audio_mix_tetra, '0', qtgui_time_sink_tetra, '0']
+- [blocks_add_master, '0', audio_sink_0, '0']
+- [blocks_add_master, '0', qtgui_time_sink_dnp, '0']
+- [blocks_unpack_k_bits_bb_0, '0', tetra_decoder_block_0, '0']
+- [demod_dmr_ch0, '0', dsd_dmr_ch0, '0']
+- [demod_dmr_ch1, '0', dsd_dmr_ch1, '0']
+- [demod_dmr_ch10, '0', dsd_dmr_ch10, '0']
+- [demod_dmr_ch11, '0', dsd_dmr_ch11, '0']
+- [demod_dmr_ch12, '0', dsd_dmr_ch12, '0']
+- [demod_dmr_ch13, '0', dsd_dmr_ch13, '0']
+- [demod_dmr_ch14, '0', dsd_dmr_ch14, '0']
+- [demod_dmr_ch15, '0', dsd_dmr_ch15, '0']
+- [demod_dmr_ch2, '0', dsd_dmr_ch2, '0']
+- [demod_dmr_ch3, '0', dsd_dmr_ch3, '0']
+- [demod_dmr_ch4, '0', dsd_dmr_ch4, '0']
+- [demod_dmr_ch5, '0', dsd_dmr_ch5, '0']
+- [demod_dmr_ch6, '0', dsd_dmr_ch6, '0']
+- [demod_dmr_ch7, '0', dsd_dmr_ch7, '0']
+- [demod_dmr_ch8, '0', dsd_dmr_ch8, '0']
+- [demod_dmr_ch9, '0', dsd_dmr_ch9, '0']
+- [demod_nxdn_ch0, '0', dsd_nxdn_ch0, '0']
+- [demod_nxdn_ch1, '0', dsd_nxdn_ch1, '0']
+- [demod_nxdn_ch10, '0', dsd_nxdn_ch10, '0']
+- [demod_nxdn_ch11, '0', dsd_nxdn_ch11, '0']
+- [demod_nxdn_ch12, '0', dsd_nxdn_ch12, '0']
+- [demod_nxdn_ch13, '0', dsd_nxdn_ch13, '0']
+- [demod_nxdn_ch14, '0', dsd_nxdn_ch14, '0']
+- [demod_nxdn_ch15, '0', dsd_nxdn_ch15, '0']
+- [demod_nxdn_ch2, '0', dsd_nxdn_ch2, '0']
+- [demod_nxdn_ch3, '0', dsd_nxdn_ch3, '0']
+- [demod_nxdn_ch4, '0', dsd_nxdn_ch4, '0']
+- [demod_nxdn_ch5, '0', dsd_nxdn_ch5, '0']
+- [demod_nxdn_ch6, '0', dsd_nxdn_ch6, '0']
+- [demod_nxdn_ch7, '0', dsd_nxdn_ch7, '0']
+- [demod_nxdn_ch8, '0', dsd_nxdn_ch8, '0']
+- [demod_nxdn_ch9, '0', dsd_nxdn_ch9, '0']
+- [demod_p25_ch0, '0', dsd_p25_ch0, '0']
+- [demod_p25_ch1, '0', dsd_p25_ch1, '0']
+- [demod_p25_ch2, '0', dsd_p25_ch2, '0']
+- [demod_p25_ch3, '0', dsd_p25_ch3, '0']
+- [demod_p25_ch4, '0', dsd_p25_ch4, '0']
+- [demod_p25_ch5, '0', dsd_p25_ch5, '0']
+- [demod_p25_ch6, '0', dsd_p25_ch6, '0']
+- [demod_p25_ch7, '0', dsd_p25_ch7, '0']
+- [demod_p25_ch8, '0', dsd_p25_ch8, '0']
+- [demod_p25_ch9, '0', dsd_p25_ch9, '0']
+- [digital_constellation_decoder_cb_0, '0', digital_map_bb_0, '0']
+- [digital_diff_phasor_cc_0, '0', digital_constellation_decoder_cb_0, '0']
+- [digital_diff_phasor_cc_0, '0', qtgui_const_sink_x_0_0, '0']
+- [digital_fll_band_edge_cc_0, '0', digital_pfb_clock_sync_xxx_0, '0']
+- [digital_linear_equalizer_0, '0', digital_diff_phasor_cc_0, '0']
+- [digital_map_bb_0, '0', blocks_unpack_k_bits_bb_0, '0']
+- [digital_pfb_clock_sync_xxx_0, '0', digital_linear_equalizer_0, '0']
+- [dsd_dmr_ch0, '0', aresamp_dmr_ch0, '0']
+- [dsd_dmr_ch1, '0', aresamp_dmr_ch1, '0']
+- [dsd_dmr_ch10, '0', aresamp_dmr_ch10, '0']
+- [dsd_dmr_ch11, '0', aresamp_dmr_ch11, '0']
+- [dsd_dmr_ch12, '0', aresamp_dmr_ch12, '0']
+- [dsd_dmr_ch13, '0', aresamp_dmr_ch13, '0']
+- [dsd_dmr_ch14, '0', aresamp_dmr_ch14, '0']
+- [dsd_dmr_ch15, '0', aresamp_dmr_ch15, '0']
+- [dsd_dmr_ch2, '0', aresamp_dmr_ch2, '0']
+- [dsd_dmr_ch3, '0', aresamp_dmr_ch3, '0']
+- [dsd_dmr_ch4, '0', aresamp_dmr_ch4, '0']
+- [dsd_dmr_ch5, '0', aresamp_dmr_ch5, '0']
+- [dsd_dmr_ch6, '0', aresamp_dmr_ch6, '0']
+- [dsd_dmr_ch7, '0', aresamp_dmr_ch7, '0']
+- [dsd_dmr_ch8, '0', aresamp_dmr_ch8, '0']
+- [dsd_dmr_ch9, '0', aresamp_dmr_ch9, '0']
+- [dsd_nxdn_ch0, '0', aresamp_nxdn_ch0, '0']
+- [dsd_nxdn_ch1, '0', aresamp_nxdn_ch1, '0']
+- [dsd_nxdn_ch10, '0', aresamp_nxdn_ch10, '0']
+- [dsd_nxdn_ch11, '0', aresamp_nxdn_ch11, '0']
+- [dsd_nxdn_ch12, '0', aresamp_nxdn_ch12, '0']
+- [dsd_nxdn_ch13, '0', aresamp_nxdn_ch13, '0']
+- [dsd_nxdn_ch14, '0', aresamp_nxdn_ch14, '0']
+- [dsd_nxdn_ch15, '0', aresamp_nxdn_ch15, '0']
+- [dsd_nxdn_ch2, '0', aresamp_nxdn_ch2, '0']
+- [dsd_nxdn_ch3, '0', aresamp_nxdn_ch3, '0']
+- [dsd_nxdn_ch4, '0', aresamp_nxdn_ch4, '0']
+- [dsd_nxdn_ch5, '0', aresamp_nxdn_ch5, '0']
+- [dsd_nxdn_ch6, '0', aresamp_nxdn_ch6, '0']
+- [dsd_nxdn_ch7, '0', aresamp_nxdn_ch7, '0']
+- [dsd_nxdn_ch8, '0', aresamp_nxdn_ch8, '0']
+- [dsd_nxdn_ch9, '0', aresamp_nxdn_ch9, '0']
+- [dsd_p25_ch0, '0', aresamp_p25_ch0, '0']
+- [dsd_p25_ch1, '0', aresamp_p25_ch1, '0']
+- [dsd_p25_ch2, '0', aresamp_p25_ch2, '0']
+- [dsd_p25_ch3, '0', aresamp_p25_ch3, '0']
+- [dsd_p25_ch4, '0', aresamp_p25_ch4, '0']
+- [dsd_p25_ch5, '0', aresamp_p25_ch5, '0']
+- [dsd_p25_ch6, '0', aresamp_p25_ch6, '0']
+- [dsd_p25_ch7, '0', aresamp_p25_ch7, '0']
+- [dsd_p25_ch8, '0', aresamp_p25_ch8, '0']
+- [dsd_p25_ch9, '0', aresamp_p25_ch9, '0']
+- [freq_xlating_fir_filter_xxx_0, '0', mmse_resampler_xx_0, '0']
+- [lpf_dmr_ch0, '0', squelch_dmr_ch0, '0']
+- [lpf_dmr_ch1, '0', squelch_dmr_ch1, '0']
+- [lpf_dmr_ch10, '0', squelch_dmr_ch10, '0']
+- [lpf_dmr_ch11, '0', squelch_dmr_ch11, '0']
+- [lpf_dmr_ch12, '0', squelch_dmr_ch12, '0']
+- [lpf_dmr_ch13, '0', squelch_dmr_ch13, '0']
+- [lpf_dmr_ch14, '0', squelch_dmr_ch14, '0']
+- [lpf_dmr_ch15, '0', squelch_dmr_ch15, '0']
+- [lpf_dmr_ch2, '0', squelch_dmr_ch2, '0']
+- [lpf_dmr_ch3, '0', squelch_dmr_ch3, '0']
+- [lpf_dmr_ch4, '0', squelch_dmr_ch4, '0']
+- [lpf_dmr_ch5, '0', squelch_dmr_ch5, '0']
+- [lpf_dmr_ch6, '0', squelch_dmr_ch6, '0']
+- [lpf_dmr_ch7, '0', squelch_dmr_ch7, '0']
+- [lpf_dmr_ch8, '0', squelch_dmr_ch8, '0']
+- [lpf_dmr_ch9, '0', squelch_dmr_ch9, '0']
+- [lpf_nxdn_ch0, '0', squelch_nxdn_ch0, '0']
+- [lpf_nxdn_ch1, '0', squelch_nxdn_ch1, '0']
+- [lpf_nxdn_ch10, '0', squelch_nxdn_ch10, '0']
+- [lpf_nxdn_ch11, '0', squelch_nxdn_ch11, '0']
+- [lpf_nxdn_ch12, '0', squelch_nxdn_ch12, '0']
+- [lpf_nxdn_ch13, '0', squelch_nxdn_ch13, '0']
+- [lpf_nxdn_ch14, '0', squelch_nxdn_ch14, '0']
+- [lpf_nxdn_ch15, '0', squelch_nxdn_ch15, '0']
+- [lpf_nxdn_ch2, '0', squelch_nxdn_ch2, '0']
+- [lpf_nxdn_ch3, '0', squelch_nxdn_ch3, '0']
+- [lpf_nxdn_ch4, '0', squelch_nxdn_ch4, '0']
+- [lpf_nxdn_ch5, '0', squelch_nxdn_ch5, '0']
+- [lpf_nxdn_ch6, '0', squelch_nxdn_ch6, '0']
+- [lpf_nxdn_ch7, '0', squelch_nxdn_ch7, '0']
+- [lpf_nxdn_ch8, '0', squelch_nxdn_ch8, '0']
+- [lpf_nxdn_ch9, '0', squelch_nxdn_ch9, '0']
+- [lpf_p25_ch0, '0', squelch_p25_ch0, '0']
+- [lpf_p25_ch1, '0', squelch_p25_ch1, '0']
+- [lpf_p25_ch2, '0', squelch_p25_ch2, '0']
+- [lpf_p25_ch3, '0', squelch_p25_ch3, '0']
+- [lpf_p25_ch4, '0', squelch_p25_ch4, '0']
+- [lpf_p25_ch5, '0', squelch_p25_ch5, '0']
+- [lpf_p25_ch6, '0', squelch_p25_ch6, '0']
+- [lpf_p25_ch7, '0', squelch_p25_ch7, '0']
+- [lpf_p25_ch8, '0', squelch_p25_ch8, '0']
+- [lpf_p25_ch9, '0', squelch_p25_ch9, '0']
+- [mmse_resampler_xx_0, '0', analog_feedforward_agc_cc_0, '0']
+- [mmse_resampler_xx_0, '0', qtgui_waterfall_sink_x_0, '0']
+- [network_tcp_source_dmr, '0', pfb_channelizer_ccf_0, '0']
+- [network_tcp_source_dmr, '0', qtgui_freq_sink_combined, '0']
+- [network_tcp_source_nxdn, '0', pfb_channelizer_ccf_0_1, '0']
+- [network_tcp_source_nxdn, '0', qtgui_freq_sink_combined, '1']
+- [network_tcp_source_p25, '0', pfb_channelizer_ccf_0_0, '0']
+- [network_tcp_source_p25, '0', qtgui_freq_sink_combined, '2']
+- [network_tcp_source_tetra, '0', freq_xlating_fir_filter_xxx_0, '0']
+- [network_tcp_source_tetra, '0', qtgui_freq_sink_combined, '3']
+- [pfb_channelizer_ccf_0, '0', resamp_iq_dmr_ch0, '0']
+- [pfb_channelizer_ccf_0, '1', resamp_iq_dmr_ch1, '0']
+- [pfb_channelizer_ccf_0, '10', resamp_iq_dmr_ch10, '0']
+- [pfb_channelizer_ccf_0, '11', resamp_iq_dmr_ch11, '0']
+- [pfb_channelizer_ccf_0, '12', resamp_iq_dmr_ch12, '0']
+- [pfb_channelizer_ccf_0, '13', resamp_iq_dmr_ch13, '0']
+- [pfb_channelizer_ccf_0, '14', resamp_iq_dmr_ch14, '0']
+- [pfb_channelizer_ccf_0, '15', resamp_iq_dmr_ch15, '0']
+- [pfb_channelizer_ccf_0, '2', resamp_iq_dmr_ch2, '0']
+- [pfb_channelizer_ccf_0, '3', resamp_iq_dmr_ch3, '0']
+- [pfb_channelizer_ccf_0, '4', resamp_iq_dmr_ch4, '0']
+- [pfb_channelizer_ccf_0, '5', resamp_iq_dmr_ch5, '0']
+- [pfb_channelizer_ccf_0, '6', resamp_iq_dmr_ch6, '0']
+- [pfb_channelizer_ccf_0, '7', resamp_iq_dmr_ch7, '0']
+- [pfb_channelizer_ccf_0, '8', resamp_iq_dmr_ch8, '0']
+- [pfb_channelizer_ccf_0, '9', resamp_iq_dmr_ch9, '0']
+- [pfb_channelizer_ccf_0_0, '0', resamp_iq_p25_ch0, '0']
+- [pfb_channelizer_ccf_0_0, '1', resamp_iq_p25_ch1, '0']
+- [pfb_channelizer_ccf_0_0, '2', resamp_iq_p25_ch2, '0']
+- [pfb_channelizer_ccf_0_0, '3', resamp_iq_p25_ch3, '0']
+- [pfb_channelizer_ccf_0_0, '4', resamp_iq_p25_ch4, '0']
+- [pfb_channelizer_ccf_0_0, '5', resamp_iq_p25_ch5, '0']
+- [pfb_channelizer_ccf_0_0, '6', resamp_iq_p25_ch6, '0']
+- [pfb_channelizer_ccf_0_0, '7', resamp_iq_p25_ch7, '0']
+- [pfb_channelizer_ccf_0_0, '8', resamp_iq_p25_ch8, '0']
+- [pfb_channelizer_ccf_0_0, '9', resamp_iq_p25_ch9, '0']
+- [pfb_channelizer_ccf_0_1, '0', resamp_iq_nxdn_ch0, '0']
+- [pfb_channelizer_ccf_0_1, '1', resamp_iq_nxdn_ch1, '0']
+- [pfb_channelizer_ccf_0_1, '10', resamp_iq_nxdn_ch10, '0']
+- [pfb_channelizer_ccf_0_1, '11', resamp_iq_nxdn_ch11, '0']
+- [pfb_channelizer_ccf_0_1, '12', resamp_iq_nxdn_ch12, '0']
+- [pfb_channelizer_ccf_0_1, '13', resamp_iq_nxdn_ch13, '0']
+- [pfb_channelizer_ccf_0_1, '14', resamp_iq_nxdn_ch14, '0']
+- [pfb_channelizer_ccf_0_1, '15', resamp_iq_nxdn_ch15, '0']
+- [pfb_channelizer_ccf_0_1, '2', resamp_iq_nxdn_ch2, '0']
+- [pfb_channelizer_ccf_0_1, '3', resamp_iq_nxdn_ch3, '0']
+- [pfb_channelizer_ccf_0_1, '4', resamp_iq_nxdn_ch4, '0']
+- [pfb_channelizer_ccf_0_1, '5', resamp_iq_nxdn_ch5, '0']
+- [pfb_channelizer_ccf_0_1, '6', resamp_iq_nxdn_ch6, '0']
+- [pfb_channelizer_ccf_0_1, '7', resamp_iq_nxdn_ch7, '0']
+- [pfb_channelizer_ccf_0_1, '8', resamp_iq_nxdn_ch8, '0']
+- [pfb_channelizer_ccf_0_1, '9', resamp_iq_nxdn_ch9, '0']
+- [resamp_iq_dmr_ch0, '0', lpf_dmr_ch0, '0']
+- [resamp_iq_dmr_ch1, '0', lpf_dmr_ch1, '0']
+- [resamp_iq_dmr_ch10, '0', lpf_dmr_ch10, '0']
+- [resamp_iq_dmr_ch11, '0', lpf_dmr_ch11, '0']
+- [resamp_iq_dmr_ch12, '0', lpf_dmr_ch12, '0']
+- [resamp_iq_dmr_ch13, '0', lpf_dmr_ch13, '0']
+- [resamp_iq_dmr_ch14, '0', lpf_dmr_ch14, '0']
+- [resamp_iq_dmr_ch15, '0', lpf_dmr_ch15, '0']
+- [resamp_iq_dmr_ch2, '0', lpf_dmr_ch2, '0']
+- [resamp_iq_dmr_ch3, '0', lpf_dmr_ch3, '0']
+- [resamp_iq_dmr_ch4, '0', lpf_dmr_ch4, '0']
+- [resamp_iq_dmr_ch5, '0', lpf_dmr_ch5, '0']
+- [resamp_iq_dmr_ch6, '0', lpf_dmr_ch6, '0']
+- [resamp_iq_dmr_ch7, '0', lpf_dmr_ch7, '0']
+- [resamp_iq_dmr_ch8, '0', lpf_dmr_ch8, '0']
+- [resamp_iq_dmr_ch9, '0', lpf_dmr_ch9, '0']
+- [resamp_iq_nxdn_ch0, '0', lpf_nxdn_ch0, '0']
+- [resamp_iq_nxdn_ch1, '0', lpf_nxdn_ch1, '0']
+- [resamp_iq_nxdn_ch10, '0', lpf_nxdn_ch10, '0']
+- [resamp_iq_nxdn_ch11, '0', lpf_nxdn_ch11, '0']
+- [resamp_iq_nxdn_ch12, '0', lpf_nxdn_ch12, '0']
+- [resamp_iq_nxdn_ch13, '0', lpf_nxdn_ch13, '0']
+- [resamp_iq_nxdn_ch14, '0', lpf_nxdn_ch14, '0']
+- [resamp_iq_nxdn_ch15, '0', lpf_nxdn_ch15, '0']
+- [resamp_iq_nxdn_ch2, '0', lpf_nxdn_ch2, '0']
+- [resamp_iq_nxdn_ch3, '0', lpf_nxdn_ch3, '0']
+- [resamp_iq_nxdn_ch4, '0', lpf_nxdn_ch4, '0']
+- [resamp_iq_nxdn_ch5, '0', lpf_nxdn_ch5, '0']
+- [resamp_iq_nxdn_ch6, '0', lpf_nxdn_ch6, '0']
+- [resamp_iq_nxdn_ch7, '0', lpf_nxdn_ch7, '0']
+- [resamp_iq_nxdn_ch8, '0', lpf_nxdn_ch8, '0']
+- [resamp_iq_nxdn_ch9, '0', lpf_nxdn_ch9, '0']
+- [resamp_iq_p25_ch0, '0', lpf_p25_ch0, '0']
+- [resamp_iq_p25_ch1, '0', lpf_p25_ch1, '0']
+- [resamp_iq_p25_ch2, '0', lpf_p25_ch2, '0']
+- [resamp_iq_p25_ch3, '0', lpf_p25_ch3, '0']
+- [resamp_iq_p25_ch4, '0', lpf_p25_ch4, '0']
+- [resamp_iq_p25_ch5, '0', lpf_p25_ch5, '0']
+- [resamp_iq_p25_ch6, '0', lpf_p25_ch6, '0']
+- [resamp_iq_p25_ch7, '0', lpf_p25_ch7, '0']
+- [resamp_iq_p25_ch8, '0', lpf_p25_ch8, '0']
+- [resamp_iq_p25_ch9, '0', lpf_p25_ch9, '0']
+- [squelch_dmr_ch0, '0', demod_dmr_ch0, '0']
+- [squelch_dmr_ch1, '0', demod_dmr_ch1, '0']
+- [squelch_dmr_ch10, '0', demod_dmr_ch10, '0']
+- [squelch_dmr_ch11, '0', demod_dmr_ch11, '0']
+- [squelch_dmr_ch12, '0', demod_dmr_ch12, '0']
+- [squelch_dmr_ch13, '0', demod_dmr_ch13, '0']
+- [squelch_dmr_ch14, '0', demod_dmr_ch14, '0']
+- [squelch_dmr_ch15, '0', demod_dmr_ch15, '0']
+- [squelch_dmr_ch2, '0', demod_dmr_ch2, '0']
+- [squelch_dmr_ch3, '0', demod_dmr_ch3, '0']
+- [squelch_dmr_ch4, '0', demod_dmr_ch4, '0']
+- [squelch_dmr_ch5, '0', demod_dmr_ch5, '0']
+- [squelch_dmr_ch6, '0', demod_dmr_ch6, '0']
+- [squelch_dmr_ch7, '0', demod_dmr_ch7, '0']
+- [squelch_dmr_ch8, '0', demod_dmr_ch8, '0']
+- [squelch_dmr_ch9, '0', demod_dmr_ch9, '0']
+- [squelch_nxdn_ch0, '0', demod_nxdn_ch0, '0']
+- [squelch_nxdn_ch1, '0', demod_nxdn_ch1, '0']
+- [squelch_nxdn_ch10, '0', demod_nxdn_ch10, '0']
+- [squelch_nxdn_ch11, '0', demod_nxdn_ch11, '0']
+- [squelch_nxdn_ch12, '0', demod_nxdn_ch12, '0']
+- [squelch_nxdn_ch13, '0', demod_nxdn_ch13, '0']
+- [squelch_nxdn_ch14, '0', demod_nxdn_ch14, '0']
+- [squelch_nxdn_ch15, '0', demod_nxdn_ch15, '0']
+- [squelch_nxdn_ch2, '0', demod_nxdn_ch2, '0']
+- [squelch_nxdn_ch3, '0', demod_nxdn_ch3, '0']
+- [squelch_nxdn_ch4, '0', demod_nxdn_ch4, '0']
+- [squelch_nxdn_ch5, '0', demod_nxdn_ch5, '0']
+- [squelch_nxdn_ch6, '0', demod_nxdn_ch6, '0']
+- [squelch_nxdn_ch7, '0', demod_nxdn_ch7, '0']
+- [squelch_nxdn_ch8, '0', demod_nxdn_ch8, '0']
+- [squelch_nxdn_ch9, '0', demod_nxdn_ch9, '0']
+- [squelch_p25_ch0, '0', demod_p25_ch0, '0']
+- [squelch_p25_ch1, '0', demod_p25_ch1, '0']
+- [squelch_p25_ch2, '0', demod_p25_ch2, '0']
+- [squelch_p25_ch3, '0', demod_p25_ch3, '0']
+- [squelch_p25_ch4, '0', demod_p25_ch4, '0']
+- [squelch_p25_ch5, '0', demod_p25_ch5, '0']
+- [squelch_p25_ch6, '0', demod_p25_ch6, '0']
+- [squelch_p25_ch7, '0', demod_p25_ch7, '0']
+- [squelch_p25_ch8, '0', demod_p25_ch8, '0']
+- [squelch_p25_ch9, '0', demod_p25_ch9, '0']
+- [tetra_decoder_block_0, '0', audio_mix_tetra, '0']
+- [tetra_decoder_block_0, '0', audio_sink_tn1, '0']
+- [tetra_decoder_block_0, '1', audio_mix_tetra, '1']
+- [tetra_decoder_block_0, '1', audio_sink_tn2, '0']
+- [tetra_decoder_block_0, '2', audio_mix_tetra, '2']
+- [tetra_decoder_block_0, '2', audio_sink_tn3, '0']
+- [tetra_decoder_block_0, '3', audio_mix_tetra, '3']
+- [tetra_decoder_block_0, '3', audio_sink_tn4, '0']
+- [tetra_decoder_block_0, call_log, blocks_message_debug_0, print]
+- [tetra_decoder_block_0, call_log, bridge_zmq_tetra_events, in]
+- [vol_dmr_ch0, '0', audio_mix_dmr, '0']
+- [vol_dmr_ch1, '0', audio_mix_dmr, '1']
+- [vol_dmr_ch10, '0', audio_mix_dmr, '10']
+- [vol_dmr_ch11, '0', audio_mix_dmr, '11']
+- [vol_dmr_ch12, '0', audio_mix_dmr, '12']
+- [vol_dmr_ch13, '0', audio_mix_dmr, '13']
+- [vol_dmr_ch14, '0', audio_mix_dmr, '14']
+- [vol_dmr_ch15, '0', audio_mix_dmr, '15']
+- [vol_dmr_ch2, '0', audio_mix_dmr, '2']
+- [vol_dmr_ch3, '0', audio_mix_dmr, '3']
+- [vol_dmr_ch4, '0', audio_mix_dmr, '4']
+- [vol_dmr_ch5, '0', audio_mix_dmr, '5']
+- [vol_dmr_ch6, '0', audio_mix_dmr, '6']
+- [vol_dmr_ch7, '0', audio_mix_dmr, '7']
+- [vol_dmr_ch8, '0', audio_mix_dmr, '8']
+- [vol_dmr_ch9, '0', audio_mix_dmr, '9']
+- [vol_nxdn_ch0, '0', audio_mix_nxdn, '0']
+- [vol_nxdn_ch1, '0', audio_mix_nxdn, '1']
+- [vol_nxdn_ch10, '0', audio_mix_nxdn, '10']
+- [vol_nxdn_ch11, '0', audio_mix_nxdn, '11']
+- [vol_nxdn_ch12, '0', audio_mix_nxdn, '12']
+- [vol_nxdn_ch13, '0', audio_mix_nxdn, '13']
+- [vol_nxdn_ch14, '0', audio_mix_nxdn, '14']
+- [vol_nxdn_ch15, '0', audio_mix_nxdn, '15']
+- [vol_nxdn_ch2, '0', audio_mix_nxdn, '2']
+- [vol_nxdn_ch3, '0', audio_mix_nxdn, '3']
+- [vol_nxdn_ch4, '0', audio_mix_nxdn, '4']
+- [vol_nxdn_ch5, '0', audio_mix_nxdn, '5']
+- [vol_nxdn_ch6, '0', audio_mix_nxdn, '6']
+- [vol_nxdn_ch7, '0', audio_mix_nxdn, '7']
+- [vol_nxdn_ch8, '0', audio_mix_nxdn, '8']
+- [vol_nxdn_ch9, '0', audio_mix_nxdn, '9']
+- [vol_p25_ch0, '0', audio_mix_p25, '0']
+- [vol_p25_ch1, '0', audio_mix_p25, '1']
+- [vol_p25_ch2, '0', audio_mix_p25, '2']
+- [vol_p25_ch3, '0', audio_mix_p25, '3']
+- [vol_p25_ch4, '0', audio_mix_p25, '4']
+- [vol_p25_ch5, '0', audio_mix_p25, '5']
+- [vol_p25_ch6, '0', audio_mix_p25, '6']
+- [vol_p25_ch7, '0', audio_mix_p25, '7']
+- [vol_p25_ch8, '0', audio_mix_p25, '8']
+- [vol_p25_ch9, '0', audio_mix_p25, '9']
+
+metadata:
+  file_format: 1
