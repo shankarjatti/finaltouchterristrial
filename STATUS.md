@@ -36,6 +36,7 @@ frequencies and levels), and deciding which tree is canonical (this Delhi copy v
 | Decodes a real recording | ✅ | ✅ 14.2 of 15.3 s | ✅ **syncs** (control channel, no voice) | ✅ 25 s voice in 40 s |
 | Live, real radio | ✅ handheld, 12.2 s voice / 9 dwells | — no radio | — no radio | — no radio |
 | Live over HackRF cable | — | ✅ every second on air | ✅ signal arrives, no voice in the sample | ✅ 31 s voice / 80 s, 23 call-log events |
+| Over the air (HackRF, antennas) | — | ✅ 18.5 s voice / 31 s |
 | **Voice verified** | ✅ | ✅ | ❌ **no P25 voice recording yet** | ✅ |
 | Demod gain | 1.0 | 1.0 (was 7.28 → silent) | 1.0 (4.24 → 0 syncs) | n/a |
 | Frame mode | DMR_MOTOTRBO | NXDN96 | P25_PHASE_1 | n/a |
@@ -63,6 +64,9 @@ Newest first. Numbers are measured, not estimated.
 
 | Date | What | Result |
 |---|---|---|
+| 10-26 | **NXDN over the air**, UHF (DMR radio) antennas both sides ~0.5 m, HackRF gain 20, amp off, 40 s | **18.5 s voice in 31 s**, −44.5 dB in channel (~29 dB over room noise), −24 dBFS rms, 0% clipped |
+| 10-26 | NXDN over the air, same antennas, HackRF gain 0 | signal arrives (+10 dB, −63.5 dB) but only ~10 dB over room noise: no voice |
+| 10-26 | UHF antenna on B210, nothing transmitting | band −62.2 dBFS (was −78.1 with the first antennas): antenna now picks up the room |
 | 10-26 | **Over the air** (antennas both sides, ~0.5 m), NXDN, HackRF gain 0 / 20 / 30, amp off, 40 s each | **nothing received**: NXDN channel −84.7 / −84.7 / −84.4 dB, same as no signal. DMR handheld at 0.5 m also nothing. B210 antenna most likely not on RX2 (RF A). |
 | 10-26 | Clear-channel check, receive only, all 4 test frequencies | all clear (−78 dBFS, flat noise) |
 | 10-26 | HackRF over-the-air stop | **bug**: `timeout 75` left it transmitting for 2+ min (osmosdr stop hung). Fixed: `--duration` + 3 s force-exit watchdog; verified 3× (stops itself at 42 s) |
@@ -111,8 +115,11 @@ Newest first. Numbers are measured, not estimated.
 ## Over-the-air testing
 
 Done on 2026-10-26 under the user's authorization (defence test, closed room): clear-channel
-check first, HackRF amp off, timed transmissions with `--duration`. First attempt received
-nothing — see the results log; next step is to move the B210 antenna to RX2 (RF A).
+check first, HackRF amp off, timed transmissions with `--duration`. The first antennas (black
+hinged, Wi-Fi style) added nothing — the B210's noise floor was the same as with no antenna,
+consistent with RP-SMA plugs on SMA jacks (no centre contact). With UHF antennas from the
+DMR radios, NXDN decoded over the air at HackRF gain 20. **Use UHF antennas; check the
+noise floor rises when one is fitted.**
 
 Not done, on purpose: transmitting the HackRF into antennas would radiate on 420–451 MHz,
 the bands of real NXDN/P25/TETRA networks, and needs a licence (WPC in India). Use the
