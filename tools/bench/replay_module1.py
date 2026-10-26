@@ -28,15 +28,17 @@ TICK = 2000            # 10 ms per send
 BANDS = [('dmr', 7001), ('nxdn', 7002), ('p25', 7003), ('tetra', 7004)]
 
 
-def load(path):
+def load(path, swap_iq=False):
     if path.lower().endswith('.wav'):
         from scipy.signal import resample_poly
         with wave.open(path) as w:
             fs = w.getframerate()
             a = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).reshape(-1, 2) / 32768.0
         r = Fraction(FS, fs).limit_denominator(1000)
-        return resample_poly(a[:, 0] + 1j * a[:, 1], r.numerator, r.denominator).astype(np.complex64)
-    return np.fromfile(path, dtype=np.complex64)
+        i, q = (a[:, 1], a[:, 0]) if swap_iq else (a[:, 0], a[:, 1])
+        return resample_poly(i + 1j * q, r.numerator, r.denominator).astype(np.complex64)
+    x = np.fromfile(path, dtype=np.complex64)
+    return (x.imag + 1j * x.real).astype(np.complex64) if swap_iq else x
 
 
 def main():
@@ -46,11 +48,13 @@ def main():
     ap.add_argument('--dwell', type=float, default=10.0, help='seconds per band (default 10)')
     ap.add_argument('--gap', type=float, default=1.0, help='zero-fill between bands (default 1)')
     ap.add_argument('--secs', type=float, default=96.0, help='total run time (default 96)')
+    ap.add_argument('--swap-iq', action='append', default=[], choices=[b for b, _ in BANDS],
+                    help='that band\'s recording stores Q left / I right (TETRA IQ.wav does)')
     ap.add_argument('--only', choices=[b for b, _ in BANDS],
                     help='keep this one band dwelling all the time (no schedule, no gaps)')
     a = ap.parse_args()
 
-    rec = {b: load(getattr(a, b)) for b, _ in BANDS if getattr(a, b)}
+    rec = {b: load(getattr(a, b), b in a.swap_iq) for b, _ in BANDS if getattr(a, b)}
     for b, x in rec.items():
         print(f'{b}: {len(x) / FS:.1f} s loaded', flush=True)
     conns = {}

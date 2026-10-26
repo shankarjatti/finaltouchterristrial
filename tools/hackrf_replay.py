@@ -48,8 +48,10 @@ class Replay(gr.top_block):
                 wav_rate = w.getframerate()
             wav = blocks.wavfile_source(a.file, True)
             iq = blocks.float_to_complex(1)
-            self.connect((wav, 0), (iq, 0))
-            self.connect((wav, 1), (iq, 1))
+            # --swap-iq: Q on the left, I on the right (TETRA IQ.wav is stored this way)
+            i_ch, q_ch = (1, 0) if a.swap_iq else (0, 1)
+            self.connect((wav, i_ch), (iq, 0))
+            self.connect((wav, q_ch), (iq, 1))
             r = Fraction(int(BASE_RATE), wav_rate).limit_denominator(1000)
             to_base = filter.rational_resampler_ccc(interpolation=r.numerator, decimation=r.denominator,
                                                      taps=[], fractional_bw=0.4)
@@ -92,6 +94,7 @@ def main():
     ap.add_argument('--amp', action='store_true', help='enable the HackRF +14 dB TX amp (normally leave off)')
     ap.add_argument('--scale', type=float, default=0.5, help='digital level before the DAC (default 0.5)')
     ap.add_argument('--device', default='hackrf=0', help='osmosdr device string (default hackrf=0)')
+    ap.add_argument('--swap-iq', action='store_true', help='wav stores Q left / I right (TETRA IQ.wav does)')
     ap.add_argument('--dry-run', action='store_true', help='build and run the chain into a null sink, no hardware')
     a = ap.parse_args()
 

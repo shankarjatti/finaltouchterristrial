@@ -575,6 +575,18 @@ python3 tools/bench/tap_audio.py 9102 40       # how much voice the decoder prod
 `P25/(IQ)P25 Trunked Channel.wav` is real P25 Phase 1 but a **control channel**:
 every frame is TSDU, so it proves sync, never voice. There is no P25 voice
 recording here yet.
+`TETRA/TETRA IQ.wav` (= `tetra_test/TETRA IQ.wav`) stores **Q on the left and I on the
+right** — `tetra_native_rx11.grc` wires it swapped. Fed the normal way the spectrum is
+mirrored and TETRA never syncs (0 packets), so pass `--swap-iq` to `hackrf_replay.py`
+and `replay_module1.py`. Its carrier sits at −1.714 kHz, which is why the decoder's
+TETRA "Baseband offset" is −1.714: **for a live carrier set it to the measured offset
+(normally 0)**.
+
+**TETRA result (Oct 26 2026):** the coupled TETRA chain is block-for-block the standalone
+one and decodes the recording identically at 200 kSps/decim 5 as at 48 kSps/decim 1
+(`tools/bench/tetra_chain_test.py`: 39 BSCH syncs, TN2 voice 25.0 s vs 24.9 s in 40 s).
+Over the HackRF cable at 420 MHz through the full live system: **31.0 s of voice in 80 s
+and 23 call-log events** (calling SSI, cell info), 0% clipped.
 
 ## 10. Troubleshooting
 
