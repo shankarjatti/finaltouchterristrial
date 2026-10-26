@@ -27,6 +27,7 @@ Run:
 """
 import asyncio
 import base64
+import collections
 import json
 import os
 import re
@@ -74,7 +75,14 @@ BANDS = [
 ]
 SAMP_RATE = 200_000.0
 FFT_N = 512
-ACTIVE_THRESH_DBFS = -60.0   # above this = real signal, below = zero-fill/gap/noise
+ACTIVE_THRESH_DBFS = -60.0   # fallback only, until a band has enough history (see band_active)
+# A fixed dBFS threshold cannot serve both a bare B210 (floor ~-78 dBFS) and one with a
+# real antenna (room noise ~-62 dBFS): with an antenna, -60 sat 2 dB above the noise and
+# an over-the-air NXDN signal at -63.7 dBFS read 'idle' and was never recorded. Each band
+# now learns its own floor: the 5th percentile of its recent non-zero-fill frame levels.
+NOISE_WIN = 1200            # frames of history per band (~110 s of that band's dwell time)
+NOISE_MARGIN_DB = 6.0       # active when this far above the band's own floor
+NOISE_MIN_FRAMES = 50       # below this much history, fall back to ACTIVE_THRESH_DBFS
 
 # Channel counts must match allinone.grc's pfb.channelizer_ccf blocks exactly:
 # DMR 16, NXDN 16, P25 10. TETRA is not channelized (TDMA -- one carrier, 4
@@ -84,6 +92,21 @@ CHANNELS_PER_BAND = {'dmr': 16, 'nxdn': 16, 'p25': 10, 'tetra': 1}
 CHAN_SNR_DB = 8.0            # channel counts as occupied this far above band median
 BAND_RF_ACTIVE = {'dmr': False, 'nxdn': False, 'p25': False, 'tetra': False}
 BAND_RF_LAST = {'dmr': 0.0, 'nxdn': 0.0, 'p25': 0.0, 'tetra': 0.0}
+BAND_LEVEL_HIST = {k: collections.deque(maxlen=NOISE_WIN) for k in BAND_RF_ACTIVE}
+BAND_FLOOR_DB = {k: None for k in BAND_RF_ACTIVE}
+
+
+def band_active(key, rms_db):
+    """True when this frame is real signal: well above the band's own noise floor."""
+    if rms_db <= -110.0:          # Module 1 zero-fill (gap or another band dwelling)
+        return False
+    hist = BAND_LEVEL_HIST[key]
+    hist.append(rms_db)
+    if len(hist) < NOISE_MIN_FRAMES:
+        return rms_db > ACTIVE_THRESH_DBFS
+    floor = float(np.percentile(hist, 5))
+    BAND_FLOOR_DB[key] = floor
+    return rms_db > floor + NOISE_MARGIN_DB
 
 
 def channel_powers(spec_pow, key):
@@ -431,7 +454,7 @@ async def iq_reader(band):
                     mag = np.abs(samples)
                     rms = float(np.sqrt(np.mean(mag ** 2))) if len(mag) else 0.0
                     rms_db = 20 * np.log10(rms) if rms > 1e-12 else -120.0
-                    active = rms_db > ACTIVE_THRESH_DBFS
+                    active = band_active(key, rms_db)
 
                     win = samples * np.hanning(len(samples))
                     spec = np.fft.fftshift(np.fft.fft(win, FFT_N))
@@ -457,6 +480,7 @@ async def iq_reader(band):
                         'band': key,
                         'active': bool(active),
                         'rms_db': round(rms_db, 1),
+                        'floor_db': None if BAND_FLOOR_DB[key] is None else round(BAND_FLOOR_DB[key], 1),
                         'spectrum': [round(float(x), 1) for x in spec_db[::2]],  # 256 bins
                         'time': [round(float(x), 4) for x in samples.real[::4]][:64],
                         'chan_db': [round(float(p), 1) for p in chans],

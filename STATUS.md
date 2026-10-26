@@ -55,6 +55,7 @@ frequencies and levels), and deciding which tree is canonical (this Delhi copy v
 | B210 on USB 3 (5000 Mbps) | ✅ port 2-10, 0 USB errors since |
 | Long soak (30+ min) with the new decoder | ❌ not done |
 | Squelch/volume checked by ear for NXDN/P25/TETRA | ❌ only by measurement |
+| Console ACTIVE/recording threshold adapts to each band's noise floor | ✅ NXDN learned −69.2 dBFS with an antenna; room noise stays `idle` |
 
 ---
 
@@ -64,6 +65,8 @@ Newest first. Numbers are measured, not estimated.
 
 | Date | What | Result |
 |---|---|---|
+| 10-26 | NXDN over the air, HackRF continuous, gain 20, amp off, NXDN dwell 30 s, adaptive activity threshold | **27.8 s voice in 59.5 s** (−42.8 dBFS band level), console `DECODING`, 8 dwell recordings with voice, 0% clipped |
+| 10-26 | Console showed NXDN `idle` over the air and recorded nothing | fixed absolute −60 dBFS threshold sat 2 dB above room noise; now per-band adaptive (floor + 6 dB) |
 | 10-26 | **NXDN over the air**, UHF (DMR radio) antennas both sides ~0.5 m, HackRF gain 20, amp off, 40 s | **18.5 s voice in 31 s**, −44.5 dB in channel (~29 dB over room noise), −24 dBFS rms, 0% clipped |
 | 10-26 | NXDN over the air, same antennas, HackRF gain 0 | signal arrives (+10 dB, −63.5 dB) but only ~10 dB over room noise: no voice |
 | 10-26 | UHF antenna on B210, nothing transmitting | band −62.2 dBFS (was −78.1 with the first antennas): antenna now picks up the room |
