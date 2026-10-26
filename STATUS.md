@@ -65,6 +65,9 @@ Newest first. Numbers are measured, not estimated.
 
 | Date | What | Result |
 |---|---|---|
+| 10-26 | NXDN over the air, HackRF continuous at **gain 30**, amp off | **36.0 s voice in 60 s** in 5 bursts, −22.5 dBFS rms, 0% clipped |
+| 10-26 | NXDN over the air at gain 20 later in the session | dropped to 1–17 s / 60 s. Cause: **room fading** — 10 ms level median −52.8 dBFS but 1% of frames at −67 (the noise floor), 6% >10 dB below median; signal also moved 17 dB between minutes (antennas/people moving). Stream, decoder, squelch and RX gain all checked fine (TCP queues 0, decoder restart only partly helped) |
+| 10-26 | HackRF USB resets on port 1-8 (18:20, 18:51) | transmitter silently stuck on the dead device; a keepalive now restarts it within ~6 s. Consider another USB port/cable for the HackRF |
 | 10-26 | NXDN over the air, HackRF continuous, gain 20, amp off, NXDN dwell 30 s, adaptive activity threshold | **27.8 s voice in 59.5 s** (−42.8 dBFS band level), console `DECODING`, 8 dwell recordings with voice, 0% clipped |
 | 10-26 | Console showed NXDN `idle` over the air and recorded nothing | fixed absolute −60 dBFS threshold sat 2 dB above room noise; now per-band adaptive (floor + 6 dB) |
 | 10-26 | **NXDN over the air**, UHF (DMR radio) antennas both sides ~0.5 m, HackRF gain 20, amp off, 40 s | **18.5 s voice in 31 s**, −44.5 dB in channel (~29 dB over room noise), −24 dBFS rms, 0% clipped |
@@ -86,6 +89,8 @@ Newest first. Numbers are measured, not estimated.
 ---
 
 ## Open issues
+
+0. **Over-the-air NXDN needs HackRF gain ~30 in this room**: at 20, multipath fades reach the noise floor and break frames. Keep antennas still and vertical, ~1 m apart, nobody between them.
 
 1. **No P25 voice recording.** `(IQ)P25 Trunked Channel.wav` is a control channel
    (TSDU only); `SDRSharp_…_IQ.wav` turned out to be DMR. Need a P25 voice sample.
