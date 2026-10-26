@@ -1835,7 +1835,7 @@ blocks:
     start: '-90'
     step: '1'
     stop: '-10'
-    value: '-20'
+    value: '-73'
     widget: counter_slider
   states:
     bus_sink: false
