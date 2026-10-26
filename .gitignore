@@ -1,4 +1,31 @@
+# C++ build artifacts
 module1/build/
-gui/recordings/
+*.o
+a.out
+
+# Shared libraries are build output in general...
+*.so
+# ...but this one is a REQUIRED vendored dependency, not build output.
+# Without it the TETRA decoder block cannot load and allinone.py fails to import.
+!deps/gr_tetra_decoder/libtetrakit_capi.so
+
+# Python byte-code / cache
 __pycache__/
 *.pyc
+
+# Runtime output: recorded audio is per-session data, not source
+gui/recordings/*.wav
+!gui/recordings/.gitkeep
+
+# grcc writes this; allinone.py is the copy that actually runs (see README §6)
+securecom_module2_decoder.py
+
+# Flowgraph backups from editing sessions
+*.grc.bak
+*.grc.pre_*
+*.grc.before_*
+
+# OS & editor temp files
+.DS_Store
+.~lock.*
+*~

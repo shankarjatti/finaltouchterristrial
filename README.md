@@ -177,9 +177,12 @@ These were found by measurement, not assumption. Do not change them casually.
 | Where | Value | Why |
 |---|---|---|
 | `module1/src/main.cpp` | DMR446 = **446.118528 MHz** | A real IQ capture of the test radio put its power centroid at +24778 Hz from the nominal 446.09375 MHz, with 8.3 kHz occupied bandwidth. Tuning here centres the signal in channelizer channel 0. **Retune this for your own radio.** |
-| `allinone.grc` | `gain_demod` = **1.0** | Offline decode test on real captured IQ: gain 1.0 → −20.5 dBFS audio; 0.2 → −31.2 dBFS; **3.93 and 8.0 → total silence.** The theoretical `fs/(2π·dev)` = 3.93 does *not* work — DSD's slicer overdrives. |
-| `allinone.grc` | `squelch_thresh` = **−30 dB** | At −50 dB, adjacent-channel leakage from a strong local signal opened many channels at once, so 15 channels of DSD garbage were summed onto the one real channel. |
-| `allinone.grc` | `volume` = **0.5** | `audio_mix_*` sums all 16 channels. At 3.0 the sum measured **+14.9 dBFS** — roughly 5× full scale, i.e. gross clipping. 0.5 keeps it inside ±1.0. |
+| `allinone.grc` | **One decode chain per protocol** | DMR, NXDN and P25 each run `channelizer → sum of all N channels → resampler → LPF → squelch → demod → ONE DSD` (the `dmr_test` structure), built by `tools/make_single_chain.py`. Replaces 42 parallel chains (16+16+10): same DMR decode (5.12 s vs 5.14 s on the real capture), 3 DSD instances instead of 42, decoder CPU 62% vs 262%. |
+| `allinone.grc` | demod gain **1.0** for DMR, NXDN and P25 | Measured on real recordings: NXDN at 7.28 and P25 at 4.24 decoded **nothing**; at 1.0 NXDN decoded 14.2 of 15.3 s. The theoretical `fs/(2π·dev)` does *not* work — DSD's slicer overdrives. |
+| `allinone.grc` | P25 frame **`AUTO_DETECT`** | `P25_PHASE_1` decoded nothing with any gain or modulation; `AUTO_DETECT` decoded 5.0 s of a 34 s recording (3.7 s with the standalone `p25_decoder.grc`). |
+| `allinone.grc` | `squelch_thresh_dmr/_nxdn/_p25` = **−20 dB**, one slider each | The old single `squelch_thresh` drove all 42 squelches, so lowering it for DMR also opened every NXDN and P25 channel. Squelch is absolute: lower it by the same dB you lower RX gain. |
+| `allinone.grc` | `volume_dmr/_nxdn/_p25` = **0.5**, one slider each | DSD output peaks at −0.8 dBFS; 0.5 gives about −24 dBFS rms / −6 dBFS peak with 0% clipping. The old 0.04 put voice near −48 dBFS. |
+| `allinone.grc` | **Separate speaker output per protocol** | One `audio_sink` per protocol, mixed by the sound server — no GNU Radio adder ties the protocols' throughput together. Measured equal or better than one mixed adder; `allinone_single_mixed.grc` is the mixed alternative. |
 | `gui/bridge_server.py` | RX gain default **40 dB** | An earlier reading of −5.6 dBFS looked like ADC overload, but peak/RMS was 4.5 dB with 0% of samples above 0.95 — not clipping. Adjustable from the Hardware tab. |
 
 ### Verified results (2026-09-01, real DMR handheld)
@@ -494,7 +497,7 @@ Measured result on the real capture — note the textbook value fails outright:
 | **1.0** | **−20.5 dBFS (best — this is what ships)** |
 | 3.93 | **silence** — the theoretical `fs/(2π·dev)` value overdrives DSD's slicer |
 
-Run this before and after touching `gain_demod`, `squelch_thresh` or the
+Run this before and after touching a `gain_demod*`, `squelch_thresh_*` or the
 channelizer. It takes ~30 s per gain point (DSD is slow).
 
 ### `measure_signal.py` — find a transmission's real frequency
@@ -550,8 +553,8 @@ be validated without a radio. `offline_decode_test.py` unpacks it automatically.
 | Hardware starts, no audio | Did you also press **Start decoder**? Both modules are required |
 | No sound in browser | Press **Start decoder** — that gesture unlocks browser audio |
 | Signal visible, never decodes | Frequency mismatch. Capture IQ and measure your radio's real centre, then set it in `main.cpp` (see §5) |
-| Audio distorted / mushy | `volume` too high or `squelch_thresh` too permissive (see §5) |
-| Decode good briefly then degrades | Classic over-driven sum — squelch opening on extra channels. Raise `squelch_thresh` |
+| Audio distorted / mushy | that protocol's `volume_*` too high or `squelch_thresh_*` too permissive (see §5) |
+| Decode good briefly then degrades | Check the dwell (§6) and RX gain overload; with one chain per protocol there is no longer a multi-channel sum to over-drive |
 | Recordings list empty after reload | Press **Refresh**; it reads the real folder |
 | Flowgraph edit had no effect | You skipped `cp securecom_module2_decoder.py allinone.py` (§6) |
 

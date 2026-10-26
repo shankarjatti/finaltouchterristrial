@@ -13,7 +13,7 @@
 #    4. bridge           bridge_server.py           -> ws://127.0.0.1:8787
 #    5. web server       python3 -m http.server     -> http://127.0.0.1:8788
 #    6. hardware         securecom_module1  (C++ tuner + burst scheduling)
-#    7. decoder          allinone.py        (GNU Radio, 42 channels + TETRA)
+#    7. decoder          allinone.py        (GNU Radio, 1 chain each DMR/NXDN/P25 + TETRA)
 #    8. GUI              open the console in a browser
 #
 #  Steps 6 and 7 are driven through the bridge's WebSocket rather than started
@@ -232,7 +232,7 @@ ok "module1 running, 4/4 IQ ports open (7001-7004)"
 # ---------------------------------------------------------------- 7. decoder
 step 7 "Decoder: allinone.py (GNU Radio)"
 ws_send '{"cmd":"start_decoder"}' || die "bridge refused start_decoder"
-info "GNU Radio builds 42 channels + TETRA — this takes ~10 s"
+info "GNU Radio builds the DMR/NXDN/P25 chains + TETRA — this takes a few seconds"
 for i in $(seq 1 60); do
   [ "$(count_ports '127.0.0.1:910[1-5] ')" -ge 5 ] && break
   sleep 0.5
