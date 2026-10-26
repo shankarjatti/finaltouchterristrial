@@ -178,9 +178,9 @@ These were found by measurement, not assumption. Do not change them casually.
 |---|---|---|
 | `module1/src/main.cpp` | DMR446 = **446.118528 MHz** | A real IQ capture of the test radio put its power centroid at +24778 Hz from the nominal 446.09375 MHz, with 8.3 kHz occupied bandwidth. Tuning here centres the signal in channelizer channel 0. **Retune this for your own radio.** |
 | `allinone.grc` | **One decode chain per protocol** | DMR, NXDN and P25 each run `channelizer → sum of all N channels → resampler → LPF → squelch → demod → ONE DSD` (the `dmr_test` structure), built by `tools/make_single_chain.py`. Replaces 42 parallel chains (16+16+10): same DMR decode (5.12 s vs 5.14 s on the real capture), 3 DSD instances instead of 42, decoder CPU 62% vs 262%. |
-| `allinone.grc` | demod gain **1.0** for DMR, NXDN and P25 | Measured on real recordings: NXDN at 7.28 and P25 at 4.24 decoded **nothing**; at 1.0 NXDN decoded 14.2 of 15.3 s. The theoretical `fs/(2π·dev)` does *not* work — DSD's slicer overdrives. |
-| `allinone.grc` | P25 frame **`AUTO_DETECT`** | `P25_PHASE_1` decoded nothing with any gain or modulation; `AUTO_DETECT` decoded 5.0 s of a 34 s recording (3.7 s with the standalone `p25_decoder.grc`). |
-| `allinone.grc` | `squelch_thresh_dmr` = **−73 dB**; `_nxdn/_p25` = −20 dB, one slider each | DMR −73 found live (Oct 26 2026, real DMR handheld, 40 dB RX gain): clean voice, less noise. In the single summed chain DSD itself mutes on noise (no sync, no audio), so the squelch should stay open — at −20 it chattered on weaker speech, breaking DSD frames into garble and losing whole dwells. NXDN/P25 are still −20 (not tested live). The old single `squelch_thresh` drove all 42 squelches, so lowering it for DMR also opened every NXDN and P25 channel. Squelch is absolute: re-check it if you change RX gain. |
+| `allinone.grc` | demod gain **1.0** for DMR, NXDN and P25 | Measured on real recordings: NXDN at 7.28 decoded **nothing**, at 1.0 14.2 of 15.3 s. P25 at 4.24 gave **0 syncs** on the real P25 recording; 0.5–2.0 all sync, and 1.0 puts DSD's input level at ~51% (2.0 overdrives it to ~102%). The theoretical `fs/(2π·dev)` does *not* work — DSD's slicer overdrives. |
+| `allinone.grc` | P25 frame **`P25_PHASE_1`** (unchanged) | On a real P25 Phase 1 recording (`(IQ)P25 Trunked Channel.wav`, NAC 1A0) it syncs exactly as well as `AUTO_DETECT` (1088 vs 1089 in 30 s) and cannot false-sync on other modes. A brief switch to `AUTO_DETECT` was based on `SDRSharp_…_12kHz_IQ.wav`, which turned out to be **DMR**, not P25 — see the sample note below. |
+| `allinone.grc` | `squelch_thresh_dmr/_nxdn/_p25` = **−73 dB**, one slider each | Found live on Oct 26 2026 at 40 dB RX gain: DMR with the real handheld, NXDN with a recording replayed by a HackRF over a cable (§9.1) — at −48.5 dB in channel it decoded every second on air. At −20 a −48…−67 dB signal never opened the squelch, and on weaker speech it chattered, breaking DSD frames into garble. In the single summed chain DSD itself mutes on noise (no sync, no audio), so the squelch should stay open. **P25 at −73 is not voice-verified**: the only real P25 recording is a control channel (no voice). Squelch is absolute: re-check it if you change RX gain. |
 | `allinone.grc` | `volume_dmr` = **0.2**; `_nxdn/_p25` = 0.5, one slider each | On recordings DSD peaks at −0.8 dBFS and 0.5 gives about −24 dBFS rms / −6 dBFS peak. Live DMR (real handheld, 40 dB RX gain) is hotter: at 0.5 two recordings peaked at 0.0 dBFS with 0.3–0.5% clipped, so DMR is 0.2 (−8 dB, about −3 dBFS peak). NXDN/P25 stay 0.5 until tested live. The old 0.04 put voice near −48 dBFS. |
 | `allinone.grc` | **Separate speaker output per protocol** | One `audio_sink` per protocol, mixed by the sound server — no GNU Radio adder ties the protocols' throughput together. Measured equal or better than one mixed adder; `allinone_single_mixed.grc` is the mixed alternative. |
 | `gui/bridge_server.py` | RX gain default **40 dB** | An earlier reading of −5.6 dBFS looked like ADC overload, but peak/RMS was 4.5 dB with 0% of samples above 0.95 — not clipping. Adjustable from the Hardware tab. |
@@ -543,6 +543,38 @@ A genuine 0.97 s DMR key-up from the bench radio (complex64 @ 200 kSps, centred
 be validated without a radio. `offline_decode_test.py` unpacks it automatically.
 
 ---
+
+
+### 9.1 Testing NXDN / P25 / TETRA without their radios (HackRF over a cable)
+
+```
+HackRF ANTENNA --SMA--[30-40 dB attenuator]--SMA-- B210 RX2 (RF A)      no antennas
+```
+
+`tools/hackrf_replay.py` transmits a recorded IQ `.wav` (or 200 kSps `.cf32`) on a band's
+frequency, so the whole live system is exercised exactly as with a real radio:
+
+```bash
+# start the stack with a long dwell on the band under test, e.g. ./run_securecom.sh --dwell-nxdn 10
+python3 tools/hackrf_replay.py --file "NXDN96 IQ.wav" --freq 451.09375e6 --ppm -6.24 --tx-gain 20
+python3 tools/bench/rf_spectrum.py 7002 22     # where the signal landed, level, offset
+python3 tools/bench/tap_audio.py 9102 40       # how much voice the decoder produced
+```
+
+* **Correct the HackRF's crystal first.** This bench's HackRF transmits 6.24 ppm low
+  (-2.8 kHz at 451 MHz), which by itself stopped NXDN decoding. Measure the offset with
+  `rf_spectrum.py`, then pass `--ppm offset_Hz/freq_MHz`.
+* Start at `--tx-gain 0` and raise it; leave the HackRF amp off. 20 dB put NXDN at
+  -48.5 dB in channel, which decoded every second on air.
+* `tools/bench/replay_module1.py` + `run_decoder_offline.sh` do the same with no RF at
+  all: a Module 1 stand-in serves recordings on 7001-7004 with the burst schedule.
+
+**Sample provenance (checked Oct 26 2026 with DSD's frame log):**
+`all_protocols_wav_samples/P25/SDRSharp_20160101_231914Z_12kHz_IQ.wav` and the
+`…_72125hz_IQ.wav` copy (byte-identical, also under `DMR/`) are **DMR**, not P25.
+`P25/(IQ)P25 Trunked Channel.wav` is real P25 Phase 1 but a **control channel**:
+every frame is TSDU, so it proves sync, never voice. There is no P25 voice
+recording here yet.
 
 ## 10. Troubleshooting
 

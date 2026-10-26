@@ -13,8 +13,9 @@ Also applies the settings measured on real recordings (Oct 2026):
   * each protocol gets its own squelch and volume slider
   * volume 0.5 (DSD peaks at -0.8 dBFS; 0.04 left voice near -48 dBFS)
   * NXDN demod gain 1.0 (7.28 decoded nothing; 1.0 decoded 14.2 of 15.3 s)
-  * P25 frame AUTO_DETECT + demod gain 1.0 (P25_PHASE_1 / 4.24 decoded nothing;
-    AUTO_DETECT 1.0 decoded 5.0 s of a 34 s recording vs 3.7 s standalone)
+  * P25 demod gain 1.0 (on a real P25 Phase 1 recording, 4.24 gave 0 syncs; 0.5-2.0
+    all sync and 1.0 puts DSD's input level at ~51%). Frame mode stays P25_PHASE_1:
+    it syncs exactly as well as AUTO_DETECT and cannot false-sync on other modes.
 
 Speaker output, --audio:
   mixed     one blocks_add_master -> one audio sink (as before)
@@ -107,7 +108,6 @@ def main():
     out_blocks = [b for b in out_blocks if b['name'] not in ('squelch_thresh', 'volume')]
     ob = {b['name']: b for b in out_blocks}
     ob['gain_demod_nxdn']['parameters']['value'] = '1.0'
-    ob['dsd_p25']['parameters']['frame'] = 'dsd.dsd_FRAME_AUTO_DETECT'
     ob['gain_demod_p25']['parameters']['value'] = '1.0'
 
     if a.audio == 'separate':

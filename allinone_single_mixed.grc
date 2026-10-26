@@ -905,7 +905,7 @@ blocks:
     alias: ''
     comment: P25 ch0 DSD Voice Decoder
     errorbars: 'True'
-    frame: dsd.dsd_FRAME_AUTO_DETECT
+    frame: dsd.dsd_FRAME_P25_PHASE_1
     maxoutbuf: '1024'
     minoutbuf: '0'
     mod: dsd.dsd_MOD_C4FM
@@ -1874,7 +1874,7 @@ blocks:
     start: '-90'
     step: '1'
     stop: '-10'
-    value: '-20'
+    value: '-73'
     widget: counter_slider
   states:
     bus_sink: false
@@ -1897,7 +1897,7 @@ blocks:
     start: '0.01'
     step: '0.01'
     stop: '20.0'
-    value: '0.5'
+    value: '0.2'
     widget: counter_slider
   states:
     bus_sink: false
@@ -1940,7 +1940,7 @@ blocks:
     start: '-90'
     step: '1'
     stop: '-10'
-    value: '-20'
+    value: '-73'
     widget: counter_slider
   states:
     bus_sink: false
@@ -2006,7 +2006,7 @@ blocks:
     start: '-90'
     step: '1'
     stop: '-10'
-    value: '-20'
+    value: '-73'
     widget: counter_slider
   states:
     bus_sink: false
