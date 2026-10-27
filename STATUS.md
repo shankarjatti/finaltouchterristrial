@@ -84,6 +84,7 @@ Newest first. Numbers are measured, not estimated.
 
 | Date | What | Result |
 |---|---|---|
+| 10-27 | Fix: audio meters now decode-driven for all 8 bands | two updaters conflicted — handleRealAudio set each meter from decoded audio, but feedFrame overwrote all meters with raw IQ energy every 90 ms, so only DMR (strong signal + 15 s dwell) ever showed a bar. feedFrame now uses the decoded-audio level (decaying to 0 when stale). Bridge confirmed sending audio for 7/8 bands continuously (TETRA only while decoding); verified the meter responds per band |
 | 10-27 | Console: replaced free-dragging with resizable borders (user's choice) | 5 splitter bars on the grid borders: sidebar width, spectrum/waterfall and waterfall/time heights, main/bottom height, audio/log width. Hover highlights the border; drag resizes, with min clamps. Verified live: dragging the sidebar border changed the column sizes |
 | 10-27 | Console: every panel/plot is a draggable floating window | each of the 6 panels (spectrum, waterfall, time, the tabbed panel, audio, log) has a grip; drag pops it out as a fixed window at its size, double-click docks it back. Verified live: 6 grips, drag moves exactly, dock resets |
 | 10-27 | Recordings: play button is a play/pause toggle | clicking ▶ plays and turns to ⏸ with a m:ss / m:ss time readout; clicking ⏸ pauses; only one recording plays at a time; resets to ▶ at the end. Verified live |

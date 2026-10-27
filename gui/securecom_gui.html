@@ -829,14 +829,20 @@ function liveFeedFrame(){
     for(let k=0;k<t.length;k++) timeBuf[timeBuf.length-t.length+k] = t[k];
   }
 
+  // audio meters: driven by each band's DECODED audio (the bridge_zmq_* taps,
+  // all 8 bands), decaying to 0 when a band stops producing audio. handleRealAudio
+  // sets them on each message; this keeps them consistent and clears stale bands.
+  // (Previously this loop overwrote them with raw IQ energy, so only the band with
+  //  a strong signal and a long dwell -- DMR -- ever showed a bar.)
   for(const b of BANDS){
-    const bl = bandsLive[b.key];
     const el = document.querySelector(`.audio-ch[data-b="${b.key}"]`);
-    // real energy shown here as a proxy for "signal present" — NOT decoded
-    // audio (that needs Module 2's dsd output, not wired by this bridge)
-    el.classList.toggle('live', false);
-    el.querySelector('.rec-dot').classList.remove('on');
-    const lvl = bl.spectrum ? Math.min(100, Math.max(0, (bl.rms_db+90)*2.2)) : 0;
+    if(!el) continue;
+    const da = decoderAudio[b.key];
+    const fresh = da && performance.now()-da.t < 600;
+    const live = !!(fresh && da.active);
+    el.classList.toggle('live', live);
+    el.querySelector('.rec-dot').classList.toggle('on', live);
+    const lvl = fresh ? Math.min(100, Math.max(0, (da.rms_db+90)*2.2)) : 0;
     el.querySelector('.meter i').style.width = lvl.toFixed(0)+'%';
   }
 
