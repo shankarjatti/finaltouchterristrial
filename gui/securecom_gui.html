@@ -686,11 +686,24 @@ function renderRecordings(items){
       `<div class="meta"><div class="fn">${it.file}</div>`+
       `<div class="ts">${ts.toLocaleTimeString('en-GB')} · ${(it.band||'?').toUpperCase()} · ${dur} · ${kb} KB</div></div>`+
       `<button data-play title="play">&#9654;</button>`+
+      `<span data-time style="font:10px var(--mono);color:var(--text-mute);margin:0 4px;min-width:62px;display:inline-block;text-align:right;"></span>`+
       `<button data-dl title="save to disk">&#8595;</button>`+
       `<button class="danger" data-del title="delete">&#10005;</button>`;
-    div.querySelector('[data-play]').onclick = ()=>{
-      const a = new Audio('/recordings/'+encodeURIComponent(it.file));
-      a.play().catch(e=>logLine('sys','[GUI] playback failed: '+e.message));
+    const playBtn = div.querySelector('[data-play]');
+    const timeEl = div.querySelector('[data-time]');
+    const fmt = s => { s = Math.floor(s||0); return (s/60|0)+':'+String(s%60).padStart(2,'0'); };
+    let audio = null;
+    playBtn.onclick = ()=>{
+      // toggle: ▶ starts/resumes, ⏸ pauses the same recording
+      if(audio){ audio.paused ? audio.play() : audio.pause(); return; }
+      if(window._recPlaying){ try{ window._recPlaying.pause(); }catch(e){} } // only one at a time
+      audio = new Audio('/recordings/'+encodeURIComponent(it.file));
+      window._recPlaying = audio;
+      audio.onplay  = ()=>{ playBtn.innerHTML='&#9208;'; playBtn.title='pause'; };
+      audio.onpause = ()=>{ playBtn.innerHTML='&#9654;'; playBtn.title='play'; };
+      audio.onended = ()=>{ playBtn.innerHTML='&#9654;'; playBtn.title='play'; timeEl.textContent=''; audio=null; };
+      audio.ontimeupdate = ()=>{ timeEl.textContent = fmt(audio.currentTime)+' / '+fmt(audio.duration); };
+      audio.play().catch(e=>logLine('sys','[GUI] playback failed: '+e.message));
     };
     div.querySelector('[data-dl]').onclick = ()=>{
       const a = document.createElement('a');
