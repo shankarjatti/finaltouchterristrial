@@ -4,7 +4,7 @@ Living status of the work: what is done, what is in progress, what has not start
 Updated with every verified change. Settings and the reasons behind them are in
 `README.md` §5; how to test is in `README.md` §9.
 
-**Last updated:** 2026-10-26 (TETRA validated over RF; docs brought up to date)
+**Last updated:** 2026-10-27 (step 1 closed; over-the-air dropout cause logged; step 2 starting)
 
 ---
 
@@ -12,8 +12,8 @@ Updated with every verified change. Settings and the reasons behind them are in
 
 | # | Step | Status |
 |---|---|---|
-| 1 | Get the 4 protocols (DMR, NXDN, P25, TETRA) working properly | **In progress** — see below |
-| 2 | Add 4 more protocols | Not started |
+| 1 | Get the 4 protocols (DMR, NXDN, P25, TETRA) working properly | **Done** (user sign-off 10-27), open items below |
+| 2 | Add 4 more protocols | **In progress** — planning |
 | 3 | Finalize the backend (freeze ports and message formats) | Not started |
 | 4 | Finalize the UI | Not started |
 | 5 | Convert to C++ (Module 1 already is; decide the scope first) | Not started |
@@ -65,8 +65,9 @@ Newest first. Numbers are measured, not estimated.
 
 | Date | What | Result |
 |---|---|---|
+| 10-26 | **Root cause of the over-the-air NXDN drop-outs** | the **HackRF's USB link fails while it radiates**: 14 disconnects on port 1-8 since 18:20 with `error -71`, worsening with TX gain (4 in 23 s at gain 30); a live capture had **2 ms holes every ~6 ms** (15.6% of the time >20 dB down), and it decoded only 1.32 s / 12.2 s even offline. With the HackRF idle: **0 disconnects in 3 min**. Over the cable it never happened. Over-the-air testing stopped; cable is the test path |
 | 10-26 | NXDN over the air, HackRF continuous at **gain 30**, amp off | **36.0 s voice in 60 s** in 5 bursts, −22.5 dBFS rms, 0% clipped |
-| 10-26 | NXDN over the air at gain 20 later in the session | dropped to 1–17 s / 60 s. Cause: **room fading** — 10 ms level median −52.8 dBFS but 1% of frames at −67 (the noise floor), 6% >10 dB below median; signal also moved 17 dB between minutes (antennas/people moving). Stream, decoder, squelch and RX gain all checked fine (TCP queues 0, decoder restart only partly helped) |
+| 10-26 | NXDN over the air at gain 20 later in the session | dropped to 1–17 s / 60 s. *First read as room fading — **corrected below**: it was mostly HackRF transmit dropouts.* Measured then: 10 ms level median −52.8 dBFS but 1% of frames at −67 (the noise floor), 6% >10 dB below median; signal also moved 17 dB between minutes (antennas/people moving). Stream, decoder, squelch and RX gain all checked fine (TCP queues 0, decoder restart only partly helped) |
 | 10-26 | HackRF USB resets on port 1-8 (18:20, 18:51) | transmitter silently stuck on the dead device; a keepalive now restarts it within ~6 s. Consider another USB port/cable for the HackRF |
 | 10-26 | NXDN over the air, HackRF continuous, gain 20, amp off, NXDN dwell 30 s, adaptive activity threshold | **27.8 s voice in 59.5 s** (−42.8 dBFS band level), console `DECODING`, 8 dwell recordings with voice, 0% clipped |
 | 10-26 | Console showed NXDN `idle` over the air and recorded nothing | fixed absolute −60 dBFS threshold sat 2 dB above room noise; now per-band adaptive (floor + 6 dB) |
@@ -90,7 +91,8 @@ Newest first. Numbers are measured, not estimated.
 
 ## Open issues
 
-0. **Over-the-air NXDN needs HackRF gain ~30 in this room**: at 20, multipath fades reach the noise floor and break frames. Keep antennas still and vertical, ~1 m apart, nobody between them.
+0. **Over-the-air HackRF tests are unreliable**: its own radiated RF breaks its USB link (dropouts, then resets). Test through the cable + attenuator. Over-the-air is stopped.
+0b. **Bridge leaks IQ readers**: every schedule/gain change starts new per-port readers without stopping the old ones (4 per port after a few changes). Stream not stalled (send queues 0), but it wastes CPU and must be fixed in step 3.
 
 1. **No P25 voice recording.** `(IQ)P25 Trunked Channel.wav` is a control channel
    (TSDU only); `SDRSharp_…_IQ.wav` turned out to be DMR. Need a P25 voice sample.
@@ -112,7 +114,12 @@ Newest first. Numbers are measured, not estimated.
 
 | Commit | What |
 |---|---|
-| (this) | STATUS.md added; DELHI_HANDOFF.md updated and copied to `docs/` |
+| (this) | STATUS: step 1 closed, over-the-air dropout root cause, bridge reader leak |
+| `e8fedfe` | STATUS: over-the-air NXDN at gain 30 |
+| `8397961` | Bridge: per-band adaptive activity threshold |
+| `1e6e4b7` | NXDN decodes over the air |
+| `3d6d704` | HackRF `--duration` + stop watchdog |
+| `2fbd486` | STATUS.md added; DELHI_HANDOFF.md updated and copied to `docs/` |
 | `abe98dc` | TETRA validated over RF; swapped I/Q explained; tap_audio 8 kHz fix |
 | `41b8420` | NXDN validated over RF; P25 back to P25_PHASE_1; HackRF replay + bench tools |
 | `351e671` | DMR volume 0.5 → 0.2 |
@@ -127,7 +134,8 @@ check first, HackRF amp off, timed transmissions with `--duration`. The first an
 hinged, Wi-Fi style) added nothing — the B210's noise floor was the same as with no antenna,
 consistent with RP-SMA plugs on SMA jacks (no centre contact). With UHF antennas from the
 DMR radios, NXDN decoded over the air at HackRF gain 20. **Use UHF antennas; check the
-noise floor rises when one is fitted.**
+noise floor rises when one is fitted.** Over-the-air testing was then stopped: the HackRF's
+USB link fails while it radiates (see the results log), so the cable is the test path.
 
 Not done, on purpose: transmitting the HackRF into antennas would radiate on 420–451 MHz,
 the bands of real NXDN/P25/TETRA networks, and needs a licence (WPC in India). Use the
