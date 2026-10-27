@@ -62,6 +62,7 @@ AUDIO_TAPS = {
 }
 TETRA_EVENTS_ADDR = 'tcp://127.0.0.1:9105'
 REC_ON_DBFS = -38.0   # audio RMS above this = decoded voice actually present
+REC_MIN_VOICE_S = 0.5  # a recording is kept only if DSD decoded at least this much voice in it
                        # (only used to LABEL a recording now, not to gate it)
 REC_HANGTIME_S = 1.2  # legacy, kept for reference
 DWELL_TAIL_S = 0.45   # keep recording this long past the dwell's RF ending, to
@@ -631,6 +632,10 @@ async def audio_tap_reader(band):
             rms = float(np.sqrt(np.mean(samples ** 2)))
             rms_db = 20 * np.log10(rms) if rms > 1e-9 else -120.0
             hot = rms_db > REC_ON_DBFS
+            # DSD outputs exact silence unless it decoded voice frames, so any
+            # non-silent sample is decoded voice (an absolute level would drop
+            # quiet but real voice: NXDN48 sits at ~-39 dBFS)
+            voiced = int(np.count_nonzero(np.abs(samples) > 1e-4))
 
             # Whole-dwell recording: capture the FULL dwell window for this
             # band, not only the parts where decoded audio crosses a level.
@@ -649,6 +654,7 @@ async def audio_tap_reader(band):
                     rec = open_recording(band, cfg['rate'])
                     rec['peak_db'] = -200.0
                 rec['wf'].writeframes(pcm16.tobytes())
+                rec['voiced'] = rec.get('voiced', 0) + voiced
                 if hot:
                     rec['had_audio'] = True
                 rec['peak_db'] = max(rec.get('peak_db', -200.0), rms_db)
@@ -656,7 +662,17 @@ async def audio_tap_reader(band):
                 rec = recorders[band]
                 had = rec.get('had_audio', False)
                 peak = rec.get('peak_db', -200.0)
+                voice_s = rec.get('voiced', 0) / float(cfg['rate'])
                 info = close_recording(band)
+                # Keep a recording only when DSD decoded voice in it. Saving every
+                # RF-active dwell filled the folder with silence (22 of 25 files
+                # silent, 822 files / 362 MB), so undecoded dwells are dropped.
+                if info and voice_s < REC_MIN_VOICE_S:
+                    try:
+                        os.remove(info['path'])
+                    except OSError:
+                        pass
+                    info = None
                 if info and info['duration'] >= 0.2:
                     await broadcast({'type': 'recording', 'band': band,
                                       'file': os.path.basename(info['path']),
@@ -664,7 +680,7 @@ async def audio_tap_reader(band):
                                       'had_audio': bool(had),
                                       'peak_db': round(peak, 1),
                                       't': time.time()})
-                    kind = 'decoded audio present' if had else 'dwell captured, no decode'
+                    kind = f'{voice_s:.1f} s decoded voice'
                     await broadcast({'type': 'log', 'band': band, 't': time.time(),
                                       'text': f'  ↳ saved {os.path.basename(info["path"])} '
                                               f'({info["duration"]}s, {kind}, peak {peak:.1f} dBFS)'})
