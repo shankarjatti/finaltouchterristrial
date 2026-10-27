@@ -79,10 +79,11 @@ main{display:grid; grid-template-columns:1fr 300px; overflow:hidden;}
 #boxSpectrum .graph-label, #boxSpectrum .graph-readout, #boxSpectrum .legend,
 #boxWaterfall .graph-label, #boxWaterfall .graph-readout{ color:#c9ced6; }
 /* draggable panels: a small grip on each panel pops it out as a floating window */
-.drag-grip{position:absolute; top:3px; left:4px; width:16px; height:15px; z-index:8;
-  display:flex; align-items:center; justify-content:center; cursor:move; font-size:11px;
-  color:#8893a0; background:rgba(127,131,142,0.14); border-radius:3px; user-select:none;}
-.drag-grip:hover{background:rgba(127,131,142,0.30); color:#eef1f4;}
+.drag-grip{position:absolute; top:3px; left:4px; height:15px; z-index:8;
+  display:flex; align-items:center; gap:3px; padding:0 5px; cursor:move; font-size:10px;
+  color:#fff; background:var(--accent); border-radius:3px; user-select:none; opacity:0.85;
+  font-family:var(--mono); letter-spacing:.03em;}
+.drag-grip:hover{opacity:1;}
 #boxSpectrum .graph-label, #boxWaterfall .graph-label, #boxTime .graph-label{left:24px;}
 .floating{box-shadow:0 8px 28px rgba(0,0,0,0.45); z-index:60 !important;
   outline:1px solid var(--accent); background:var(--panel);}
@@ -1037,7 +1038,7 @@ function makeDraggable(el, title){
   if(!el || el.querySelector(':scope > .drag-grip')) return;
   if(getComputedStyle(el).position === 'static') el.style.position = 'relative';
   const grip = document.createElement('div');
-  grip.className = 'drag-grip'; grip.innerHTML = '&#10303;';
+  grip.className = 'drag-grip'; grip.innerHTML = '&#10303; move';
   grip.title = (title||'panel') + ' — drag to move, double-click to dock back';
   el.appendChild(grip);
   let sx, sy, ox, oy, dragging = false;
