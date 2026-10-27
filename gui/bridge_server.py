@@ -154,6 +154,7 @@ STATE = {
     'cycle': 0,
     'clients': {b['key']: 0 for b in BANDS},
     'active_band': None,
+    'usb_mbps': None,        # the B210's real negotiated USB speed (480 = USB 2.0, 5000 = USB 3)
 }
 proc = None
 BG_TASKS = set()  # strong refs -- asyncio only holds weak refs to tasks otherwise,
@@ -188,6 +189,26 @@ async def broadcast(msg: dict):
 # ---------------------------------------------------------------- Module 1 process + log parsing
 
 RE_GAIN = re.compile(r'RX gain actual\s*:\s*([\d.]+)\s*dB')
+
+
+def b210_usb_mbps():
+    """The B210's negotiated USB speed from sysfs, or None if it is not on the bus.
+    Read after Module 1 has opened the radio: until its firmware loads, the B210
+    sits in its bootloader and always reports 480 Mbps."""
+    base = '/sys/bus/usb/devices'
+    try:
+        for d in os.listdir(base):
+            try:
+                with open(os.path.join(base, d, 'idVendor')) as f:
+                    if f.read().strip() != '2500':
+                        continue
+                with open(os.path.join(base, d, 'speed')) as f:
+                    return int(float(f.read().strip()))
+            except (OSError, ValueError):
+                continue
+    except OSError:
+        pass
+    return None
 RE_LOCK = re.compile(r'LO Lock\s*:\s*(\w+)')
 RE_CYCLE = re.compile(r'Cycle #(\d+)')
 RE_DWELL = re.compile(r'DWELL\s+band=(\S+)\s+freq=([\d.]+)\s*MHz')
@@ -213,6 +234,7 @@ async def read_module1_stdout(loop):
         m = RE_GAIN.search(line)
         if m:
             STATE['rx_gain_actual'] = float(m.group(1))
+            STATE['usb_mbps'] = b210_usb_mbps()     # radio is up: firmware loaded, real link speed
         m = RE_LOCK.search(line)
         if m:
             STATE['lo_lock'] = m.group(1)
@@ -352,7 +374,7 @@ async def start_module1():
     # you also run it) try to connect
     await asyncio.sleep(1.0)
     for b in BANDS:
-        spawn(iq_reader(b))
+        spawn(iq_reader(b, _m1_generation))
 
 
 async def apply_gain(gain_db: float):
@@ -433,7 +455,7 @@ async def stop_module1():
 
 # ---------------------------------------------------------------- real IQ -> FFT per band
 
-async def iq_reader(band):
+async def iq_reader(band, gen):
     """Connect to Module 1's TCP port for this band as a plain client (same
     as Module 2 would) and turn the real complex64 stream into spectrum /
     time-domain frames for the browser. Reconnects if Module 1 restarts."""
@@ -442,7 +464,10 @@ async def iq_reader(band):
     chunk_samps = FFT_N
     chunk_bytes = chunk_samps * bytes_per_samp
 
-    while STATE['running']:
+    # gen = the Module 1 run this reader belongs to. Without it, every restart
+    # (gain/schedule change, auto-restart) left the old readers reconnecting
+    # forever: 4 bridge clients per port were seen after a few changes.
+    while STATE['running'] and gen == _m1_generation:
         try:
             reader, _writer = await asyncio.open_connection('127.0.0.1', port)
         except OSError:
@@ -452,7 +477,7 @@ async def iq_reader(band):
         buf = b''
         last_send = 0.0
         try:
-            while STATE['running']:
+            while STATE['running'] and gen == _m1_generation:
                 data = await reader.read(65536)
                 if not data:
                     break

@@ -84,6 +84,9 @@ Newest first. Numbers are measured, not estimated.
 
 | Date | What | Result |
 |---|---|---|
+| 10-27 | Yesterday's console + the 4 new bands (same look, muted colours) | 8 bands in Signals/legend/audio/schedule; frequency axis 419–454 MHz; header on one line. **USB link now measured** (bridge reads the B210's sysfs speed after the firmware loads; was a fixed 'USB 3.0' string): shows USB 3.x (5000 Mb/s). **TCP clients** now 'ports with a client / 8 (connections)': 8 / 8 (16) |
+| 10-27 | Bridge IQ-reader leak fixed | readers exit when their Module 1 run ends; after a schedule restart exactly 2 connections per port (decoder + bridge), was growing (4 per port seen) |
+| 10-27 | DMR dwell 15 s, others 1 s (user's demo setting) | applied; Module 1 sends 3,000,000 samples (15 s) per DMR dwell |
 | 10-27 | Console: back to yesterday's 4-protocol page (user's choice) | `gui/securecom_gui.html` restored byte-identical to the pre-step-2 version; today's 8-band page kept as `gui/securecom_gui_8band.html`. Works against the 8-band bridge (it ignores the 4 new bands), no page errors |
 | 10-27 | **8-band stack on USB 3** (B210 back on port 2-10, 5000 Mbps) | 60 s: 29 dwells across all 8 bands, **0 USB errors, 0 Module 1 restarts**, live IQ from every band (36–48 frames each). On USB 2.0 (port 1-8) earlier the same stack hit LIBUSB_TRANSFER_ERROR within seconds and restarted repeatedly |
 | 10-27 | One colour per band, same in decoder window and console | Qt spectrum: 8 traces (all bands); Qt audio plot: 7 DSD traces (TETRA keeps its own 8 kHz plot), rate fixed 200 kSps → 48 kHz (time axis was ~4× short). GRC allows only named Qt colours, so both use: DMR blue, NXDN96 red, P25 green, TETRA black, NXDN48 magenta, D-STAR cyan, X2-TDMA dark red, ProVoice dark blue. Console served no-cache (browser had kept the old page) |
@@ -120,7 +123,7 @@ Newest first. Numbers are measured, not estimated.
 0d. **The B210 must be on USB 3** (port 2-10, 5000 Mbps; the launcher reports it). On USB 2.0 Module 1 fails within seconds. In its bootloader stage it always shows 480 Mbps first; check the speed after the launcher has loaded the firmware.
 
 0. **Over-the-air HackRF tests are unreliable**: its own radiated RF breaks its USB link (dropouts, then resets). Test through the cable + attenuator. Over-the-air is stopped.
-0b. **Bridge leaks IQ readers**: every schedule/gain change starts new per-port readers without stopping the old ones (4 per port after a few changes). Stream not stalled (send queues 0), but it wastes CPU and must be fixed in step 3.
+0b. ~~**Bridge leaks IQ readers**~~ fixed 10-27 —: every schedule/gain change starts new per-port readers without stopping the old ones (4 per port after a few changes). Stream not stalled (send queues 0), but it wastes CPU and must be fixed in step 3.
 
 1. **No P25 voice recording.** `(IQ)P25 Trunked Channel.wav` is a control channel
    (TSDU only); `SDRSharp_…_IQ.wav` turned out to be DMR. Need a P25 voice sample.
