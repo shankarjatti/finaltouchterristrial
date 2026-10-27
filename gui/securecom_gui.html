@@ -78,15 +78,11 @@ main{display:grid; grid-template-columns:1fr 300px; overflow:hidden;}
 /* Decodio-style spectrum + waterfall: black canvas, so overlay text goes light */
 #boxSpectrum .graph-label, #boxSpectrum .graph-readout, #boxSpectrum .legend,
 #boxWaterfall .graph-label, #boxWaterfall .graph-readout{ color:#c9ced6; }
-/* draggable panels: a small grip on each panel pops it out as a floating window */
-.drag-grip{position:absolute; top:3px; left:4px; height:15px; z-index:8;
-  display:flex; align-items:center; gap:3px; padding:0 5px; cursor:move; font-size:10px;
-  color:#fff; background:var(--accent); border-radius:3px; user-select:none; opacity:0.85;
-  font-family:var(--mono); letter-spacing:.03em;}
-.drag-grip:hover{opacity:1;}
-#boxSpectrum .graph-label, #boxWaterfall .graph-label, #boxTime .graph-label{left:24px;}
-.floating{box-shadow:0 8px 28px rgba(0,0,0,0.45); z-index:60 !important;
-  outline:1px solid var(--accent); background:var(--panel);}
+/* resizable borders: thin bars sitting on each grid border, drag to resize */
+.splitter{position:absolute; z-index:7; background:transparent;}
+.splitter.col{top:0; bottom:0; left:0; width:7px; margin-left:-3px; cursor:col-resize;}
+.splitter.row{left:0; right:0; top:0; height:7px; margin-top:-3px; cursor:row-resize;}
+.splitter:hover, .splitter.active{background:var(--accent); opacity:0.55;}
 .legend span{display:flex; align-items:center; gap:4px;}
 .legend i{width:8px;height:8px;display:inline-block;border-radius:1px;}
 
@@ -1033,42 +1029,64 @@ document.getElementById('btnDecStop').onclick = ()=>{
 renderSchedRows();
 showNotConnected();
 updateHwPanel();
-/* ---------------- draggable floating panels ---------------- */
-function makeDraggable(el, title){
-  if(!el || el.querySelector(':scope > .drag-grip')) return;
-  if(getComputedStyle(el).position === 'static') el.style.position = 'relative';
-  const grip = document.createElement('div');
-  grip.className = 'drag-grip'; grip.innerHTML = '&#10303; move';
-  grip.title = (title||'panel') + ' — drag to move, double-click to dock back';
-  el.appendChild(grip);
-  let sx, sy, ox, oy, dragging = false;
-  grip.addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    const r = el.getBoundingClientRect();
-    // pop out as a fixed window at its current position and size
-    Object.assign(el.style, {position:'fixed', left:r.left+'px', top:r.top+'px',
-      width:r.width+'px', height:r.height+'px', margin:'0'});
-    el.classList.add('floating');
-    sx=e.clientX; sy=e.clientY; ox=r.left; oy=r.top; dragging=true;
-    try{ grip.setPointerCapture(e.pointerId); }catch(_){}
+/* ---------------- resizable panel borders (split-pane) ---------------- */
+function addSplitter(parent, orientation, onDrag){
+  if(getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+  const bar = document.createElement('div');
+  bar.className = 'splitter ' + orientation;
+  parent.appendChild(bar);
+  let dragging = false;
+  bar.addEventListener('pointerdown', e=>{
+    e.preventDefault(); dragging = true; bar.classList.add('active');
+    document.body.style.cursor = orientation==='col' ? 'col-resize' : 'row-resize';
+    try{ bar.setPointerCapture(e.pointerId); }catch(_){}
   });
-  grip.addEventListener('pointermove', e=>{
-    if(!dragging) return;
-    el.style.left = Math.max(0, ox + e.clientX - sx) + 'px';
-    el.style.top  = Math.max(0, oy + e.clientY - sy) + 'px';
-  });
-  const end = e=>{ dragging=false; try{ grip.releasePointerCapture(e.pointerId); }catch(_){} };
-  grip.addEventListener('pointerup', end);
-  grip.addEventListener('pointercancel', end);
-  grip.addEventListener('dblclick', ()=>{   // dock back to the original layout
-    el.classList.remove('floating');
-    ['position','left','top','width','height','margin'].forEach(p=>el.style[p]='');
+  window.addEventListener('pointermove', e=>{ if(dragging) onDrag(e); });
+  window.addEventListener('pointerup', e=>{
+    if(!dragging) return; dragging = false; bar.classList.remove('active');
+    document.body.style.cursor = ''; try{ bar.releasePointerCapture(e.pointerId); }catch(_){}
   });
 }
-['boxSpectrum','boxWaterfall','boxTime'].forEach(id=>makeDraggable(document.getElementById(id), id.replace('box','')));
-makeDraggable(document.querySelector('.sidebar'), 'Panels');
-makeDraggable(document.querySelector('.audio'), 'Audio');
-makeDraggable(document.getElementById('console'), 'Log');
+const clamp = (v,lo,hi)=>Math.max(lo, Math.min(hi, v));
+const mainEl = document.querySelector('main');
+const graphsEl = document.querySelector('.graphs');
+const bottomEl = document.querySelector('.bottom');
+const sidebarEl = document.querySelector('.sidebar');
+const consoleEl = document.getElementById('console');
+const boxWf = document.getElementById('boxWaterfall');
+const boxTm = document.getElementById('boxTime');
+
+// sidebar width: main is `1fr <sidebar>px`
+addSplitter(sidebarEl, 'col', e=>{
+  const r = mainEl.getBoundingClientRect();
+  const w = clamp(r.right - e.clientX, 180, r.width - 220);
+  mainEl.style.gridTemplateColumns = `1fr ${w}px`;
+});
+// spectrum vs waterfall: graphs rows `<spec>px 1fr <time>px`
+addSplitter(boxWf, 'row', e=>{
+  const r = graphsEl.getBoundingClientRect();
+  const timeH = boxTm.getBoundingClientRect().height;
+  const specH = clamp(e.clientY - r.top, 70, r.height - timeH - 90);
+  graphsEl.style.gridTemplateRows = `${specH}px 1fr ${timeH}px`;
+});
+// waterfall vs time
+addSplitter(boxTm, 'row', e=>{
+  const r = graphsEl.getBoundingClientRect();
+  const specH = document.getElementById('boxSpectrum').getBoundingClientRect().height;
+  const timeH = clamp(r.bottom - e.clientY, 50, r.height - specH - 90);
+  graphsEl.style.gridTemplateRows = `${specH}px 1fr ${timeH}px`;
+});
+// main vs bottom strip: body rows `44px 1fr <bottom>px`
+addSplitter(bottomEl, 'row', e=>{
+  const bottomH = clamp(window.innerHeight - e.clientY, 90, window.innerHeight - 200);
+  document.body.style.gridTemplateRows = `44px 1fr ${bottomH}px`;
+});
+// audio vs log: bottom is `<audio>px 1fr`
+addSplitter(consoleEl, 'col', e=>{
+  const r = bottomEl.getBoundingClientRect();
+  const w = clamp(e.clientX - r.left, 160, r.width - 220);
+  bottomEl.style.gridTemplateColumns = `${w}px 1fr`;
+});
 
 connectBridge();
 logLine('sys', 'Console loaded. Waiting for bridge_server.py at ws://127.0.0.1:8787 — no simulated data, real feed only.');

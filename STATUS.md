@@ -84,6 +84,7 @@ Newest first. Numbers are measured, not estimated.
 
 | Date | What | Result |
 |---|---|---|
+| 10-27 | Console: replaced free-dragging with resizable borders (user's choice) | 5 splitter bars on the grid borders: sidebar width, spectrum/waterfall and waterfall/time heights, main/bottom height, audio/log width. Hover highlights the border; drag resizes, with min clamps. Verified live: dragging the sidebar border changed the column sizes |
 | 10-27 | Console: every panel/plot is a draggable floating window | each of the 6 panels (spectrum, waterfall, time, the tabbed panel, audio, log) has a grip; drag pops it out as a fixed window at its size, double-click docks it back. Verified live: 6 grips, drag moves exactly, dock resets |
 | 10-27 | Recordings: play button is a play/pause toggle | clicking ▶ plays and turns to ⏸ with a m:ss / m:ss time readout; clicking ⏸ pauses; only one recording plays at a time; resets to ▶ at the end. Verified live |
 | 10-27 | Console spectrum + waterfall restyled to the Decodio reference | spectrum: black, yellow trace, dBm scale on both sides, per-carrier grey markers (channel no. + level on occupied ones); waterfall: blue->cyan->green->yellow->red heat scale with a dB colour bar. Same real IQ/channel data as before, front-end only; verified live, no page errors |
