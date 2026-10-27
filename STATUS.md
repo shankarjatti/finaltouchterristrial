@@ -84,6 +84,7 @@ Newest first. Numbers are measured, not estimated.
 
 | Date | What | Result |
 |---|---|---|
+| 10-27 | Console spectrum + waterfall restyled to the Decodio reference | spectrum: black, yellow trace, dBm scale on both sides, per-carrier grey markers (channel no. + level on occupied ones); waterfall: blue->cyan->green->yellow->red heat scale with a dB colour bar. Same real IQ/channel data as before, front-end only; verified live, no page errors |
 | 10-27 | Yesterday's console + the 4 new bands (same look, muted colours) | 8 bands in Signals/legend/audio/schedule; frequency axis 419–454 MHz; header on one line. **USB link now measured** (bridge reads the B210's sysfs speed after the firmware loads; was a fixed 'USB 3.0' string): shows USB 3.x (5000 Mb/s). **TCP clients** now 'ports with a client / 8 (connections)': 8 / 8 (16) |
 | 10-27 | Bridge IQ-reader leak fixed | readers exit when their Module 1 run ends; after a schedule restart exactly 2 connections per port (decoder + bridge), was growing (4 per port seen) |
 | 10-27 | DMR dwell 15 s, others 1 s (user's demo setting) | applied; Module 1 sends 3,000,000 samples (15 s) per DMR dwell |

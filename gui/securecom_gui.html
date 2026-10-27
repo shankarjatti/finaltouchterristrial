@@ -75,6 +75,9 @@ main{display:grid; grid-template-columns:1fr 300px; overflow:hidden;}
 .zoom-reset:hover{color:var(--text); border-color:var(--accent);}
 .legend{position:absolute; bottom:4px; left:8px; display:flex; gap:10px; z-index:2;
   font-family:var(--mono); font-size:9.5px; color:var(--text-dim);}
+/* Decodio-style spectrum + waterfall: black canvas, so overlay text goes light */
+#boxSpectrum .graph-label, #boxSpectrum .graph-readout, #boxSpectrum .legend,
+#boxWaterfall .graph-label, #boxWaterfall .graph-readout{ color:#c9ced6; }
 .legend span{display:flex; align-items:center; gap:4px;}
 .legend i{width:8px;height:8px;display:inline-block;border-radius:1px;}
 
@@ -433,45 +436,92 @@ const WF_ROWS_MAX = 160;
 
 function binFreq(i){ return FMIN + (i/NBINS)*(FMAX-FMIN); }
 
+// Decodio-style heat scale: deep blue (noise floor) -> blue -> cyan -> green
+// -> yellow -> red (strong). t in [0,1].
+const HEAT_STOPS = [[0,10,16,70],[0.22,10,70,200],[0.42,0,190,200],[0.6,40,210,55],[0.8,240,225,25],[1,235,35,25]];
+function heatColor(t){
+  t = Math.min(1, Math.max(0, t));
+  for(let s=1; s<HEAT_STOPS.length; s++){
+    const a=HEAT_STOPS[s-1], b=HEAT_STOPS[s];
+    if(t<=b[0]){ const k=(t-a[0])/(b[0]-a[0]||1);
+      return [Math.round(a[1]+(b[1]-a[1])*k), Math.round(a[2]+(b[2]-a[2])*k), Math.round(a[3]+(b[3]-a[3])*k)]; }
+  }
+  return [235,35,25];
+}
+const WF_DB_LO = -100, WF_DB_HI = -30;   // maps a waterfall bin's dB to the heat scale
+const WF_BAR_W = 34;                      // width of the colour bar on the right
+
+// Carriers (channelizer channels) to mark on the spectrum, from bands seen dwelling
+// recently. Returns [{f (MHz), ch, rel (dB over band median), occ}].
+function activeCarriers(){
+  const out = [];
+  for(const b of BANDS){
+    const bl = bandsLive[b.key];
+    if(!bl || !bl.chan_db || performance.now()-bl.t > 2500) continue;
+    const n = bl.chan_db.length, bw = (bl.chan_bw_hz||12500)/1000;
+    const med = [...bl.chan_db].sort((x,y)=>x-y)[Math.floor(n/2)];
+    const occ = bl.chan_occupied || [];
+    for(let i=0;i<n;i++){
+      const off = (i <= n/2 ? i : i-n) * bw;      // kHz, same convention as the Signals table
+      out.push({f: b.freq + off/1000, ch:i, rel: bl.chan_db[i]-med, occ: occ.includes(i), color:b.color});
+    }
+  }
+  return out;
+}
+
 function drawSpectrum(){
   const r = specBox.getBoundingClientRect();
   const ctx = spec.ctx; const {min,max} = spec.view;
+  const y4db = db => r.height - ((db+110)/100)*r.height;
   ctx.save(); ctx.scale(devicePixelRatio, devicePixelRatio);
   ctx.clearRect(0,0,r.width,r.height);
-  ctx.fillStyle = css('--panel'); ctx.fillRect(0,0,r.width,r.height);
+  ctx.fillStyle = '#000'; ctx.fillRect(0,0,r.width,r.height);
 
-  // grid
-  ctx.strokeStyle = css('--grid'); ctx.lineWidth = 1; ctx.font = '9px monospace'; ctx.fillStyle = css('--text-mute');
-  for(let db=-100; db<=-10; db+=20){
-    const y = r.height - ((db+110)/100)*r.height;
+  // grid + dBm scale on BOTH sides
+  ctx.strokeStyle = 'rgba(120,130,145,0.22)'; ctx.lineWidth = 1;
+  ctx.font = '9px monospace'; ctx.fillStyle = '#9aa3af';
+  for(let db=-100; db<=-20; db+=20){
+    const y = y4db(db);
     ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(r.width,y); ctx.stroke();
-    ctx.fillText(db+' dB', 4, y-2);
+    ctx.textAlign='left';  ctx.fillText(db, 3, y-2);
+    ctx.textAlign='right'; ctx.fillText(db, r.width-3, y-2);
   }
+  ctx.textAlign='left';
   for(let f=Math.ceil(min); f<=max; f+=1){
     const x = ((f-min)/(max-min))*r.width;
+    ctx.strokeStyle='rgba(120,130,145,0.16)';
     ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,r.height); ctx.stroke();
-    ctx.fillText(f+'M', x+2, r.height-3);
+    ctx.fillStyle='#9aa3af'; ctx.fillText(f.toFixed(3)+' MHz', x+2, r.height-3);
   }
 
-  // trace, colored by which band's window the bin falls in
-  for(const b of BANDS){
-    ctx.strokeStyle = css(b.color); ctx.lineWidth = 1.4; ctx.beginPath();
-    let started=false;
-    for(let i=0;i<NBINS;i++){
-      const f = binFreq(i);
-      if(Math.abs(f-b.freq) > 0.6) continue;
-      if(f<min || f>max) continue;
-      const x = ((f-min)/(max-min))*r.width;
-      const db = spectrumBins[i];
-      const y = r.height - ((db+110)/100)*r.height;
-      if(!started){ctx.moveTo(x,y); started=true;} else ctx.lineTo(x,y);
+  // carrier markers: grey band per channel, labels on occupied ones
+  for(const c of activeCarriers()){
+    if(c.f<min || c.f>max) continue;
+    const x = ((c.f-min)/(max-min))*r.width;
+    ctx.fillStyle = c.occ ? 'rgba(180,190,205,0.22)' : 'rgba(150,160,175,0.10)';
+    ctx.fillRect(x-1.5, 0, 3, r.height);
+    if(c.occ){
+      ctx.fillStyle='#d8dde4'; ctx.textAlign='center';
+      ctx.fillText(c.rel>0?('+'+c.rel.toFixed(0)):c.rel.toFixed(0), x, 10);
+      ctx.fillText(c.ch, x, r.height-13);
+      ctx.textAlign='left';
     }
-    if(started) ctx.stroke();
   }
 
-  // drag-select overlay
+  // single yellow trace across the span (Decodio look)
+  ctx.strokeStyle = '#f2e200'; ctx.lineWidth = 1.2; ctx.beginPath();
+  let started=false;
+  for(let i=0;i<NBINS;i++){
+    const f = binFreq(i);
+    if(f<min || f>max) continue;
+    const x = ((f-min)/(max-min))*r.width;
+    const y = y4db(spectrumBins[i]);
+    if(!started){ctx.moveTo(x,y); started=true;} else ctx.lineTo(x,y);
+  }
+  if(started) ctx.stroke();
+
   const dr = spec.dragRect();
-  if(dr){ ctx.fillStyle='rgba(26,95,138,0.20)'; ctx.fillRect(dr[0],0,dr[1]-dr[0],r.height); }
+  if(dr){ ctx.fillStyle='rgba(242,226,0,0.18)'; ctx.fillRect(dr[0],0,dr[1]-dr[0],r.height); }
   ctx.restore();
   document.getElementById('roSpectrum').textContent = `span ${(max-min).toFixed(3)} MHz`;
 }
@@ -481,27 +531,41 @@ function drawWaterfall(){
   const ctx = wf.ctx; const {min,max} = wf.view;
   ctx.save(); ctx.scale(devicePixelRatio, devicePixelRatio);
   ctx.clearRect(0,0,r.width,r.height);
-  // paint the ground white so un-swept area matches the other two graphs
-  ctx.fillStyle = css('--panel'); ctx.fillRect(0,0,r.width,r.height);
+  const plotW = r.width - WF_BAR_W;
+  // deep-blue floor for the unswept area, matching the heat scale's low end
+  const floor = heatColor(0);
+  ctx.fillStyle = `rgb(${floor[0]},${floor[1]},${floor[2]})`; ctx.fillRect(0,0,plotW,r.height);
   const rowH = r.height / WF_ROWS_MAX;
+  const colW = Math.max(1.2, plotW/NBINS*2);
   for(let ri=0; ri<waterfallRows.length; ri++){
     const row = waterfallRows[ri];
     const y = ri*rowH;
     for(let i=0;i<NBINS;i+=2){
       const f = binFreq(i);
       if(f<min || f>max) continue;
-      const x = ((f-min)/(max-min))*r.width;
-      const db = row[i];
-      const t = Math.min(1, Math.max(0, (db+100)/70));
-      // light-theme heat scale: white (quiet) -> steel blue -> deep navy (strong).
-      // Inverted vs a dark theme so low energy reads as empty page, not as ink.
-      const rr = Math.round(255 - t*210), gg = Math.round(255 - t*185), bb = Math.round(255 - t*95);
+      const x = ((f-min)/(max-min))*plotW;
+      const t = (row[i]-WF_DB_LO)/(WF_DB_HI-WF_DB_LO);
+      const [rr,gg,bb] = heatColor(t);
       ctx.fillStyle = `rgb(${rr},${gg},${bb})`;
-      ctx.fillRect(x, y, Math.max(1.2, r.width/NBINS*2), rowH+0.6);
+      ctx.fillRect(x, y, colW, rowH+0.6);
     }
   }
   const dr = wf.dragRect();
-  if(dr){ ctx.fillStyle='rgba(26,95,138,0.16)'; ctx.fillRect(dr[0],0,dr[1]-dr[0],r.height); }
+  if(dr){ ctx.fillStyle='rgba(242,226,0,0.16)'; ctx.fillRect(dr[0],0,dr[1]-dr[0],r.height); }
+
+  // colour bar on the right, with a dB scale
+  const bx = plotW + 6, bw = WF_BAR_W - 12;
+  for(let y=0; y<r.height; y++){
+    const [rr,gg,bb] = heatColor(1 - y/r.height);
+    ctx.fillStyle = `rgb(${rr},${gg},${bb})`; ctx.fillRect(bx, y, bw, 1);
+  }
+  ctx.fillStyle='#000'; ctx.fillRect(plotW, 0, 6, r.height);
+  ctx.font='9px monospace'; ctx.fillStyle='#c9ced6'; ctx.textAlign='left';
+  for(let k=0;k<=4;k++){
+    const db = Math.round(WF_DB_HI - k*(WF_DB_HI-WF_DB_LO)/4);
+    const y = (k/4)*r.height;
+    ctx.fillText(db, bx, Math.min(r.height-2, Math.max(8, y+3)));
+  }
   ctx.restore();
 }
 
