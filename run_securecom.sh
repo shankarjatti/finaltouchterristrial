@@ -11,7 +11,7 @@
 #                        still reports "RUNNING")
 #    3. build            module1 (C++/UHD) if the binary is missing or stale
 #    4. bridge           bridge_server.py           -> ws://127.0.0.1:8787
-#    5. web server       python3 -m http.server     -> http://127.0.0.1:8788
+#    5. web server       gui/http_server_nocache.py -> http://127.0.0.1:8788
 #    6. hardware         securecom_module1  (C++ tuner + burst scheduling)
 #    7. decoder          allinone.py        (GNU Radio, 1 chain each DMR/NXDN/P25 + TETRA)
 #    8. GUI              open the console in a browser
@@ -115,6 +115,7 @@ kill_stack(){
   pkill -9 -f "securecom_module1"      2>/dev/null
   pkill -9 -f "bridge_server.py"       2>/dev/null
   pkill -9 -f "http.server $HTTP_PORT" 2>/dev/null
+  pkill -9 -f "http_server_nocache.py $HTTP_PORT" 2>/dev/null
   sleep 1.5
 }
 
@@ -219,7 +220,8 @@ wait_for_port 8787 15 "bridge" || { tail -20 "$LOG_DIR/bridge.log"; die "bridge 
 
 # ---------------------------------------------------------------- 5. web server
 step 5 "Web server for the console"
-( cd "$GUI_DIR" && setsid nohup python3 -m http.server "$HTTP_PORT" --bind 127.0.0.1 >"$LOG_DIR/http.log" 2>&1 </dev/null & )
+# no-cache server: a plain http.server let browsers keep showing an old console page
+( cd "$GUI_DIR" && setsid nohup python3 http_server_nocache.py "$HTTP_PORT" --bind 127.0.0.1 >"$LOG_DIR/http.log" 2>&1 </dev/null & )
 wait_for_port "$HTTP_PORT" 10 "web server" || die "web server did not start"
 info "serve over http:// — opening the .html as file:// breaks the WebSocket and .wav playback"
 

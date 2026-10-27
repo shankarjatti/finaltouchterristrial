@@ -84,6 +84,7 @@ Newest first. Numbers are measured, not estimated.
 
 | Date | What | Result |
 |---|---|---|
+| 10-27 | One colour per band, same in decoder window and console | Qt spectrum: 8 traces (all bands); Qt audio plot: 7 DSD traces (TETRA keeps its own 8 kHz plot), rate fixed 200 kSps → 48 kHz (time axis was ~4× short). GRC allows only named Qt colours, so both use: DMR blue, NXDN96 red, P25 green, TETRA black, NXDN48 magenta, D-STAR cyan, X2-TDMA dark red, ProVoice dark blue. Console served no-cache (browser had kept the old page) |
 | 10-27 | **8-band stack live** (B210, receive only) | 8/8 IQ ports, 9/9 taps; Module 1 rotates all 8 bands (~2 s each); bridge gets live IQ from all 8 with the right channel plans (NXDN48 32×6.25 kHz, ProVoice 8×25 kHz) |
 | 10-27 | NXDN48 recording through the real decoder (replayed on 7005) | **28.2 s voice in 32 s**, −39 dBFS rms, −5 dBFS peak, 0% clipped at volume 3.0; other 7 taps silent as they should be; decoder 91% of one core |
 | 10-27 | NXDN48 recording decoded directly by DSD (frame log) | `Sync: -NXDN48 … VOICE` with error-free frames, input level 42–46%; same 16.8 s at demod gain 0.5/1/2; DSD output peaks only −16 dBFS (quiet speech) → volume 3.0 |

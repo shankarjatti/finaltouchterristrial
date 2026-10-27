@@ -1275,15 +1275,15 @@ blocks:
     axislabels: 'True'
     bw: samp_rate
     color1: '"blue"'
-    color10: '"dark blue"'
+    color10: '"blue"'
     color2: '"red"'
     color3: '"green"'
     color4: '"black"'
-    color5: '"cyan"'
-    color6: '"magenta"'
-    color7: '"yellow"'
-    color8: '"dark red"'
-    color9: '"dark green"'
+    color5: '"magenta"'
+    color6: '"cyan"'
+    color7: '"dark red"'
+    color8: '"dark blue"'
+    color9: '"blue"'
     comment: Combined Spectrum Analyzer for All 3 Bands
     ctrlpanel: 'False'
     fc: '0'
@@ -1292,21 +1292,21 @@ blocks:
     grid: 'True'
     gui_hint: ''
     label: Power Spectrum Density
-    label1: DMR446 (Port 7001)
+    label1: DMR446 (7001)
     label10: ''
-    label2: NXDN96 (Port 7002)
-    label3: P25 Phase 1 (Port 7003)
-    label4: TETRA (Port 7004)
-    label5: ''
-    label6: ''
-    label7: ''
-    label8: ''
+    label2: NXDN96 (7002)
+    label3: P25 Ph1 (7003)
+    label4: TETRA (7004)
+    label5: NXDN48 (7005)
+    label6: D-STAR (7006)
+    label7: X2-TDMA (7007)
+    label8: ProVoice (7008)
     label9: ''
     legend: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    name: SecureCOM Live Spectrum Activity (Blue=DMR, Red=NXDN, Green=P25)
-    nconnections: '4'
+    name: "SecureCOM Live Spectrum \u2014 8 bands (colours match the console)"
+    nconnections: '8'
     norm_window: 'False'
     showports: 'False'
     tr_chan: '0'
@@ -1356,28 +1356,28 @@ blocks:
     autoscale: 'True'
     axislabels: 'True'
     color1: blue
-    color10: dark blue
+    color10: blue
     color2: red
     color3: green
-    color4: black
+    color4: magenta
     color5: cyan
-    color6: magenta
-    color7: yellow
-    color8: dark red
-    color9: dark green
+    color6: dark red
+    color7: dark blue
+    color8: blue
+    color9: blue
     comment: ''
     ctrlpanel: 'False'
     entags: 'True'
     grid: 'False'
     gui_hint: ''
-    label1: DMR
+    label1: DMR446
     label10: ''
-    label2: NXDN
-    label3: P25
-    label4: ''
-    label5: ''
-    label6: ''
-    label7: ''
+    label2: NXDN96
+    label3: P25 Ph1
+    label4: NXDN48
+    label5: D-STAR
+    label6: X2-TDMA
+    label7: ProVoice
     label8: ''
     label9: ''
     legend: 'True'
@@ -1391,10 +1391,10 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: "Audio Time Domain \u2014 DMR/NXDN/P25"
-    nconnections: '3'
+    name: "Decoded Audio \u2014 7 DSD protocols (48 kHz)"
+    nconnections: '7'
     size: '1024'
-    srate: samp_rate
+    srate: '48000'
     stemplot: 'False'
     style1: '1'
     style10: '1'
@@ -3471,34 +3471,18 @@ connections:
   - '0'
   - pfb_channelizer_ccf_0
   - '0'
-- - network_tcp_source_dmr
-  - '0'
-  - qtgui_freq_sink_combined
-  - '0'
 - - network_tcp_source_nxdn
   - '0'
   - pfb_channelizer_ccf_0_1
   - '0'
-- - network_tcp_source_nxdn
-  - '0'
-  - qtgui_freq_sink_combined
-  - '1'
 - - network_tcp_source_p25
   - '0'
   - pfb_channelizer_ccf_0_0
   - '0'
-- - network_tcp_source_p25
-  - '0'
-  - qtgui_freq_sink_combined
-  - '2'
 - - network_tcp_source_tetra
   - '0'
   - freq_xlating_fir_filter_xxx_0
   - '0'
-- - network_tcp_source_tetra
-  - '0'
-  - qtgui_freq_sink_combined
-  - '3'
 - - resamp_iq_dmr
   - '0'
   - lpf_dmr
@@ -3767,18 +3751,6 @@ connections:
   - '0'
   - audio_sink_p25
   - '0'
-- - vol_dmr
-  - '0'
-  - qtgui_time_sink_dnp
-  - '0'
-- - vol_nxdn
-  - '0'
-  - qtgui_time_sink_dnp
-  - '1'
-- - vol_p25
-  - '0'
-  - qtgui_time_sink_dnp
-  - '2'
 - - network_tcp_source_nxdn48
   - '0'
   - pfb_channelizer_nxdn48
@@ -4227,5 +4199,65 @@ connections:
   - '0'
   - audio_sink_provoice
   - '0'
+- - network_tcp_source_dmr
+  - '0'
+  - qtgui_freq_sink_combined
+  - '0'
+- - network_tcp_source_nxdn
+  - '0'
+  - qtgui_freq_sink_combined
+  - '1'
+- - network_tcp_source_p25
+  - '0'
+  - qtgui_freq_sink_combined
+  - '2'
+- - network_tcp_source_tetra
+  - '0'
+  - qtgui_freq_sink_combined
+  - '3'
+- - network_tcp_source_nxdn48
+  - '0'
+  - qtgui_freq_sink_combined
+  - '4'
+- - network_tcp_source_dstar
+  - '0'
+  - qtgui_freq_sink_combined
+  - '5'
+- - network_tcp_source_x2tdma
+  - '0'
+  - qtgui_freq_sink_combined
+  - '6'
+- - network_tcp_source_provoice
+  - '0'
+  - qtgui_freq_sink_combined
+  - '7'
+- - vol_dmr
+  - '0'
+  - qtgui_time_sink_dnp
+  - '0'
+- - vol_nxdn
+  - '0'
+  - qtgui_time_sink_dnp
+  - '1'
+- - vol_p25
+  - '0'
+  - qtgui_time_sink_dnp
+  - '2'
+- - vol_nxdn48
+  - '0'
+  - qtgui_time_sink_dnp
+  - '3'
+- - vol_dstar
+  - '0'
+  - qtgui_time_sink_dnp
+  - '4'
+- - vol_x2tdma
+  - '0'
+  - qtgui_time_sink_dnp
+  - '5'
+- - vol_provoice
+  - '0'
+  - qtgui_time_sink_dnp
+  - '6'
 metadata:
   file_format: 1

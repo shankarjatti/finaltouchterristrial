@@ -356,9 +356,9 @@ class securecom_module2_decoder(gr.top_block, Qt.QWidget):
         self.top_layout.addWidget(self._qtgui_time_sink_tetra_win)
         self.qtgui_time_sink_dnp = qtgui.time_sink_f(
             1024, #size
-            samp_rate, #samp_rate
-            'Audio Time Domain — DMR/NXDN/P25', #name
-            3, #number of inputs
+            48000, #samp_rate
+            'Decoded Audio — 7 DSD protocols (48 kHz)', #name
+            7, #number of inputs
             None # parent
         )
         self.qtgui_time_sink_dnp.set_update_time(0.10)
@@ -375,12 +375,12 @@ class securecom_module2_decoder(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_dnp.enable_stem_plot(False)
 
 
-        labels = ['DMR', 'NXDN', 'P25', '', '',
-            '', '', '', '', '']
+        labels = ['DMR446', 'NXDN96', 'P25 Ph1', 'NXDN48', 'D-STAR',
+            'X2-TDMA', 'ProVoice', '', '', '']
         widths = [1, 1, 1, 1, 1,
             1, 1, 1, 1, 1]
-        colors = ['blue', 'red', 'green', 'black', 'cyan',
-            'magenta', 'yellow', 'dark red', 'dark green', 'dark blue']
+        colors = ['blue', 'red', 'green', 'magenta', 'cyan',
+            'dark red', 'dark blue', 'blue', 'blue', 'blue']
         alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
             1.0, 1.0, 1.0, 1.0, 1.0]
         styles = [1, 1, 1, 1, 1,
@@ -389,7 +389,7 @@ class securecom_module2_decoder(gr.top_block, Qt.QWidget):
             -1, -1, -1, -1, -1]
 
 
-        for i in range(3):
+        for i in range(7):
             if len(labels[i]) == 0:
                 self.qtgui_time_sink_dnp.set_line_label(i, "Data {0}".format(i))
             else:
@@ -407,8 +407,8 @@ class securecom_module2_decoder(gr.top_block, Qt.QWidget):
             window.WIN_BLACKMAN_hARRIS, #wintype
             0, #fc
             samp_rate, #bw
-            'SecureCOM Live Spectrum Activity (Blue=DMR, Red=NXDN, Green=P25)', #name
-            4,
+            'SecureCOM Live Spectrum — 8 bands (colours match the console)', #name
+            8,
             None # parent
         )
         self.qtgui_freq_sink_combined.set_update_time(0.10)
@@ -424,16 +424,16 @@ class securecom_module2_decoder(gr.top_block, Qt.QWidget):
 
 
 
-        labels = ['DMR446 (Port 7001)', 'NXDN96 (Port 7002)', 'P25 Phase 1 (Port 7003)', 'TETRA (Port 7004)', '',
-            '', '', '', '', '']
+        labels = ['DMR446 (7001)', 'NXDN96 (7002)', 'P25 Ph1 (7003)', 'TETRA (7004)', 'NXDN48 (7005)',
+            'D-STAR (7006)', 'X2-TDMA (7007)', 'ProVoice (7008)', '', '']
         widths = [2, 2, 2, 1, 1,
             1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
-            "magenta", "yellow", "dark red", "dark green", "dark blue"]
+        colors = ["blue", "red", "green", "black", "magenta",
+            "cyan", "dark red", "dark blue", "blue", "blue"]
         alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
             1.0, 1.0, 1.0, 1.0, 1.0]
 
-        for i in range(4):
+        for i in range(8):
             if len(labels[i]) == 0:
                 self.qtgui_freq_sink_combined.set_line_label(i, "Data {0}".format(i))
             else:
@@ -846,129 +846,133 @@ class securecom_module2_decoder(gr.top_block, Qt.QWidget):
         self.connect((self.network_tcp_source_dmr, 0), (self.pfb_channelizer_ccf_0, 0))
         self.connect((self.network_tcp_source_dmr, 0), (self.qtgui_freq_sink_combined, 0))
         self.connect((self.network_tcp_source_dstar, 0), (self.pfb_channelizer_dstar, 0))
+        self.connect((self.network_tcp_source_dstar, 0), (self.qtgui_freq_sink_combined, 5))
         self.connect((self.network_tcp_source_nxdn, 0), (self.pfb_channelizer_ccf_0_1, 0))
         self.connect((self.network_tcp_source_nxdn, 0), (self.qtgui_freq_sink_combined, 1))
         self.connect((self.network_tcp_source_nxdn48, 0), (self.pfb_channelizer_nxdn48, 0))
+        self.connect((self.network_tcp_source_nxdn48, 0), (self.qtgui_freq_sink_combined, 4))
         self.connect((self.network_tcp_source_p25, 0), (self.pfb_channelizer_ccf_0_0, 0))
         self.connect((self.network_tcp_source_p25, 0), (self.qtgui_freq_sink_combined, 2))
         self.connect((self.network_tcp_source_provoice, 0), (self.pfb_channelizer_provoice, 0))
+        self.connect((self.network_tcp_source_provoice, 0), (self.qtgui_freq_sink_combined, 7))
         self.connect((self.network_tcp_source_tetra, 0), (self.freq_xlating_fir_filter_xxx_0, 0))
         self.connect((self.network_tcp_source_tetra, 0), (self.qtgui_freq_sink_combined, 3))
         self.connect((self.network_tcp_source_x2tdma, 0), (self.pfb_channelizer_x2tdma, 0))
-        self.connect((self.pfb_channelizer_ccf_0, 9), (self.iq_sum_dmr, 9))
-        self.connect((self.pfb_channelizer_ccf_0, 15), (self.iq_sum_dmr, 15))
-        self.connect((self.pfb_channelizer_ccf_0, 1), (self.iq_sum_dmr, 1))
-        self.connect((self.pfb_channelizer_ccf_0, 7), (self.iq_sum_dmr, 7))
+        self.connect((self.network_tcp_source_x2tdma, 0), (self.qtgui_freq_sink_combined, 6))
+        self.connect((self.pfb_channelizer_ccf_0, 3), (self.iq_sum_dmr, 3))
+        self.connect((self.pfb_channelizer_ccf_0, 11), (self.iq_sum_dmr, 11))
         self.connect((self.pfb_channelizer_ccf_0, 5), (self.iq_sum_dmr, 5))
         self.connect((self.pfb_channelizer_ccf_0, 0), (self.iq_sum_dmr, 0))
-        self.connect((self.pfb_channelizer_ccf_0, 3), (self.iq_sum_dmr, 3))
-        self.connect((self.pfb_channelizer_ccf_0, 2), (self.iq_sum_dmr, 2))
-        self.connect((self.pfb_channelizer_ccf_0, 8), (self.iq_sum_dmr, 8))
-        self.connect((self.pfb_channelizer_ccf_0, 11), (self.iq_sum_dmr, 11))
+        self.connect((self.pfb_channelizer_ccf_0, 1), (self.iq_sum_dmr, 1))
         self.connect((self.pfb_channelizer_ccf_0, 6), (self.iq_sum_dmr, 6))
-        self.connect((self.pfb_channelizer_ccf_0, 12), (self.iq_sum_dmr, 12))
-        self.connect((self.pfb_channelizer_ccf_0, 10), (self.iq_sum_dmr, 10))
         self.connect((self.pfb_channelizer_ccf_0, 4), (self.iq_sum_dmr, 4))
         self.connect((self.pfb_channelizer_ccf_0, 13), (self.iq_sum_dmr, 13))
+        self.connect((self.pfb_channelizer_ccf_0, 12), (self.iq_sum_dmr, 12))
+        self.connect((self.pfb_channelizer_ccf_0, 9), (self.iq_sum_dmr, 9))
+        self.connect((self.pfb_channelizer_ccf_0, 7), (self.iq_sum_dmr, 7))
         self.connect((self.pfb_channelizer_ccf_0, 14), (self.iq_sum_dmr, 14))
+        self.connect((self.pfb_channelizer_ccf_0, 15), (self.iq_sum_dmr, 15))
+        self.connect((self.pfb_channelizer_ccf_0, 10), (self.iq_sum_dmr, 10))
+        self.connect((self.pfb_channelizer_ccf_0, 2), (self.iq_sum_dmr, 2))
+        self.connect((self.pfb_channelizer_ccf_0, 8), (self.iq_sum_dmr, 8))
+        self.connect((self.pfb_channelizer_ccf_0_0, 4), (self.iq_sum_p25, 4))
+        self.connect((self.pfb_channelizer_ccf_0_0, 9), (self.iq_sum_p25, 9))
+        self.connect((self.pfb_channelizer_ccf_0_0, 2), (self.iq_sum_p25, 2))
+        self.connect((self.pfb_channelizer_ccf_0_0, 8), (self.iq_sum_p25, 8))
+        self.connect((self.pfb_channelizer_ccf_0_0, 0), (self.iq_sum_p25, 0))
+        self.connect((self.pfb_channelizer_ccf_0_0, 7), (self.iq_sum_p25, 7))
         self.connect((self.pfb_channelizer_ccf_0_0, 5), (self.iq_sum_p25, 5))
         self.connect((self.pfb_channelizer_ccf_0_0, 3), (self.iq_sum_p25, 3))
         self.connect((self.pfb_channelizer_ccf_0_0, 6), (self.iq_sum_p25, 6))
-        self.connect((self.pfb_channelizer_ccf_0_0, 9), (self.iq_sum_p25, 9))
-        self.connect((self.pfb_channelizer_ccf_0_0, 4), (self.iq_sum_p25, 4))
-        self.connect((self.pfb_channelizer_ccf_0_0, 7), (self.iq_sum_p25, 7))
-        self.connect((self.pfb_channelizer_ccf_0_0, 0), (self.iq_sum_p25, 0))
         self.connect((self.pfb_channelizer_ccf_0_0, 1), (self.iq_sum_p25, 1))
-        self.connect((self.pfb_channelizer_ccf_0_0, 8), (self.iq_sum_p25, 8))
-        self.connect((self.pfb_channelizer_ccf_0_0, 2), (self.iq_sum_p25, 2))
-        self.connect((self.pfb_channelizer_ccf_0_1, 8), (self.iq_sum_nxdn, 8))
-        self.connect((self.pfb_channelizer_ccf_0_1, 0), (self.iq_sum_nxdn, 0))
-        self.connect((self.pfb_channelizer_ccf_0_1, 3), (self.iq_sum_nxdn, 3))
-        self.connect((self.pfb_channelizer_ccf_0_1, 15), (self.iq_sum_nxdn, 15))
-        self.connect((self.pfb_channelizer_ccf_0_1, 13), (self.iq_sum_nxdn, 13))
-        self.connect((self.pfb_channelizer_ccf_0_1, 9), (self.iq_sum_nxdn, 9))
-        self.connect((self.pfb_channelizer_ccf_0_1, 5), (self.iq_sum_nxdn, 5))
-        self.connect((self.pfb_channelizer_ccf_0_1, 12), (self.iq_sum_nxdn, 12))
-        self.connect((self.pfb_channelizer_ccf_0_1, 1), (self.iq_sum_nxdn, 1))
-        self.connect((self.pfb_channelizer_ccf_0_1, 4), (self.iq_sum_nxdn, 4))
-        self.connect((self.pfb_channelizer_ccf_0_1, 6), (self.iq_sum_nxdn, 6))
-        self.connect((self.pfb_channelizer_ccf_0_1, 7), (self.iq_sum_nxdn, 7))
-        self.connect((self.pfb_channelizer_ccf_0_1, 11), (self.iq_sum_nxdn, 11))
-        self.connect((self.pfb_channelizer_ccf_0_1, 2), (self.iq_sum_nxdn, 2))
-        self.connect((self.pfb_channelizer_ccf_0_1, 14), (self.iq_sum_nxdn, 14))
         self.connect((self.pfb_channelizer_ccf_0_1, 10), (self.iq_sum_nxdn, 10))
-        self.connect((self.pfb_channelizer_dstar, 13), (self.iq_sum_dstar, 13))
+        self.connect((self.pfb_channelizer_ccf_0_1, 6), (self.iq_sum_nxdn, 6))
+        self.connect((self.pfb_channelizer_ccf_0_1, 14), (self.iq_sum_nxdn, 14))
+        self.connect((self.pfb_channelizer_ccf_0_1, 9), (self.iq_sum_nxdn, 9))
+        self.connect((self.pfb_channelizer_ccf_0_1, 1), (self.iq_sum_nxdn, 1))
+        self.connect((self.pfb_channelizer_ccf_0_1, 15), (self.iq_sum_nxdn, 15))
+        self.connect((self.pfb_channelizer_ccf_0_1, 3), (self.iq_sum_nxdn, 3))
+        self.connect((self.pfb_channelizer_ccf_0_1, 8), (self.iq_sum_nxdn, 8))
+        self.connect((self.pfb_channelizer_ccf_0_1, 11), (self.iq_sum_nxdn, 11))
+        self.connect((self.pfb_channelizer_ccf_0_1, 13), (self.iq_sum_nxdn, 13))
+        self.connect((self.pfb_channelizer_ccf_0_1, 4), (self.iq_sum_nxdn, 4))
+        self.connect((self.pfb_channelizer_ccf_0_1, 0), (self.iq_sum_nxdn, 0))
+        self.connect((self.pfb_channelizer_ccf_0_1, 12), (self.iq_sum_nxdn, 12))
+        self.connect((self.pfb_channelizer_ccf_0_1, 7), (self.iq_sum_nxdn, 7))
+        self.connect((self.pfb_channelizer_ccf_0_1, 2), (self.iq_sum_nxdn, 2))
+        self.connect((self.pfb_channelizer_ccf_0_1, 5), (self.iq_sum_nxdn, 5))
+        self.connect((self.pfb_channelizer_dstar, 8), (self.iq_sum_dstar, 8))
+        self.connect((self.pfb_channelizer_dstar, 12), (self.iq_sum_dstar, 12))
+        self.connect((self.pfb_channelizer_dstar, 1), (self.iq_sum_dstar, 1))
+        self.connect((self.pfb_channelizer_dstar, 15), (self.iq_sum_dstar, 15))
+        self.connect((self.pfb_channelizer_dstar, 3), (self.iq_sum_dstar, 3))
         self.connect((self.pfb_channelizer_dstar, 4), (self.iq_sum_dstar, 4))
         self.connect((self.pfb_channelizer_dstar, 14), (self.iq_sum_dstar, 14))
-        self.connect((self.pfb_channelizer_dstar, 15), (self.iq_sum_dstar, 15))
+        self.connect((self.pfb_channelizer_dstar, 10), (self.iq_sum_dstar, 10))
+        self.connect((self.pfb_channelizer_dstar, 7), (self.iq_sum_dstar, 7))
         self.connect((self.pfb_channelizer_dstar, 9), (self.iq_sum_dstar, 9))
         self.connect((self.pfb_channelizer_dstar, 6), (self.iq_sum_dstar, 6))
-        self.connect((self.pfb_channelizer_dstar, 7), (self.iq_sum_dstar, 7))
         self.connect((self.pfb_channelizer_dstar, 0), (self.iq_sum_dstar, 0))
-        self.connect((self.pfb_channelizer_dstar, 8), (self.iq_sum_dstar, 8))
-        self.connect((self.pfb_channelizer_dstar, 10), (self.iq_sum_dstar, 10))
         self.connect((self.pfb_channelizer_dstar, 5), (self.iq_sum_dstar, 5))
-        self.connect((self.pfb_channelizer_dstar, 11), (self.iq_sum_dstar, 11))
-        self.connect((self.pfb_channelizer_dstar, 12), (self.iq_sum_dstar, 12))
+        self.connect((self.pfb_channelizer_dstar, 13), (self.iq_sum_dstar, 13))
         self.connect((self.pfb_channelizer_dstar, 2), (self.iq_sum_dstar, 2))
-        self.connect((self.pfb_channelizer_dstar, 1), (self.iq_sum_dstar, 1))
-        self.connect((self.pfb_channelizer_dstar, 3), (self.iq_sum_dstar, 3))
+        self.connect((self.pfb_channelizer_dstar, 11), (self.iq_sum_dstar, 11))
+        self.connect((self.pfb_channelizer_nxdn48, 29), (self.iq_sum_nxdn48, 29))
+        self.connect((self.pfb_channelizer_nxdn48, 31), (self.iq_sum_nxdn48, 31))
+        self.connect((self.pfb_channelizer_nxdn48, 9), (self.iq_sum_nxdn48, 9))
+        self.connect((self.pfb_channelizer_nxdn48, 4), (self.iq_sum_nxdn48, 4))
+        self.connect((self.pfb_channelizer_nxdn48, 1), (self.iq_sum_nxdn48, 1))
+        self.connect((self.pfb_channelizer_nxdn48, 8), (self.iq_sum_nxdn48, 8))
+        self.connect((self.pfb_channelizer_nxdn48, 11), (self.iq_sum_nxdn48, 11))
+        self.connect((self.pfb_channelizer_nxdn48, 10), (self.iq_sum_nxdn48, 10))
+        self.connect((self.pfb_channelizer_nxdn48, 18), (self.iq_sum_nxdn48, 18))
+        self.connect((self.pfb_channelizer_nxdn48, 12), (self.iq_sum_nxdn48, 12))
+        self.connect((self.pfb_channelizer_nxdn48, 22), (self.iq_sum_nxdn48, 22))
+        self.connect((self.pfb_channelizer_nxdn48, 7), (self.iq_sum_nxdn48, 7))
+        self.connect((self.pfb_channelizer_nxdn48, 15), (self.iq_sum_nxdn48, 15))
+        self.connect((self.pfb_channelizer_nxdn48, 28), (self.iq_sum_nxdn48, 28))
+        self.connect((self.pfb_channelizer_nxdn48, 21), (self.iq_sum_nxdn48, 21))
+        self.connect((self.pfb_channelizer_nxdn48, 16), (self.iq_sum_nxdn48, 16))
+        self.connect((self.pfb_channelizer_nxdn48, 26), (self.iq_sum_nxdn48, 26))
+        self.connect((self.pfb_channelizer_nxdn48, 0), (self.iq_sum_nxdn48, 0))
+        self.connect((self.pfb_channelizer_nxdn48, 14), (self.iq_sum_nxdn48, 14))
+        self.connect((self.pfb_channelizer_nxdn48, 3), (self.iq_sum_nxdn48, 3))
+        self.connect((self.pfb_channelizer_nxdn48, 30), (self.iq_sum_nxdn48, 30))
         self.connect((self.pfb_channelizer_nxdn48, 6), (self.iq_sum_nxdn48, 6))
+        self.connect((self.pfb_channelizer_nxdn48, 17), (self.iq_sum_nxdn48, 17))
+        self.connect((self.pfb_channelizer_nxdn48, 24), (self.iq_sum_nxdn48, 24))
+        self.connect((self.pfb_channelizer_nxdn48, 13), (self.iq_sum_nxdn48, 13))
         self.connect((self.pfb_channelizer_nxdn48, 2), (self.iq_sum_nxdn48, 2))
         self.connect((self.pfb_channelizer_nxdn48, 25), (self.iq_sum_nxdn48, 25))
-        self.connect((self.pfb_channelizer_nxdn48, 15), (self.iq_sum_nxdn48, 15))
-        self.connect((self.pfb_channelizer_nxdn48, 22), (self.iq_sum_nxdn48, 22))
-        self.connect((self.pfb_channelizer_nxdn48, 24), (self.iq_sum_nxdn48, 24))
-        self.connect((self.pfb_channelizer_nxdn48, 10), (self.iq_sum_nxdn48, 10))
-        self.connect((self.pfb_channelizer_nxdn48, 4), (self.iq_sum_nxdn48, 4))
-        self.connect((self.pfb_channelizer_nxdn48, 14), (self.iq_sum_nxdn48, 14))
-        self.connect((self.pfb_channelizer_nxdn48, 8), (self.iq_sum_nxdn48, 8))
-        self.connect((self.pfb_channelizer_nxdn48, 7), (self.iq_sum_nxdn48, 7))
         self.connect((self.pfb_channelizer_nxdn48, 19), (self.iq_sum_nxdn48, 19))
-        self.connect((self.pfb_channelizer_nxdn48, 27), (self.iq_sum_nxdn48, 27))
-        self.connect((self.pfb_channelizer_nxdn48, 26), (self.iq_sum_nxdn48, 26))
-        self.connect((self.pfb_channelizer_nxdn48, 11), (self.iq_sum_nxdn48, 11))
-        self.connect((self.pfb_channelizer_nxdn48, 1), (self.iq_sum_nxdn48, 1))
-        self.connect((self.pfb_channelizer_nxdn48, 23), (self.iq_sum_nxdn48, 23))
-        self.connect((self.pfb_channelizer_nxdn48, 17), (self.iq_sum_nxdn48, 17))
-        self.connect((self.pfb_channelizer_nxdn48, 30), (self.iq_sum_nxdn48, 30))
-        self.connect((self.pfb_channelizer_nxdn48, 16), (self.iq_sum_nxdn48, 16))
         self.connect((self.pfb_channelizer_nxdn48, 20), (self.iq_sum_nxdn48, 20))
-        self.connect((self.pfb_channelizer_nxdn48, 31), (self.iq_sum_nxdn48, 31))
-        self.connect((self.pfb_channelizer_nxdn48, 3), (self.iq_sum_nxdn48, 3))
+        self.connect((self.pfb_channelizer_nxdn48, 27), (self.iq_sum_nxdn48, 27))
+        self.connect((self.pfb_channelizer_nxdn48, 23), (self.iq_sum_nxdn48, 23))
         self.connect((self.pfb_channelizer_nxdn48, 5), (self.iq_sum_nxdn48, 5))
-        self.connect((self.pfb_channelizer_nxdn48, 9), (self.iq_sum_nxdn48, 9))
-        self.connect((self.pfb_channelizer_nxdn48, 18), (self.iq_sum_nxdn48, 18))
-        self.connect((self.pfb_channelizer_nxdn48, 13), (self.iq_sum_nxdn48, 13))
-        self.connect((self.pfb_channelizer_nxdn48, 0), (self.iq_sum_nxdn48, 0))
-        self.connect((self.pfb_channelizer_nxdn48, 12), (self.iq_sum_nxdn48, 12))
-        self.connect((self.pfb_channelizer_nxdn48, 21), (self.iq_sum_nxdn48, 21))
-        self.connect((self.pfb_channelizer_nxdn48, 28), (self.iq_sum_nxdn48, 28))
-        self.connect((self.pfb_channelizer_nxdn48, 29), (self.iq_sum_nxdn48, 29))
-        self.connect((self.pfb_channelizer_provoice, 7), (self.iq_sum_provoice, 7))
+        self.connect((self.pfb_channelizer_provoice, 4), (self.iq_sum_provoice, 4))
         self.connect((self.pfb_channelizer_provoice, 0), (self.iq_sum_provoice, 0))
         self.connect((self.pfb_channelizer_provoice, 1), (self.iq_sum_provoice, 1))
-        self.connect((self.pfb_channelizer_provoice, 6), (self.iq_sum_provoice, 6))
-        self.connect((self.pfb_channelizer_provoice, 4), (self.iq_sum_provoice, 4))
-        self.connect((self.pfb_channelizer_provoice, 2), (self.iq_sum_provoice, 2))
-        self.connect((self.pfb_channelizer_provoice, 3), (self.iq_sum_provoice, 3))
         self.connect((self.pfb_channelizer_provoice, 5), (self.iq_sum_provoice, 5))
+        self.connect((self.pfb_channelizer_provoice, 7), (self.iq_sum_provoice, 7))
+        self.connect((self.pfb_channelizer_provoice, 3), (self.iq_sum_provoice, 3))
+        self.connect((self.pfb_channelizer_provoice, 6), (self.iq_sum_provoice, 6))
+        self.connect((self.pfb_channelizer_provoice, 2), (self.iq_sum_provoice, 2))
+        self.connect((self.pfb_channelizer_x2tdma, 1), (self.iq_sum_x2tdma, 1))
         self.connect((self.pfb_channelizer_x2tdma, 10), (self.iq_sum_x2tdma, 10))
+        self.connect((self.pfb_channelizer_x2tdma, 6), (self.iq_sum_x2tdma, 6))
+        self.connect((self.pfb_channelizer_x2tdma, 8), (self.iq_sum_x2tdma, 8))
         self.connect((self.pfb_channelizer_x2tdma, 9), (self.iq_sum_x2tdma, 9))
+        self.connect((self.pfb_channelizer_x2tdma, 15), (self.iq_sum_x2tdma, 15))
+        self.connect((self.pfb_channelizer_x2tdma, 12), (self.iq_sum_x2tdma, 12))
         self.connect((self.pfb_channelizer_x2tdma, 3), (self.iq_sum_x2tdma, 3))
         self.connect((self.pfb_channelizer_x2tdma, 7), (self.iq_sum_x2tdma, 7))
-        self.connect((self.pfb_channelizer_x2tdma, 5), (self.iq_sum_x2tdma, 5))
-        self.connect((self.pfb_channelizer_x2tdma, 12), (self.iq_sum_x2tdma, 12))
-        self.connect((self.pfb_channelizer_x2tdma, 0), (self.iq_sum_x2tdma, 0))
-        self.connect((self.pfb_channelizer_x2tdma, 6), (self.iq_sum_x2tdma, 6))
+        self.connect((self.pfb_channelizer_x2tdma, 14), (self.iq_sum_x2tdma, 14))
         self.connect((self.pfb_channelizer_x2tdma, 2), (self.iq_sum_x2tdma, 2))
         self.connect((self.pfb_channelizer_x2tdma, 13), (self.iq_sum_x2tdma, 13))
-        self.connect((self.pfb_channelizer_x2tdma, 15), (self.iq_sum_x2tdma, 15))
-        self.connect((self.pfb_channelizer_x2tdma, 14), (self.iq_sum_x2tdma, 14))
         self.connect((self.pfb_channelizer_x2tdma, 4), (self.iq_sum_x2tdma, 4))
-        self.connect((self.pfb_channelizer_x2tdma, 1), (self.iq_sum_x2tdma, 1))
         self.connect((self.pfb_channelizer_x2tdma, 11), (self.iq_sum_x2tdma, 11))
-        self.connect((self.pfb_channelizer_x2tdma, 8), (self.iq_sum_x2tdma, 8))
+        self.connect((self.pfb_channelizer_x2tdma, 0), (self.iq_sum_x2tdma, 0))
+        self.connect((self.pfb_channelizer_x2tdma, 5), (self.iq_sum_x2tdma, 5))
         self.connect((self.resamp_iq_dmr, 0), (self.lpf_dmr, 0))
         self.connect((self.resamp_iq_dstar, 0), (self.lpf_dstar, 0))
         self.connect((self.resamp_iq_nxdn, 0), (self.lpf_nxdn, 0))
@@ -983,10 +987,10 @@ class securecom_module2_decoder(gr.top_block, Qt.QWidget):
         self.connect((self.squelch_p25, 0), (self.demod_p25, 0))
         self.connect((self.squelch_provoice, 0), (self.demod_provoice, 0))
         self.connect((self.squelch_x2tdma, 0), (self.demod_x2tdma, 0))
-        self.connect((self.tetra_decoder_block_0, 2), (self.audio_mix_tetra, 2))
         self.connect((self.tetra_decoder_block_0, 3), (self.audio_mix_tetra, 3))
-        self.connect((self.tetra_decoder_block_0, 1), (self.audio_mix_tetra, 1))
         self.connect((self.tetra_decoder_block_0, 0), (self.audio_mix_tetra, 0))
+        self.connect((self.tetra_decoder_block_0, 2), (self.audio_mix_tetra, 2))
+        self.connect((self.tetra_decoder_block_0, 1), (self.audio_mix_tetra, 1))
         self.connect((self.tetra_decoder_block_0, 0), (self.audio_sink_tn1, 0))
         self.connect((self.tetra_decoder_block_0, 1), (self.audio_sink_tn2, 0))
         self.connect((self.tetra_decoder_block_0, 2), (self.audio_sink_tn3, 0))
@@ -996,18 +1000,22 @@ class securecom_module2_decoder(gr.top_block, Qt.QWidget):
         self.connect((self.vol_dmr, 0), (self.qtgui_time_sink_dnp, 0))
         self.connect((self.vol_dstar, 0), (self.audio_sink_dstar, 0))
         self.connect((self.vol_dstar, 0), (self.bridge_zmq_dstar, 0))
+        self.connect((self.vol_dstar, 0), (self.qtgui_time_sink_dnp, 4))
         self.connect((self.vol_nxdn, 0), (self.audio_sink_nxdn, 0))
         self.connect((self.vol_nxdn, 0), (self.bridge_zmq_nxdn, 0))
         self.connect((self.vol_nxdn, 0), (self.qtgui_time_sink_dnp, 1))
         self.connect((self.vol_nxdn48, 0), (self.audio_sink_nxdn48, 0))
         self.connect((self.vol_nxdn48, 0), (self.bridge_zmq_nxdn48, 0))
+        self.connect((self.vol_nxdn48, 0), (self.qtgui_time_sink_dnp, 3))
         self.connect((self.vol_p25, 0), (self.audio_sink_p25, 0))
         self.connect((self.vol_p25, 0), (self.bridge_zmq_p25, 0))
         self.connect((self.vol_p25, 0), (self.qtgui_time_sink_dnp, 2))
         self.connect((self.vol_provoice, 0), (self.audio_sink_provoice, 0))
         self.connect((self.vol_provoice, 0), (self.bridge_zmq_provoice, 0))
+        self.connect((self.vol_provoice, 0), (self.qtgui_time_sink_dnp, 6))
         self.connect((self.vol_x2tdma, 0), (self.audio_sink_x2tdma, 0))
         self.connect((self.vol_x2tdma, 0), (self.bridge_zmq_x2tdma, 0))
+        self.connect((self.vol_x2tdma, 0), (self.qtgui_time_sink_dnp, 5))
 
 
     def closeEvent(self, event):
@@ -1153,7 +1161,6 @@ class securecom_module2_decoder(gr.top_block, Qt.QWidget):
         self.pfb_channelizer_ccf_0_0.set_taps(firdes.low_pass(10.0, self.samp_rate, (self.samp_rate/10.0)/2.0, 1000))
         self.pfb_channelizer_ccf_0_1.set_taps(firdes.low_pass(16.0, self.samp_rate, (self.samp_rate/16.0)/2.0, 1000))
         self.qtgui_freq_sink_combined.set_frequency_range(0, self.samp_rate)
-        self.qtgui_time_sink_dnp.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_tetra.set_samp_rate(self.samp_rate)
         self.pfb_channelizer_nxdn48.set_taps(firdes.low_pass(32.0, self.samp_rate, (self.samp_rate/32.0)/2.0, 1000))
         self.pfb_channelizer_dstar.set_taps(firdes.low_pass(16.0, self.samp_rate, (self.samp_rate/16.0)/2.0, 1000))
