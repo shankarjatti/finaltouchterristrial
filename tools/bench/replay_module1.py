@@ -25,7 +25,8 @@ import numpy as np
 
 FS = 200000
 TICK = 2000            # 10 ms per send
-BANDS = [('dmr', 7001), ('nxdn', 7002), ('p25', 7003), ('tetra', 7004)]
+BANDS = [('dmr', 7001), ('nxdn', 7002), ('p25', 7003), ('tetra', 7004),
+         ('nxdn48', 7005), ('dstar', 7006), ('x2tdma', 7007), ('provoice', 7008)]
 
 
 def load(path, swap_iq=False):

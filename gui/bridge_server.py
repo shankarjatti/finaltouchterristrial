@@ -6,7 +6,7 @@ What this actually does (all real, no simulation):
   - Starts/stops the real securecom_module1 binary as a subprocess.
   - Parses its real stdout (RX gain, LO lock, cycle #, dwell/gap events,
     client connect/disconnect) and forwards it as console log lines.
-  - Connects to Module 1's 4 TCP data ports itself (127.0.0.1:7001-7004),
+  - Connects to Module 1's 8 TCP data ports itself (127.0.0.1:7001-7008),
     exactly like Module 2 does, and reads the real complex64 IQ stream.
     Computes a real FFT per band and forwards spectrum/waterfall/time data.
   - "Active" band detection is derived from real energy in the IQ stream
@@ -54,6 +54,11 @@ AUDIO_TAPS = {
     'nxdn': {'addr': 'tcp://127.0.0.1:9102', 'rate': 48000},
     'p25':  {'addr': 'tcp://127.0.0.1:9103', 'rate': 48000},
     'tetra':{'addr': 'tcp://127.0.0.1:9104', 'rate': 8000},
+    # step 2 protocols (tools/add_protocols.py)
+    'nxdn48':   {'addr': 'tcp://127.0.0.1:9106', 'rate': 48000},
+    'dstar':    {'addr': 'tcp://127.0.0.1:9107', 'rate': 48000},
+    'x2tdma':   {'addr': 'tcp://127.0.0.1:9108', 'rate': 48000},
+    'provoice': {'addr': 'tcp://127.0.0.1:9109', 'rate': 48000},
 }
 TETRA_EVENTS_ADDR = 'tcp://127.0.0.1:9105'
 REC_ON_DBFS = -38.0   # audio RMS above this = decoded voice actually present
@@ -72,6 +77,11 @@ BANDS = [
     {'key': 'nxdn',  'name': 'NXDN96',  'freq': 451.09375, 'port': 7002},
     {'key': 'p25',   'name': 'P25-Ph1', 'freq': 450.09375, 'port': 7003},
     {'key': 'tetra', 'name': 'TETRA',   'freq': 420.00000, 'port': 7004},
+    # step 2: names must match Module 1's band names (its DWELL log lines are parsed)
+    {'key': 'nxdn48',   'name': 'NXDN48',   'freq': 451.00625, 'port': 7005},
+    {'key': 'dstar',    'name': 'DSTAR',    'freq': 439.41250, 'port': 7006},
+    {'key': 'x2tdma',   'name': 'X2TDMA',   'freq': 452.00000, 'port': 7007},
+    {'key': 'provoice', 'name': 'PROVOICE', 'freq': 453.00000, 'port': 7008},
 ]
 SAMP_RATE = 200_000.0
 FFT_N = 512
@@ -88,10 +98,11 @@ NOISE_MIN_FRAMES = 50       # below this much history, fall back to ACTIVE_THRES
 # DMR 16, NXDN 16, P25 10. TETRA is not channelized (TDMA -- one carrier, 4
 # timeslots), so it gets 1 "channel" here and its slot detail comes from the
 # tetra_decoder_block call_log instead.
-CHANNELS_PER_BAND = {'dmr': 16, 'nxdn': 16, 'p25': 10, 'tetra': 1}
+CHANNELS_PER_BAND = {'dmr': 16, 'nxdn': 16, 'p25': 10, 'tetra': 1,
+                     'nxdn48': 32, 'dstar': 16, 'x2tdma': 16, 'provoice': 8}   # 6.25 / 12.5 / 12.5 / 25 kHz
 CHAN_SNR_DB = 8.0            # channel counts as occupied this far above band median
-BAND_RF_ACTIVE = {'dmr': False, 'nxdn': False, 'p25': False, 'tetra': False}
-BAND_RF_LAST = {'dmr': 0.0, 'nxdn': 0.0, 'p25': 0.0, 'tetra': 0.0}
+BAND_RF_ACTIVE = {b['key']: False for b in BANDS}
+BAND_RF_LAST = {b['key']: 0.0 for b in BANDS}
 BAND_LEVEL_HIST = {k: collections.deque(maxlen=NOISE_WIN) for k in BAND_RF_ACTIVE}
 BAND_FLOOR_DB = {k: None for k in BAND_RF_ACTIVE}
 
@@ -281,6 +292,8 @@ async def read_module1_stdout(loop):
 ENV_VAR_BY_BAND = {
     'dmr': 'SECURECOM_DMR_DWELL_SEC', 'nxdn': 'SECURECOM_NXDN_DWELL_SEC',
     'p25': 'SECURECOM_P25_DWELL_SEC', 'tetra': 'SECURECOM_TETRA_DWELL_SEC',
+    'nxdn48': 'SECURECOM_NXDN48_DWELL_SEC', 'dstar': 'SECURECOM_DSTAR_DWELL_SEC',
+    'x2tdma': 'SECURECOM_X2TDMA_DWELL_SEC', 'provoice': 'SECURECOM_PROVOICE_DWELL_SEC',
 }
 # Module 1 has one shared GAP_SEC compiled in (module1/src/burst_controller.h),
 # not one per band and not env-overridable -- so the schedule tab's gap column
@@ -518,10 +531,8 @@ async def start_module2():
     await broadcast({'type': 'decoder_status', 'running': True})
     loop = asyncio.get_event_loop()
     spawn(read_module2_stdout(loop))
-    spawn(audio_tap_reader('dmr'))
-    spawn(audio_tap_reader('nxdn'))
-    spawn(audio_tap_reader('p25'))
-    spawn(audio_tap_reader('tetra'))
+    for band in AUDIO_TAPS:
+        spawn(audio_tap_reader(band))
     spawn(tetra_event_reader())
 
 

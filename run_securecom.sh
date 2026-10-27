@@ -24,6 +24,7 @@
 #  Usage:
 #     ./run_securecom.sh                        # defaults, opens browser
 #     ./run_securecom.sh --dwell-dmr 15         # 15 s DMR dwell
+#     ./run_securecom.sh --dwell-nxdn48 10      # also --dwell-nxdn/-p25/-tetra/-dstar/-x2tdma/-provoice
 #     ./run_securecom.sh --gain 30              # RX gain 30 dB
 #     ./run_securecom.sh --no-browser           # headless / remote X
 #     ./run_securecom.sh --stop                 # shut everything down, exit
@@ -43,6 +44,7 @@ CONSOLE_URL="http://127.0.0.1:$HTTP_PORT/securecom_gui.html"
 LOG_DIR="${TMPDIR:-/tmp}/securecom_v1"
 
 DWELL_DMR=""; DWELL_NXDN=""; DWELL_P25=""; DWELL_TETRA=""
+DWELL_NXDN48=""; DWELL_DSTAR=""; DWELL_X2TDMA=""; DWELL_PROVOICE=""
 RX_GAIN=""; OPEN_BROWSER=1; STOP_ONLY=0
 
 if [ -t 1 ]; then
@@ -62,6 +64,10 @@ while [ $# -gt 0 ]; do
     --dwell-nxdn)  DWELL_NXDN="${2:?}";  shift 2;;
     --dwell-p25)   DWELL_P25="${2:?}";   shift 2;;
     --dwell-tetra) DWELL_TETRA="${2:?}"; shift 2;;
+    --dwell-nxdn48)   DWELL_NXDN48="${2:?}";   shift 2;;
+    --dwell-dstar)    DWELL_DSTAR="${2:?}";    shift 2;;
+    --dwell-x2tdma)   DWELL_X2TDMA="${2:?}";   shift 2;;
+    --dwell-provoice) DWELL_PROVOICE="${2:?}"; shift 2;;
     --gain)        RX_GAIN="${2:?}";     shift 2;;
     --no-browser)  OPEN_BROWSER=0;       shift;;
     --stop)        STOP_ONLY=1;          shift;;
@@ -149,7 +155,7 @@ ok "python deps present (numpy, websockets, pyzmq, pmt, dsd)"
 # ---------------------------------------------------------------- 2. cleanup
 step 2 "Clearing stale processes and ports"
 kill_stack
-for p in 8787 "$HTTP_PORT" 7001 7002 7003 7004 9101 9102 9103 9104 9105; do
+for p in 8787 "$HTTP_PORT" 7001 7002 7003 7004 7005 7006 7007 7008 9101 9102 9103 9104 9105 9106 9107 9108 9109; do
   port_busy "$p" && warn "port $p still busy (something outside this script owns it)"
 done
 ok "ports clear"
@@ -203,6 +209,10 @@ step 4 "Bridge (process control + real IQ/audio -> WebSocket)"
 [ -n "$DWELL_NXDN" ]  && export SECURECOM_NXDN_DWELL_SEC="$DWELL_NXDN"
 [ -n "$DWELL_P25" ]   && export SECURECOM_P25_DWELL_SEC="$DWELL_P25"
 [ -n "$DWELL_TETRA" ] && export SECURECOM_TETRA_DWELL_SEC="$DWELL_TETRA"
+[ -n "$DWELL_NXDN48" ]   && export SECURECOM_NXDN48_DWELL_SEC="$DWELL_NXDN48"
+[ -n "$DWELL_DSTAR" ]    && export SECURECOM_DSTAR_DWELL_SEC="$DWELL_DSTAR"
+[ -n "$DWELL_X2TDMA" ]   && export SECURECOM_X2TDMA_DWELL_SEC="$DWELL_X2TDMA"
+[ -n "$DWELL_PROVOICE" ] && export SECURECOM_PROVOICE_DWELL_SEC="$DWELL_PROVOICE"
 [ -n "$RX_GAIN" ]     && export SECURECOM_RX_GAIN_DB="$RX_GAIN"
 ( cd "$GUI_DIR" && setsid nohup python3 -u bridge_server.py >"$LOG_DIR/bridge.log" 2>&1 </dev/null & )
 wait_for_port 8787 15 "bridge" || { tail -20 "$LOG_DIR/bridge.log"; die "bridge did not start — see $LOG_DIR/bridge.log"; }
@@ -215,33 +225,34 @@ info "serve over http:// — opening the .html as file:// breaks the WebSocket a
 
 # ---------------------------------------------------------------- 6. hardware
 step 6 "Hardware: securecom_module1 (tuning + burst scheduling)"
-for kv in "DMR:$DWELL_DMR" "NXDN:$DWELL_NXDN" "P25:$DWELL_P25" "TETRA:$DWELL_TETRA"; do
+for kv in "DMR:$DWELL_DMR" "NXDN:$DWELL_NXDN" "P25:$DWELL_P25" "TETRA:$DWELL_TETRA" \
+          "NXDN48:$DWELL_NXDN48" "DSTAR:$DWELL_DSTAR" "X2TDMA:$DWELL_X2TDMA" "PROVOICE:$DWELL_PROVOICE"; do
   n="${kv%%:*}"; v="${kv#*:}"; [ -n "$v" ] && ok "dwell $n = ${v}s"
 done
 [ -n "$RX_GAIN" ] && ok "RX gain = ${RX_GAIN} dB"
 
 ws_send '{"cmd":"start"}' || die "bridge refused start (is it still up? $LOG_DIR/bridge.log)"
 for i in $(seq 1 40); do
-  [ "$(count_ports '0.0.0.0:700[1-4] ')" -ge 4 ] && break
+  [ "$(count_ports '0.0.0.0:700[1-8] ')" -ge 8 ] && break
   sleep 0.5
 done
-IQ_N="$(count_ports '0.0.0.0:700[1-4] ')"
-[ "$IQ_N" -ge 4 ] || { tail -20 "$LOG_DIR/bridge.log"; die "only $IQ_N/4 IQ ports open — module1 did not come up"; }
-ok "module1 running, 4/4 IQ ports open (7001-7004)"
+IQ_N="$(count_ports '0.0.0.0:700[1-8] ')"
+[ "$IQ_N" -ge 8 ] || { tail -20 "$LOG_DIR/bridge.log"; die "only $IQ_N/8 IQ ports open — module1 did not come up"; }
+ok "module1 running, 8/8 IQ ports open (7001-7008)"
 
 # ---------------------------------------------------------------- 7. decoder
 step 7 "Decoder: allinone.py (GNU Radio)"
 ws_send '{"cmd":"start_decoder"}' || die "bridge refused start_decoder"
-info "GNU Radio builds the DMR/NXDN/P25 chains + TETRA — this takes a few seconds"
+info "GNU Radio builds 7 DSD chains (DMR, NXDN96, P25, NXDN48, D-STAR, X2-TDMA, ProVoice) + TETRA"
 for i in $(seq 1 60); do
-  [ "$(count_ports '127.0.0.1:910[1-5] ')" -ge 5 ] && break
+  [ "$(count_ports '127.0.0.1:910[1-9] ')" -ge 9 ] && break
   sleep 0.5
 done
-ZMQ_N="$(count_ports '127.0.0.1:910[1-5] ')"
-if [ "$ZMQ_N" -ge 5 ]; then
-  ok "decoder running, 5/5 audio+event taps bound (9101-9105)"
+ZMQ_N="$(count_ports '127.0.0.1:910[1-9] ')"
+if [ "$ZMQ_N" -ge 9 ]; then
+  ok "decoder running, 9/9 audio+event taps bound (9101-9109)"
 else
-  warn "only $ZMQ_N/5 ZMQ taps bound — audio/recording may not work"
+  warn "only $ZMQ_N/9 ZMQ taps bound — audio/recording may not work"
   warn "check $LOG_DIR/bridge.log; usually a stale allinone.py still holds a port"
 fi
 

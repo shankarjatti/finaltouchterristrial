@@ -41,7 +41,8 @@ static double env_or(const char* name, double def)
 //  different window via env var without touching the others' share of the
 //  cycle. DMR is under active live-radio test, so it gets the long window;
 //  NXDN/P25/TETRA get a short one just to keep their chains alive/exercised.
-//  SECURECOM_{DMR,NXDN,P25,TETRA}_DWELL_SEC override individually without a
+//  SECURECOM_<BAND>_DWELL_SEC (DMR, NXDN, P25, TETRA, NXDN48, DSTAR, X2TDMA,
+//  PROVOICE) override individually without a
 //  rebuild. TETRA center freq (420.0 MHz) matches the SecureCOM config sheet's
 //  Terrestrial Radio Decoder row — see module2 for why it can't reuse the
 //  DMR/NXDN/P25 decode chain as-is.
@@ -56,6 +57,12 @@ static const std::vector<BandConfig> BANDS = {
     { "NXDN96",  451.09375e6,  7002, env_or("SECURECOM_NXDN_DWELL_SEC",  1.0) },
     { "P25-Ph1", 450.09375e6,  7003, env_or("SECURECOM_P25_DWELL_SEC",   1.0) },
     { "TETRA",   420.00000e6,  7004, env_or("SECURECOM_TETRA_DWELL_SEC", 1.0) },
+    // Step 2 bands. Frequencies are placeholders (same as the bench tree) until
+    // measured on real signals; each band is still a 200 kHz window.
+    { "NXDN48",   451.00625e6, 7005, env_or("SECURECOM_NXDN48_DWELL_SEC",   1.0) },
+    { "DSTAR",    439.41250e6, 7006, env_or("SECURECOM_DSTAR_DWELL_SEC",    1.0) },
+    { "X2TDMA",   452.00000e6, 7007, env_or("SECURECOM_X2TDMA_DWELL_SEC",   1.0) },
+    { "PROVOICE", 453.00000e6, 7008, env_or("SECURECOM_PROVOICE_DWELL_SEC", 1.0) },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -143,7 +150,7 @@ int main(int argc, char* argv[])
     std::cout << "[MAIN] ╚  Waiting for Module 2 to connect...\n\n";
 
     // Wait until all 3 Module-2 clients have connected before starting USRP
-    std::cout << "[MAIN] Waiting for all 3 TCP clients (Module 2) to connect...\n";
+    std::cout << "[MAIN] Waiting for a TCP client on every band port (Module 2) to connect...\n";
     while (!g_stop) {
         int connected = 0;
         for (auto& s : servers)

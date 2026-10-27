@@ -2,7 +2,8 @@
 """Record one protocol's decoded-audio ZMQ tap and report how much voice came out.
 
   python3 tools/bench/tap_audio.py 9102 36       # NXDN tap, 36 s
-Taps: 9101 DMR, 9102 NXDN, 9103 P25 (float32, 48 kHz); 9104 TETRA (float32, 8 kHz).
+Taps: 9101 DMR, 9102 NXDN, 9103 P25, 9106 NXDN48, 9107 D-STAR, 9108 X2-TDMA, 9109 ProVoice
+(float32, 48 kHz); 9104 TETRA (float32, 8 kHz).
 """
 import sys
 import time
@@ -10,7 +11,8 @@ import time
 import numpy as np
 import zmq
 
-RATE = {9101: 48000, 9102: 48000, 9103: 48000, 9104: 8000}   # as in gui/bridge_server.py
+RATE = {9101: 48000, 9102: 48000, 9103: 48000, 9104: 8000,    # as in gui/bridge_server.py
+        9106: 48000, 9107: 48000, 9108: 48000, 9109: 48000}  # NXDN48, D-STAR, X2-TDMA, ProVoice
 
 
 def main():

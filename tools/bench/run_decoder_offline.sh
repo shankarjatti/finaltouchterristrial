@@ -11,7 +11,7 @@ python3 "$B/replay_module1.py" --secs "$SECS" "$@" > "$LOG/replay.log" 2>&1 & RP
 sleep 2
 QT_QPA_PLATFORM=offscreen python3 "$DEC" > "$LOG/dec.log" 2>&1 & DP=$!
 until grep -q "clients connected" "$LOG/replay.log" 2>/dev/null || ! kill -0 $RP 2>/dev/null; do sleep 0.5; done
-for p in 9101 9102 9103 9104; do python3 "$B/tap_audio.py" $p $((SECS - 3)) > "$LOG/tap$p.log" 2>&1 & done
+for p in 9101 9102 9103 9104 9106 9107 9108 9109; do python3 "$B/tap_audio.py" $p $((SECS - 3)) > "$LOG/tap$p.log" 2>&1 & done
 python3 "$B/tetra_events.py" $((SECS - 3)) > "$LOG/events.log" 2>&1 &
 c0=$(awk '{print $14+$15}' /proc/$DP/stat 2>/dev/null); t0=$(date +%s)
 wait $RP; c1=$(awk '{print $14+$15}' /proc/$DP/stat 2>/dev/null); t1=$(date +%s); sleep 4

@@ -4,7 +4,7 @@ Living status of the work: what is done, what is in progress, what has not start
 Updated with every verified change. Settings and the reasons behind them are in
 `README.md` §5; how to test is in `README.md` §9.
 
-**Last updated:** 2026-10-27 (step 1 closed; over-the-air dropout cause logged; step 2 starting)
+**Last updated:** 2026-10-27 (step 2: 8 protocols built and running; NXDN48 verified on a real recording)
 
 ---
 
@@ -13,7 +13,7 @@ Updated with every verified change. Settings and the reasons behind them are in
 | # | Step | Status |
 |---|---|---|
 | 1 | Get the 4 protocols (DMR, NXDN, P25, TETRA) working properly | **Done** (user sign-off 10-27), open items below |
-| 2 | Add 4 more protocols | **In progress** — planning |
+| 2 | Add 4 more protocols (NXDN48, D-STAR, X2-TDMA, ProVoice) | **In progress** — built and running; voice verified for NXDN48 only |
 | 3 | Finalize the backend (freeze ports and message formats) | Not started |
 | 4 | Finalize the UI | Not started |
 | 5 | Convert to C++ (Module 1 already is; decide the scope first) | Not started |
@@ -59,12 +59,34 @@ frequencies and levels), and deciding which tree is canonical (this Delhi copy v
 
 ---
 
+## Step 2 — the 4 new protocols
+
+Built the same way as step 1 (one chain per protocol), each with its own channel plan,
+from the protocol standards and DSD's own symbol timing at 48 kHz.
+
+| | NXDN48 | D-STAR | X2-TDMA | ProVoice (EDACS) |
+|---|---|---|---|---|
+| Channel / modulation / rate | 6.25 kHz, 4FSK, 2400 baud | GMSK, 4800 baud | 12.5 kHz, 4FSK, 4800 baud | 25 kHz, GFSK, 9600 baud |
+| Channelizer in 200 kHz | 32 × 6.25 kHz | 16 × 12.5 kHz | 16 × 12.5 kHz | 8 × 25 kHz |
+| Channel rate → 48 kHz / LPF | ×192/25, 3 kHz | ×96/25, 6.25 kHz | ×96/25, 6.25 kHz | ×48/25, 9.5 kHz |
+| DSD frame / mod | NXDN48_IDAS / GFSK | DSTAR / GFSK | X2_TDMA / C4FM | PROVOICE / GFSK |
+| Port / tap | 7005 / 9106 | 7006 / 9107 | 7007 / 9108 | 7008 / 9109 |
+| Frequency | 451.00625 (placeholder) | 439.4125 (placeholder) | 452.0 (placeholder) | 453.0 (placeholder) |
+| Squelch / volume / gain | −73 / **3.0** / 1.0 | −73 / 0.5 / 1.0 | −73 / 0.5 / 1.0 | −73 / 0.5 / 1.0 |
+| **Voice verified** | ✅ real recording | ❌ only a synthetic sample | ❌ no recording | ❌ no recording |
+
+Built with `tools/add_protocols.py` (clones the DMR chain); `tools/layout_grc.py` lays
+`allinone.grc` out as one row per protocol (layout only — generated code identical).
+
 ## Test results log
 
 Newest first. Numbers are measured, not estimated.
 
 | Date | What | Result |
 |---|---|---|
+| 10-27 | **8-band stack live** (B210, receive only) | 8/8 IQ ports, 9/9 taps; Module 1 rotates all 8 bands (~2 s each); bridge gets live IQ from all 8 with the right channel plans (NXDN48 32×6.25 kHz, ProVoice 8×25 kHz) |
+| 10-27 | NXDN48 recording through the real decoder (replayed on 7005) | **28.2 s voice in 32 s**, −39 dBFS rms, −5 dBFS peak, 0% clipped at volume 3.0; other 7 taps silent as they should be; decoder 91% of one core |
+| 10-27 | NXDN48 recording decoded directly by DSD (frame log) | `Sync: -NXDN48 … VOICE` with error-free frames, input level 42–46%; same 16.8 s at demod gain 0.5/1/2; DSD output peaks only −16 dBFS (quiet speech) → volume 3.0 |
 | 10-26 | **Root cause of the over-the-air NXDN drop-outs** | the **HackRF's USB link fails while it radiates**: 14 disconnects on port 1-8 since 18:20 with `error -71`, worsening with TX gain (4 in 23 s at gain 30); a live capture had **2 ms holes every ~6 ms** (15.6% of the time >20 dB down), and it decoded only 1.32 s / 12.2 s even offline. With the HackRF idle: **0 disconnects in 3 min**. Over the cable it never happened. Over-the-air testing stopped; cable is the test path |
 | 10-26 | NXDN over the air, HackRF continuous at **gain 30**, amp off | **36.0 s voice in 60 s** in 5 bursts, −22.5 dBFS rms, 0% clipped |
 | 10-26 | NXDN over the air at gain 20 later in the session | dropped to 1–17 s / 60 s. *First read as room fading — **corrected below**: it was mostly HackRF transmit dropouts.* Measured then: 10 ms level median −52.8 dBFS but 1% of frames at −67 (the noise floor), 6% >10 dB below median; signal also moved 17 dB between minutes (antennas/people moving). Stream, decoder, squelch and RX gain all checked fine (TCP queues 0, decoder restart only partly helped) |
@@ -90,6 +112,9 @@ Newest first. Numbers are measured, not estimated.
 ---
 
 ## Open issues
+
+0c. **D-STAR, X2-TDMA and ProVoice need real recordings** to verify voice; their frequencies are placeholders.
+0d. **B210 on USB 2.0 at port 1-8** today (yesterday's good USB 3 port was 2-10).
 
 0. **Over-the-air HackRF tests are unreliable**: its own radiated RF breaks its USB link (dropouts, then resets). Test through the cable + attenuator. Over-the-air is stopped.
 0b. **Bridge leaks IQ readers**: every schedule/gain change starts new per-port readers without stopping the old ones (4 per port after a few changes). Stream not stalled (send queues 0), but it wastes CPU and must be fixed in step 3.
