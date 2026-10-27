@@ -78,6 +78,14 @@ main{display:grid; grid-template-columns:1fr 300px; overflow:hidden;}
 /* Decodio-style spectrum + waterfall: black canvas, so overlay text goes light */
 #boxSpectrum .graph-label, #boxSpectrum .graph-readout, #boxSpectrum .legend,
 #boxWaterfall .graph-label, #boxWaterfall .graph-readout{ color:#c9ced6; }
+/* draggable panels: a small grip on each panel pops it out as a floating window */
+.drag-grip{position:absolute; top:3px; left:4px; width:16px; height:15px; z-index:8;
+  display:flex; align-items:center; justify-content:center; cursor:move; font-size:11px;
+  color:#8893a0; background:rgba(127,131,142,0.14); border-radius:3px; user-select:none;}
+.drag-grip:hover{background:rgba(127,131,142,0.30); color:#eef1f4;}
+#boxSpectrum .graph-label, #boxWaterfall .graph-label, #boxTime .graph-label{left:24px;}
+.floating{box-shadow:0 8px 28px rgba(0,0,0,0.45); z-index:60 !important;
+  outline:1px solid var(--accent); background:var(--panel);}
 .legend span{display:flex; align-items:center; gap:4px;}
 .legend i{width:8px;height:8px;display:inline-block;border-radius:1px;}
 
@@ -1024,6 +1032,43 @@ document.getElementById('btnDecStop').onclick = ()=>{
 renderSchedRows();
 showNotConnected();
 updateHwPanel();
+/* ---------------- draggable floating panels ---------------- */
+function makeDraggable(el, title){
+  if(!el || el.querySelector(':scope > .drag-grip')) return;
+  if(getComputedStyle(el).position === 'static') el.style.position = 'relative';
+  const grip = document.createElement('div');
+  grip.className = 'drag-grip'; grip.innerHTML = '&#10303;';
+  grip.title = (title||'panel') + ' — drag to move, double-click to dock back';
+  el.appendChild(grip);
+  let sx, sy, ox, oy, dragging = false;
+  grip.addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    const r = el.getBoundingClientRect();
+    // pop out as a fixed window at its current position and size
+    Object.assign(el.style, {position:'fixed', left:r.left+'px', top:r.top+'px',
+      width:r.width+'px', height:r.height+'px', margin:'0'});
+    el.classList.add('floating');
+    sx=e.clientX; sy=e.clientY; ox=r.left; oy=r.top; dragging=true;
+    try{ grip.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  grip.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    el.style.left = Math.max(0, ox + e.clientX - sx) + 'px';
+    el.style.top  = Math.max(0, oy + e.clientY - sy) + 'px';
+  });
+  const end = e=>{ dragging=false; try{ grip.releasePointerCapture(e.pointerId); }catch(_){} };
+  grip.addEventListener('pointerup', end);
+  grip.addEventListener('pointercancel', end);
+  grip.addEventListener('dblclick', ()=>{   // dock back to the original layout
+    el.classList.remove('floating');
+    ['position','left','top','width','height','margin'].forEach(p=>el.style[p]='');
+  });
+}
+['boxSpectrum','boxWaterfall','boxTime'].forEach(id=>makeDraggable(document.getElementById(id), id.replace('box','')));
+makeDraggable(document.querySelector('.sidebar'), 'Panels');
+makeDraggable(document.querySelector('.audio'), 'Audio');
+makeDraggable(document.getElementById('console'), 'Log');
+
 connectBridge();
 logLine('sys', 'Console loaded. Waiting for bridge_server.py at ws://127.0.0.1:8787 — no simulated data, real feed only.');
 setInterval(feedFrame, 90);

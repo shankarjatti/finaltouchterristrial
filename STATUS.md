@@ -84,6 +84,7 @@ Newest first. Numbers are measured, not estimated.
 
 | Date | What | Result |
 |---|---|---|
+| 10-27 | Console: every panel/plot is a draggable floating window | each of the 6 panels (spectrum, waterfall, time, the tabbed panel, audio, log) has a grip; drag pops it out as a fixed window at its size, double-click docks it back. Verified live: 6 grips, drag moves exactly, dock resets |
 | 10-27 | Recordings: play button is a play/pause toggle | clicking ▶ plays and turns to ⏸ with a m:ss / m:ss time readout; clicking ⏸ pauses; only one recording plays at a time; resets to ▶ at the end. Verified live |
 | 10-27 | Console spectrum + waterfall restyled to the Decodio reference | spectrum: black, yellow trace, dBm scale on both sides, per-carrier grey markers (channel no. + level on occupied ones); waterfall: blue->cyan->green->yellow->red heat scale with a dB colour bar. Same real IQ/channel data as before, front-end only; verified live, no page errors |
 | 10-27 | Yesterday's console + the 4 new bands (same look, muted colours) | 8 bands in Signals/legend/audio/schedule; frequency axis 419–454 MHz; header on one line. **USB link now measured** (bridge reads the B210's sysfs speed after the firmware loads; was a fixed 'USB 3.0' string): shows USB 3.x (5000 Mb/s). **TCP clients** now 'ports with a client / 8 (connections)': 8 / 8 (16) |
