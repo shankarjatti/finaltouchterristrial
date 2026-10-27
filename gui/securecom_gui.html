@@ -17,14 +17,10 @@
   --warn:      #9a6a08;
   --bad:       #b02a2a;
   --grid:      #e4e7eb;
-  --trace-dmr: #1f4fd8;
-  --trace-nxdn:#d62728;
-  --trace-p25: #2a8a2a;
-  --trace-tetra:#222222;
-  --trace-nxdn48:#c21fc2;
-  --trace-dstar:#00a3b4;
-  --trace-x2tdma:#8b1a1a;
-  --trace-provoice:#1a237e;
+  --trace-dmr: #1a5f8a;
+  --trace-nxdn:#b02a2a;
+  --trace-p25: #1f7a4d;
+  --trace-tetra:#9a6a08;
   --mono: 'DejaVu Sans Mono','Consolas',monospace;
   --sans: 'Segoe UI',Arial,sans-serif;
 }
@@ -100,10 +96,6 @@ tr.row-dmr td.chip{color:var(--trace-dmr);}
 tr.row-nxdn td.chip{color:var(--trace-nxdn);}
 tr.row-p25 td.chip{color:var(--trace-p25);}
 tr.row-tetra td.chip{color:var(--trace-tetra);}
-tr.row-nxdn48 td.chip{color:var(--trace-nxdn48);}
-tr.row-dstar td.chip{color:var(--trace-dstar);}
-tr.row-x2tdma td.chip{color:var(--trace-x2tdma);}
-tr.row-provoice td.chip{color:var(--trace-provoice);}
 .state-idle{color:var(--text-mute);}
 .state-active{color:var(--ok);}
 .state-decoding{color:var(--warn); font-weight:600;}
@@ -159,10 +151,6 @@ input[type=number]{
 .console .ln.nxdn{color:var(--trace-nxdn);}
 .console .ln.p25{color:var(--trace-p25);}
 .console .ln.tetra{color:var(--trace-tetra);}
-.console .ln.nxdn48{color:var(--trace-nxdn48);}
-.console .ln.dstar{color:var(--trace-dstar);}
-.console .ln.x2tdma{color:var(--trace-x2tdma);}
-.console .ln.provoice{color:var(--trace-provoice);}
 .console .ln.sys{color:var(--text-dim);}
 .console .ln .t{color:var(--text-mute);}
 </style>
@@ -172,7 +160,7 @@ input[type=number]{
 <header>
   <div>
     <div class="h-title">SECURECOM — COUPLING CONSOLE</div>
-    <div class="h-sub">Terrestrial Radio Decoder · 8 protocols</div>
+    <div class="h-sub">Terrestrial Radio Decoder · DMR / NXDN / P25 / TETRA</div>
   </div>
   <div class="h-spacer"></div>
   <div class="badge"><span class="dot warn" id="dotSystem"></span><span id="lblSystem">NOT CONNECTED</span></div>
@@ -191,10 +179,6 @@ input[type=number]{
         <span><i style="background:var(--trace-nxdn)"></i>NXDN</span>
         <span><i style="background:var(--trace-p25)"></i>P25</span>
         <span><i style="background:var(--trace-tetra)"></i>TETRA</span>
-        <span><i style="background:var(--trace-nxdn48)"></i>NXDN48</span>
-        <span><i style="background:var(--trace-dstar)"></i>D-STAR</span>
-        <span><i style="background:var(--trace-x2tdma)"></i>X2-TDMA</span>
-        <span><i style="background:var(--trace-provoice)"></i>ProVoice</span>
       </div>
       <div class="zoom-reset" data-reset="spectrum">reset zoom</div>
     </div>
@@ -305,10 +289,6 @@ input[type=number]{
     <div class="audio-ch" data-b="nxdn"><span class="rec-dot"></span><span class="nm">NXDN</span><div class="meter"><i></i></div></div>
     <div class="audio-ch" data-b="p25"><span class="rec-dot"></span><span class="nm">P25</span><div class="meter"><i></i></div></div>
     <div class="audio-ch" data-b="tetra"><span class="rec-dot"></span><span class="nm">TETRA</span><div class="meter"><i></i></div></div>
-    <div class="audio-ch" data-b="nxdn48"><span class="rec-dot"></span><span class="nm">NXDN48</span><div class="meter"><i></i></div></div>
-    <div class="audio-ch" data-b="dstar"><span class="rec-dot"></span><span class="nm">D-STAR</span><div class="meter"><i></i></div></div>
-    <div class="audio-ch" data-b="x2tdma"><span class="rec-dot"></span><span class="nm">X2-TDMA</span><div class="meter"><i></i></div></div>
-    <div class="audio-ch" data-b="provoice"><span class="rec-dot"></span><span class="nm">ProVoice</span><div class="meter"><i></i></div></div>
   </div>
   <div class="console" id="console"></div>
 </div>
@@ -327,10 +307,6 @@ const BANDS = [
   {key:'nxdn',  name:'NXDN96',  freq:451.09375, color:'--trace-nxdn',  dwell:1.0, gap:1.0},
   {key:'p25',   name:'P25-Ph1', freq:450.09375, color:'--trace-p25',   dwell:1.0, gap:1.0},
   {key:'tetra', name:'TETRA',   freq:420.00000, color:'--trace-tetra', dwell:1.0, gap:1.0},
-  {key:'nxdn48', name:'NXDN48', freq:451.00625, color:'--trace-nxdn48', dwell:1.0, gap:1.0},
-  {key:'dstar', name:'DSTAR', freq:439.41250, color:'--trace-dstar', dwell:1.0, gap:1.0},
-  {key:'x2tdma', name:'X2TDMA', freq:452.00000, color:'--trace-x2tdma', dwell:1.0, gap:1.0},
-  {key:'provoice', name:'PROVOICE', freq:453.00000, color:'--trace-provoice', dwell:1.0, gap:1.0},
 ];
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 

@@ -15,7 +15,7 @@ Updated with every verified change. Settings and the reasons behind them are in
 | 1 | Get the 4 protocols (DMR, NXDN, P25, TETRA) working properly | **Done** (user sign-off 10-27), open items below |
 | 2 | Add 4 more protocols (NXDN48, D-STAR, X2-TDMA, ProVoice) | **In progress** — built and running; voice verified for NXDN48 only |
 | 3 | Finalize the backend (freeze ports and message formats) | Not started |
-| 4 | Finalize the UI | Not started |
+| 4 | Finalize the UI | **In progress** — yesterday's 4-protocol console restored; 8-band version kept separately |
 | 5 | Convert to C++ (Module 1 already is; decide the scope first) | Not started |
 
 `docs/DELHI_HANDOFF.md` is a copy of `delhi_testing/DELHI_HANDOFF.md`, refreshed on every push.
@@ -84,6 +84,7 @@ Newest first. Numbers are measured, not estimated.
 
 | Date | What | Result |
 |---|---|---|
+| 10-27 | Console: back to yesterday's 4-protocol page (user's choice) | `gui/securecom_gui.html` restored byte-identical to the pre-step-2 version; today's 8-band page kept as `gui/securecom_gui_8band.html`. Works against the 8-band bridge (it ignores the 4 new bands), no page errors |
 | 10-27 | **8-band stack on USB 3** (B210 back on port 2-10, 5000 Mbps) | 60 s: 29 dwells across all 8 bands, **0 USB errors, 0 Module 1 restarts**, live IQ from every band (36–48 frames each). On USB 2.0 (port 1-8) earlier the same stack hit LIBUSB_TRANSFER_ERROR within seconds and restarted repeatedly |
 | 10-27 | One colour per band, same in decoder window and console | Qt spectrum: 8 traces (all bands); Qt audio plot: 7 DSD traces (TETRA keeps its own 8 kHz plot), rate fixed 200 kSps → 48 kHz (time axis was ~4× short). GRC allows only named Qt colours, so both use: DMR blue, NXDN96 red, P25 green, TETRA black, NXDN48 magenta, D-STAR cyan, X2-TDMA dark red, ProVoice dark blue. Console served no-cache (browser had kept the old page) |
 | 10-27 | **8-band stack live** (B210, receive only) | 8/8 IQ ports, 9/9 taps; Module 1 rotates all 8 bands (~2 s each); bridge gets live IQ from all 8 with the right channel plans (NXDN48 32×6.25 kHz, ProVoice 8×25 kHz) |
