@@ -60,12 +60,17 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import zeromq
 import gnuradio.adsb as adsb
 import gnuradio.ais as ais
+# AIS symbol timing: 250 kSps / decimation 5 = 50 kSps at 9600 baud = 5.208 samples/symbol.
+# (The copied flowgraph said 5; the clock recovery may only drift 0.5 %, so a 4 % error
+# produced 10 kbit/s of garbage and no AIS frame ever passed the HDLC CRC.)
+AIS_SPS = 250000 / 5 / 9600
 
 
 from gnuradio import qtgui
 
 # Module 1's live ports for these two bands (module1/src/main.cpp BANDS table)
 AIS_TCP_PORT  = 7009
+AIS_AFC_OFFSETS_HZ = (-900, -450, 450, 900)   # extra carrier-offset hypotheses per AIS channel
 ADSB_TCP_PORT = 7010
 
 # What Module 1's ADS-B dwell slot ACTUALLY delivers -- see file header.
@@ -109,11 +114,9 @@ class airmaritime_decoder_live(gr.top_block, Qt.QWidget):
         ##################################################
         # AIS: 250 kSps, same as the WAV-based reference -- NOT the shared
         # 200 kSps default. The 25 kHz channel itself would fit either rate,
-        # but the GMSK demod below assumes samples_per_symbol=5 at 9600 baud
-        # (48 kSps post-decimation), which only lands correctly from a
-        # 250 kSps pre-decimation rate (~5.2 samp/sym). At 200 kSps that's
-        # ~4.17 samp/sym -- measured to break the demod's timing recovery
-        # entirely (zero AIS decodes). Module 1's AIS band requests this same
+        # the GMSK demod below runs at 250 kSps / 5 = 50 kSps, i.e. AIS_SPS =
+        # 5.208 samp/sym at 9600 baud (must be the exact value, see AIS_SPS).
+        # Module 1's AIS band requests this same
         # 250 kSps explicitly (BandConfig::samp_rate_hz, main.cpp) rather
         # than the shared default, so the two stay in lock-step.
         self.samp_rate_0 = samp_rate_0 = 250000
@@ -197,14 +200,14 @@ class airmaritime_decoder_live(gr.top_block, Qt.QWidget):
         self.digital_hdlc_deframer_bp_1 = digital.hdlc_deframer_bp(11, 64)
         self.digital_hdlc_deframer_bp_0 = digital.hdlc_deframer_bp(11, 64)
         self.digital_gmsk_demod_1 = digital.gmsk_demod(
-            samples_per_symbol=5,
+            samples_per_symbol=AIS_SPS,
             gain_mu=0.175,
             mu=0.5,
             omega_relative_limit=0.005,
             freq_error=0.0,
             verbose=False,log=False)
         self.digital_gmsk_demod_0 = digital.gmsk_demod(
-            samples_per_symbol=5,
+            samples_per_symbol=AIS_SPS,
             gain_mu=0.175,
             mu=0.5,
             omega_relative_limit=0.005,
@@ -267,10 +270,36 @@ class airmaritime_decoder_live(gr.top_block, Qt.QWidget):
         self.connect((self.tcp_source_ais, 0), (self.blocks_throttle_0_1, 0))
         self.connect((self.tcp_source_adsb, 0), (self.resampler_adsb, 0))
         self.connect((self.resampler_adsb, 0), (self.blocks_throttle_0_0, 0))
-        self.connect((self.digital_gmsk_demod_0, 0), (self.ais_invert_0, 0))
-        self.connect((self.digital_gmsk_demod_1, 0), (self.ais_invert_1, 0))
+        self.ais_nrzi_0 = digital.diff_decoder_bb(2)   # AIS is NRZI: transition -> 0 after ais.invert
+        self.connect((self.digital_gmsk_demod_0, 0), (self.ais_nrzi_0, 0))
+        self.connect((self.ais_nrzi_0, 0), (self.ais_invert_0, 0))
+        self.ais_nrzi_1 = digital.diff_decoder_bb(2)   # AIS is NRZI: transition -> 0 after ais.invert
+        self.connect((self.digital_gmsk_demod_1, 0), (self.ais_nrzi_1, 0))
+        self.connect((self.ais_nrzi_1, 0), (self.ais_invert_1, 0))
         self.connect((self.freq_xlating_fir_filter_xxx_0, 0), (self.digital_gmsk_demod_0, 0))
         self.connect((self.freq_xlating_fir_filter_xxx_1, 0), (self.digital_gmsk_demod_1, 0))
+
+        # Carrier-offset hypotheses. A transmitter/receiver oscillator mismatch (AIS allows
+        # +-500 Hz; a HackRF -> B210 bench pair showed ~550 Hz) appears as a DC bias after the FM
+        # demod and the fixed-centre branch above then drops most frames. Run the same demod chain
+        # at a few small offsets around each channel; the HDLC CRC rejects bad frames, so the extra
+        # branches only add valid ones (the bridge de-duplicates by MMSI).
+        self._ais_afc = []
+        for center, pdu in ((-25000, self.ais_pdu_to_nmea_0), (25000, self.ais_pdu_to_nmea_1)):
+            for off in AIS_AFC_OFFSETS_HZ:
+                xl = filter.freq_xlating_fir_filter_ccc(5, low_pass_taps, center + off, samp_rate_0)
+                dm = digital.gmsk_demod(samples_per_symbol=AIS_SPS, gain_mu=0.175, mu=0.5,
+                                        omega_relative_limit=0.005, freq_error=0.0, verbose=False, log=False)
+                nrzi = digital.diff_decoder_bb(2)
+                inv = ais.invert()
+                hd = digital.hdlc_deframer_bp(11, 64)
+                self.connect((self.blocks_throttle_0_1, 0), (xl, 0))
+                self.connect((xl, 0), (dm, 0))
+                self.connect((dm, 0), (nrzi, 0))
+                self.connect((nrzi, 0), (inv, 0))
+                self.connect((inv, 0), (hd, 0))
+                self.msg_connect((hd, 'out'), (pdu, 'print'))
+                self._ais_afc.append((xl, dm, nrzi, inv, hd))
 
 
     def closeEvent(self, event):

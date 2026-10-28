@@ -173,7 +173,7 @@ class airmaritime_decoder(gr.top_block, Qt.QWidget):
             omega_relative_limit=0.005,
             freq_error=0.0,
             verbose=False,log=False)
-        self.blocks_wavfile_source_0_0 = blocks.wavfile_source('/home/shankar/Downloads/tutorials/usrp_ais_project/ais_marine_vessel_tracking_250k.wav', True)
+        self.blocks_wavfile_source_0_0 = blocks.wavfile_source('/home/shankar/Downloads/tutorials/delhi_testing/all_protocols_wav_samples/AIS_Marine/ais_b210_cable_capture_250k.wav', True)
         self.blocks_wavfile_source_0 = blocks.wavfile_source('/home/shankar/Downloads/tutorials/sigtel_protocol_wav_folders/1_ADS-B/1_ADS-B_Synthetic_2.0MSps.wav', True)
         self.blocks_throttle_0_1 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate_0,True)
         self.blocks_throttle_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, fs,True)
@@ -181,8 +181,20 @@ class airmaritime_decoder(gr.top_block, Qt.QWidget):
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
         self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(1)
         self.analog_const_source_x_0 = analog.sig_source_f(0, analog.GR_CONST_WAVE, 0, 0, threshold)
+        self.ais_to_48k_1 = filter.rational_resampler_ccc(
+                interpolation=24,
+                decimation=25,
+                taps=[],
+                fractional_bw=0)
+        self.ais_to_48k_0 = filter.rational_resampler_ccc(
+                interpolation=24,
+                decimation=25,
+                taps=[],
+                fractional_bw=0)
         self.ais_pdu_to_nmea_1 = ais.pdu_to_nmea("B")
         self.ais_pdu_to_nmea_0 = ais.pdu_to_nmea("A")
+        self.ais_nrzi_1 = digital.diff_decoder_bb(2, digital.DIFF_DIFFERENTIAL)
+        self.ais_nrzi_0 = digital.diff_decoder_bb(2, digital.DIFF_DIFFERENTIAL)
         self.ais_invert_1 = ais.invert()
         self.ais_invert_0 = ais.invert()
         self.adsb_framer_1 = adsb.framer(fs, threshold)
@@ -203,6 +215,10 @@ class airmaritime_decoder(gr.top_block, Qt.QWidget):
         self.connect((self.adsb_framer_1, 0), (self.adsb_demod_0, 0))
         self.connect((self.ais_invert_0, 0), (self.digital_hdlc_deframer_bp_0, 0))
         self.connect((self.ais_invert_1, 0), (self.digital_hdlc_deframer_bp_1, 0))
+        self.connect((self.ais_nrzi_0, 0), (self.ais_invert_0, 0))
+        self.connect((self.ais_nrzi_1, 0), (self.ais_invert_1, 0))
+        self.connect((self.ais_to_48k_0, 0), (self.digital_gmsk_demod_0, 0))
+        self.connect((self.ais_to_48k_1, 0), (self.digital_gmsk_demod_1, 0))
         self.connect((self.analog_const_source_x_0, 0), (self.qtgui_time_sink_x_0, 1))
         self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.adsb_framer_1, 0))
         self.connect((self.blocks_float_to_complex_0, 0), (self.blocks_throttle_0_0, 0))
@@ -214,10 +230,10 @@ class airmaritime_decoder(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_wavfile_source_0, 0), (self.blocks_float_to_complex_0, 1))
         self.connect((self.blocks_wavfile_source_0_0, 1), (self.blocks_float_to_complex_0_0, 1))
         self.connect((self.blocks_wavfile_source_0_0, 0), (self.blocks_float_to_complex_0_0, 0))
-        self.connect((self.digital_gmsk_demod_0, 0), (self.ais_invert_0, 0))
-        self.connect((self.digital_gmsk_demod_1, 0), (self.ais_invert_1, 0))
-        self.connect((self.freq_xlating_fir_filter_xxx_0, 0), (self.digital_gmsk_demod_0, 0))
-        self.connect((self.freq_xlating_fir_filter_xxx_1, 0), (self.digital_gmsk_demod_1, 0))
+        self.connect((self.digital_gmsk_demod_0, 0), (self.ais_nrzi_0, 0))
+        self.connect((self.digital_gmsk_demod_1, 0), (self.ais_nrzi_1, 0))
+        self.connect((self.freq_xlating_fir_filter_xxx_0, 0), (self.ais_to_48k_0, 0))
+        self.connect((self.freq_xlating_fir_filter_xxx_1, 0), (self.ais_to_48k_1, 0))
 
 
     def closeEvent(self, event):

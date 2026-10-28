@@ -26,17 +26,30 @@ Console: http://127.0.0.1:8790/airmaritime_console.html  ·  map tiles: http://1
 
 ## Changes made after copying (everything else is verbatim from 1stversiondone)
 - `module1/`: USB-error recovery from the terrestrial Module 1 (drain after stop, per-band
-  catch, exit code 3 after 5 failures in a row). A 60 s AIS dwell followed by ADS-B used to
-  terminate Module 1 with `LIBUSB_TRANSFER_OVERFLOW`; it now completes (5000 Mbps link).
+  catch, exit code 3 after 5 failures in a row, non-throwing stop in the destructor so a
+  replugged B210 no longer aborts the process).
 - AIS centre **162.000 MHz** (was 162.025): the decoder's two channels sit at ∓25 kHz from the
-  tuned centre, i.e. 161.975 and 162.025. Module 1, bridge and console updated.
+  tuned centre, i.e. 161.975 and 162.025.
+- **AIS demod fixed** (it had never decoded a frame): NRZI decode added (`diff_decoder_bb(2)`
+  before `ais.invert`); correct symbol timing (250 kSps / 5 = 50 kSps = 5.208 samp/sym; the
+  live decoder uses `AIS_SPS`, `airmarin.grc` resamples 50 → 48 kSps for exactly 5); the live
+  decoder adds ±450/±900 Hz carrier-offset branches per channel (HDLC CRC rejects bad frames).
+- **Bridge**: AIS PDUs are `(meta . u8vector)` — the sentence is in `cdr()`; it read `car()`
+  and dropped every message. Duplicate frames from the offset branches are dropped (2 s window).
+- **No fake / fallback data**: tile server serves only stored tiles (404 otherwise); console map
+  opens on the world and frames the first real target at the deepest stored zoom; band state
+  shows time since the last real decode; spectrum "DECODING" only after a real decode.
+- `airmaritime_decoder.py` regenerated from `airmarin.grc` (grcc); its AIS input is now
+  `all_protocols_wav_samples/AIS_Marine/ais_b210_cable_capture_250k.wav` (real B210 capture).
 - `tools/replay_iq_tcp.py` added.
 
 ## Status
-- Built; bridge (8887), tiles (8080), console and map verified. Module 1 holds AIS + ADS-B
-  dwells on USB 3 with no errors.
-- **ADS-B decodes:** 61 messages offline, 83 in a TCP replay (aircraft appear in the console's
-  tracked-targets table).
-- **AIS: not yet decoded in any test** (offline, TCP replay, over the HackRF). The centre-frequency
-  fix above is untested on the air. Both are data (contacts), not audio: no `.wav`; output is the
-  ships/aircraft tables and the map.
+- **AIS verified end to end over a cable**: real AIS recording → HackRF (161.975 MHz, VGA 40,
+  amp off) → SMA + attenuator → B210 → Module 1 → decoder → bridge → map. 38 map updates in
+  85 s from 6 real vessels; markers and table checked in the console.
+- `ais_marine_vessel_tracking_250k.wav` contains **no AIS** (Q ≈ 0, no CRC-valid frame) — do
+  not use it for AIS tests. Use `AIS IQ.wav` (48 kHz, real) or the B210 capture.
+- **ADS-B**: decodes the synthetic `1_ADS-B_Synthetic_2.0MSps.wav` only (61 offline, 83 TCP
+  replay). Not yet verified on a real recording or live 1090 MHz.
+- Bundled map tiles: real only to zoom 6 over India.
+- Hardware/Schedule tab needs the terrestrial bridge (8787); standalone it says "not connected".

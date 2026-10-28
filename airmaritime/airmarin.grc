@@ -341,7 +341,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    file: /home/shankar/Downloads/tutorials/usrp_ais_project/ais_marine_vessel_tracking_250k.wav
+    file: /home/shankar/Downloads/tutorials/delhi_testing/all_protocols_wav_samples/AIS_Marine/ais_b210_cable_capture_250k.wav
     maxoutbuf: '0'
     minoutbuf: '0'
     nchan: '2'
@@ -351,6 +351,80 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [24, 960.0]
+    rotation: 0
+    state: enabled
+- name: ais_to_48k_0
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: '250k/5 = 50 kSps -> 48 kSps: exactly 5 samp/sym at 9600 baud'
+    decim: '25'
+    fbw: '0'
+    interp: '24'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 948.0]
+    rotation: 0
+    state: enabled
+- name: ais_to_48k_1
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: '250k/5 = 50 kSps -> 48 kSps: exactly 5 samp/sym at 9600 baud'
+    decim: '25'
+    fbw: '0'
+    interp: '24'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 1172.0]
+    rotation: 0
+    state: enabled
+- name: ais_nrzi_0
+  id: digital_diff_decoder_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    coding: digital.DIFF_DIFFERENTIAL
+    comment: 'AIS is NRZI: (x[n]-x[n-1])%2, then ais_invert'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    modulus: '2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1104, 948.0]
+    rotation: 0
+    state: enabled
+- name: ais_nrzi_1
+  id: digital_diff_decoder_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    coding: digital.DIFF_DIFFERENTIAL
+    comment: 'AIS is NRZI: (x[n]-x[n-1])%2, then ais_invert'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    modulus: '2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1104, 1172.0]
     rotation: 0
     state: enabled
 - name: digital_gmsk_demod_0
@@ -621,12 +695,16 @@ connections:
 - [blocks_wavfile_source_0, '1', blocks_float_to_complex_0, '0']
 - [blocks_wavfile_source_0_0, '0', blocks_float_to_complex_0_0, '0']
 - [blocks_wavfile_source_0_0, '1', blocks_float_to_complex_0_0, '1']
-- [digital_gmsk_demod_0, '0', ais_invert_0, '0']
-- [digital_gmsk_demod_1, '0', ais_invert_1, '0']
+- [ais_nrzi_0, '0', ais_invert_0, '0']
+- [digital_gmsk_demod_0, '0', ais_nrzi_0, '0']
+- [ais_nrzi_1, '0', ais_invert_1, '0']
+- [digital_gmsk_demod_1, '0', ais_nrzi_1, '0']
 - [digital_hdlc_deframer_bp_0, out, ais_pdu_to_nmea_0, print]
 - [digital_hdlc_deframer_bp_1, out, ais_pdu_to_nmea_1, print]
-- [freq_xlating_fir_filter_xxx_0, '0', digital_gmsk_demod_0, '0']
-- [freq_xlating_fir_filter_xxx_1, '0', digital_gmsk_demod_1, '0']
+- [ais_to_48k_0, '0', digital_gmsk_demod_0, '0']
+- [freq_xlating_fir_filter_xxx_0, '0', ais_to_48k_0, '0']
+- [ais_to_48k_1, '0', digital_gmsk_demod_1, '0']
+- [freq_xlating_fir_filter_xxx_1, '0', ais_to_48k_1, '0']
 
 metadata:
   file_format: 1

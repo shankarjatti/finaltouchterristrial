@@ -251,6 +251,9 @@ def _nmea_payload(sentence):
     return None
 
 
+_AIS_SEEN = {}   # AIVDM payload -> last time seen
+
+
 async def zmq_ais_listener(ctx):
     sub = ctx.socket(zmq.SUB)
     sub.connect(f"tcp://127.0.0.1:{ZMQ_AIS_PORT}")
@@ -268,16 +271,34 @@ async def zmq_ais_listener(ctx):
                 # every AIS/ADS-B message silently fell into the except
                 # branch below and got parsed as garbled text instead.
                 p = pmt.deserialize_str(msg_bytes)
+                sentence = None
                 if pmt.is_pair(p):
-                    p = pmt.car(p)
-                sentence = pmt.to_python(p) if pmt.is_symbol(p) else None
+                    # ais_pdu_to_nmea publishes a PDU: (metadata . u8vector of the
+                    # ASCII "!AIVDM,..." sentence); car() is usually None.
+                    body = pmt.cdr(p)
+                    if pmt.is_u8vector(body):
+                        sentence = bytes(pmt.u8vector_elements(body)).decode('ascii', 'replace')
+                    elif pmt.is_symbol(pmt.car(p)):
+                        sentence = pmt.to_python(pmt.car(p))
+                elif pmt.is_symbol(p):
+                    sentence = pmt.to_python(p)
             except Exception:
                 sentence = None
 
             if isinstance(sentence, str):
                 payload = _nmea_payload(sentence)
+                # the decoder's carrier-offset branches deliver the same frame 2-4 times
+                now = time.time()
+                if payload and now - _AIS_SEEN.get(payload, 0.0) < 2.0:
+                    continue
+                if payload:
+                    _AIS_SEEN[payload] = now
+                    if len(_AIS_SEEN) > 2000:
+                        for k in [k for k, t in _AIS_SEEN.items() if now - t > 10.0]:
+                            del _AIS_SEEN[k]
                 parsed = parse_aivdm_payload(payload) if payload else None
                 target = update_ais_target(parsed)
+                print(f"[AIS] {sentence.strip()}  -> {parsed}", flush=True)
                 if target:
                     await broadcast({"type": "ais_update", "target": target})
         except asyncio.CancelledError:

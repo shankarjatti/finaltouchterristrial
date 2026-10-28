@@ -77,7 +77,8 @@ UsrpController::UsrpController(const std::string& device_args)
 
 UsrpController::~UsrpController()
 {
-    stop_stream();
+    // a destructor must not throw: if the B210 vanished, std::terminate() would abort
+    try { stop_stream(); } catch (...) {}
 }
 
 void UsrpController::set_rate(double samp_rate_hz)

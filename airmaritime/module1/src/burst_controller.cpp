@@ -66,7 +66,8 @@ void BurstController::run()
         }
     }
 
-    usrp_.stop_stream();
+    // the radio may already be gone (unplugged / USB reset): never throw from here
+    try { usrp_.stop_stream(); } catch (...) {}
     std::cout << "[BURST] Loop exited cleanly.\n";
 }
 

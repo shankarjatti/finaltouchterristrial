@@ -399,11 +399,11 @@ input[type=number] {
       <label class="small" style="margin-top:0;">Protocol Band Signals</label>
       <table class="info" id="signalsTable">
         <thead>
-          <tr><th>Band</th><th>Freq MHz</th><th>State</th><th>Targets</th></tr>
+          <tr><th>Band</th><th>Freq MHz</th><th>Last decode</th><th>Targets</th></tr>
         </thead>
         <tbody>
-          <tr><td style="color:#2563eb;font-weight:700;">AIS A+B</td><td>162.000</td><td style="color:var(--ok);">ACTIVE</td><td id="sig-ais-cnt">0</td></tr>
-          <tr><td style="color:#d97706;font-weight:700;">ADS-B</td><td>1090.000</td><td style="color:var(--ok);">ACTIVE</td><td id="sig-adsb-cnt">0</td></tr>
+          <tr><td style="color:#2563eb;font-weight:700;">AIS A+B</td><td>162.000</td><td id="sig-ais-state" style="color:var(--text-mute);">none yet</td><td id="sig-ais-cnt">0</td></tr>
+          <tr><td style="color:#d97706;font-weight:700;">ADS-B</td><td>1090.000</td><td id="sig-adsb-state" style="color:var(--text-mute);">none yet</td><td id="sig-adsb-cnt">0</td></tr>
         </tbody>
       </table>
 
@@ -508,10 +508,10 @@ input[type=number] {
 
 <script>
 // Initialize 1 UNIFIED MAP for both Ships & Aircraft
-const mapUnified = L.map('map-unified', { zoomControl: true }).setView([37.7000, -122.4000], 10);
+const mapUnified = L.map('map-unified', { zoomControl: true }).setView([20, 0], 2);   // whole world until the first real decoded target frames the view
 
 // Tile Layer Definitions
-const mbtilesUrl   = 'http://127.0.0.1:8080/tiles/{z}/{x}/{y}.png';
+const mbtilesUrl   = 'http://127.0.0.1:8080/tiles/{z}/{x}/{y}.png?real=1';   // ?real=1: new URL so browsers drop old cached generated tiles
 const cartoDarkUrl = 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
 const osmUrl       = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const esriSatUrl   = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
@@ -525,8 +525,7 @@ const esriAttr    = 'Tiles &copy; Esri &mdash; Earthstar Geographics';
 const layerMBTiles = L.tileLayer(mbtilesUrl, {
   attribution: mbtilesAttr,
   minZoom: 0,
-  maxZoom: 18,
-  maxNativeZoom: 12,
+  maxZoom: 12,          // deepest zoom stored in world_zoom12.mbtiles; no magnified tiles beyond it
   tileSize: 256,
   updateWhenIdle: false,
   updateWhenZooming: true,
@@ -578,6 +577,13 @@ function pulseStream(kind) {
 setInterval(() => {
   const now = performance.now();
   for (const kind of ['ais', 'adsb']) {
+    // Signals table: time since this band's last real decoded message (never a fixed "ACTIVE")
+    const st = document.getElementById(`sig-${kind}-state`);
+    if (st && lastStreamMsg[kind]) {
+      const age = (now - lastStreamMsg[kind]) / 1000;
+      st.textContent = age < 1 ? 'now' : `${Math.round(age)} s ago`;
+      st.style.color = age < 30 ? 'var(--ok)' : 'var(--text-mute)';
+    }
     const el = document.getElementById(`ch-${kind}`);
     const bar = document.getElementById(`meter-${kind}`);
     if (!el || !bar) continue;
@@ -739,6 +745,27 @@ function hasPosition(t) {
   return typeof t.lat === 'number' && typeof t.lon === 'number';
 }
 
+// The map opens on a fixed default view; jump once to the first real decoded
+// target so its marker is not drawn off-screen. Later targets leave the view alone.
+// Zoom to the deepest level (11 at most) at which the offline database really holds a
+// map tile for that spot, so the target is shown on real map imagery.
+let mapFramed = false;
+async function frameFirstTarget(lat, lon) {
+  if (mapFramed) return;
+  mapFramed = true;
+  let zoom = 0;
+  for (let z = 11; z > 0; z--) {
+    const n = 1 << z;
+    const x = Math.floor((lon + 180) / 360 * n);
+    const y = Math.floor((1 - Math.asinh(Math.tan(lat * Math.PI / 180)) / Math.PI) / 2 * n);
+    try {
+      const r = await fetch(mbtilesUrl.replace('{z}', z).replace('{x}', x).replace('{y}', y));
+      if (r.ok) { zoom = z; break; }
+    } catch (e) { break; }   // tile server unreachable: keep the world view's zoom
+  }
+  mapUnified.setView([lat, lon], zoom);
+}
+
 function updateAIS(v) {
   aisData[v.mmsi] = v;
 
@@ -751,6 +778,7 @@ function updateAIS(v) {
         iconAnchor: [16, 16]
       });
       aisMarkers[v.mmsi] = L.marker([v.lat, v.lon], { icon }).addTo(mapUnified);
+      frameFirstTarget(v.lat, v.lon);
     } else {
       aisMarkers[v.mmsi].setLatLng([v.lat, v.lon]);
     }
@@ -780,6 +808,7 @@ function updateADSB(a) {
         iconAnchor: [16, 16]
       });
       adsbMarkers[a.icao] = L.marker([a.lat, a.lon], { icon }).addTo(mapUnified);
+      frameFirstTarget(a.lat, a.lon);
     } else {
       adsbMarkers[a.icao].setLatLng([a.lat, a.lon]);
     }
@@ -1023,6 +1052,7 @@ const airSpecBins = {
 // "AIS, dwelling, quiet" rather than falling back to whatever ADS-B last did.
 const airBandLive = { ais: { active: false, t: 0 }, adsb: { active: false, t: 0 } };
 let trueDwellBand = null;
+let lastIqBand = null;   // last band seen carrying non-zero IQ (standalone mode)
 let trueDwellT = 0;
 
 const airSpecCv = document.getElementById('cvAirSpectrum');
@@ -1043,20 +1073,10 @@ function handleAirSpectrum(msg) {
   if (!b) return;
   // msg.active here means "real signal above the display threshold", NOT
   // "this band is the one being dwelled on" -- see trueDwellBand for that.
-  airBandLive[msg.band] = { active: !!msg.active, t: performance.now() };
+  // iq: Module 1 is delivering non-zero IQ on this port (a zero-fill keep-alive arrives with spectrum null)
+  airBandLive[msg.band] = { active: !!msg.active, iq: Array.isArray(msg.spectrum), t: performance.now() };
   if (Array.isArray(msg.spectrum)) airSpecBins[msg.band] = Float32Array.from(msg.spectrum);
 
-  // State column: DWELLING (Module 1's own schedule, authoritative) vs
-  // whether that dwell actually has a signal on it right now (informational).
-  const rowSel = msg.band === 'ais' ? '#signalsTable tbody tr:nth-child(1) td:nth-child(3)'
-                                     : '#signalsTable tbody tr:nth-child(2) td:nth-child(3)';
-  const stateCell = document.querySelector(rowSel);
-  if (stateCell) {
-    const dwelling = trueDwellBand === msg.band && (performance.now() - trueDwellT) < 3000;
-    if (dwelling && msg.active) { stateCell.textContent = 'SIGNAL (dwelling)'; stateCell.style.color = 'var(--ok)'; }
-    else if (dwelling) { stateCell.textContent = 'dwelling (quiet)'; stateCell.style.color = 'var(--warn)'; }
-    else { stateCell.textContent = 'idle'; stateCell.style.color = 'var(--text-mute)'; }
-  }
 }
 
 function drawAirSpectrum() {
@@ -1074,9 +1094,14 @@ function drawAirSpectrum() {
   // guess). Hold the last-known band through a short gap rather than
   // blanking between dwells; only fall back to AIS if nothing has dwelled
   // yet at all (e.g. right after startup).
+  // Without that schedule feed (standalone run_airmaritime.sh), the band whose port is
+  // carrying non-zero IQ from Module 1 right now is the one being dwelled on.
   let key = trueDwellBand;
   if (!key || (performance.now() - trueDwellT) > 4000) {
-    key = trueDwellBand || 'ais';
+    const nowIq = ['ais', 'adsb'].find(k => airBandLive[k] && airBandLive[k].iq &&
+                                            (performance.now() - airBandLive[k].t) < 1500);
+    if (nowIq) lastIqBand = nowIq;
+    key = nowIq || trueDwellBand || lastIqBand || 'ais';
   }
   const band = AIRMAR_BANDS.find(x => x.key === key) || AIRMAR_BANDS[0];
   const halfSpanMHz = (band.samp_rate_hz / 1e6) / 2;
@@ -1097,14 +1122,19 @@ function drawAirSpectrum() {
     ctx.fillText(f.toFixed(3) + ' MHz', x + 2, 10);
   }
 
-  const dwelling = trueDwellBand === key && (performance.now() - trueDwellT) < 3000;
+  // Dwelling: Module 1's own schedule report (terrestrial bridge, 8787) when present, otherwise the
+  // air bridge's spectrum feed, which is active only while Module 1 delivers non-zero IQ on that port.
+  // SIGNAL is claimed only when this band produced a real decoded message in the last 5 s.
   const live = airBandLive[key];
-  const hasSignal = dwelling && live && live.active && (performance.now() - live.t) < 1500;
+  const tNow = performance.now();
+  const dwelling = (trueDwellBand === key && (tNow - trueDwellT) < 3000) ||
+                   !!(live && live.iq && (tNow - live.t) < 1500);
+  const hasSignal = dwelling && lastStreamMsg[key] && (tNow - lastStreamMsg[key]) < 5000;
   ctx.fillStyle = dwelling ? css('--plot-region-a') : css('--plot-region');
   ctx.fillRect(0, 0, r.width, r.height);
   ctx.fillStyle = hasSignal ? '#7dff7d' : (dwelling ? '#ffe800' : 'rgba(255,255,255,0.6)');
   ctx.font = '11px monospace'; ctx.textAlign = 'center';
-  const label = hasSignal ? 'DWELLING NOW — SIGNAL' : (dwelling ? 'DWELLING NOW — quiet' : 'not tuned');
+  const label = hasSignal ? 'DWELLING NOW — DECODING' : (dwelling ? 'DWELLING NOW — no decodes' : 'not tuned');
   ctx.fillText(band.name + '  •  ' + label, r.width / 2, 24);
   ctx.textAlign = 'left';
 
@@ -1127,7 +1157,7 @@ function drawAirSpectrum() {
   const lbl = document.getElementById('airSpecLbl');
   if (lbl) lbl.textContent = `RF Spectrum — ${band.name} ${band.freq.toFixed(3)} MHz`;
   const frd = document.getElementById('freqRead');
-  if (frd) frd.textContent = band.freq.toFixed(6) + ' MHz' + (act ? '  [ACTIVE]' : '');
+  if (frd) frd.textContent = band.freq.toFixed(6) + ' MHz' + (dwelling ? '  [DWELLING]' : '');
   let pk = -999;
   for (const v of bins) if (v > pk) pk = v;
   const fx = document.getElementById('fMax'), fn = document.getElementById('fMin');

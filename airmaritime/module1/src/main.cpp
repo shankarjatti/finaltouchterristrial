@@ -50,8 +50,7 @@ static double env_or(const char* name, double def)
 //  Every band's centre is env-overridable via SECURECOM_<BAND>_FREQ_HZ, with
 //  the value below as the default, so the console can retune a protocol without
 //  a rebuild. This matters in practice: the DMR default had to be corrected by
-//  ~25 kHz after measuring the real transmission, and the four newest bands are
-//  still on unverified placeholder frequencies.
+//  ~25 kHz after measuring the real transmission.
 //
 //  ── Gap defaults ──
 //  With 4 bands a 1.0 s gap cost half the cycle. With 8 it would cost 8 s of
@@ -71,15 +70,16 @@ static const std::vector<BandConfig> BANDS = {
     // AIR + MARITIME subsystem: AIS and ADS-B only. This Module 1 is the
     // standalone air/maritime backend -- the 8 terrestrial bands live in the
     // separate COUPLING/version1 tree and are NOT built here (one B210, one
-    // Module 1 at a time). Frequencies are placeholders until measured.
+    // Module 1 at a time). AIS 161.975/162.025 and ADS-B 1090 MHz are the fixed
+    // international channels; AIS verified over a cable (HackRF -> B210).
     //
     // Each band gets its OWN hardware sample rate (not the shared 200 kSps):
-    //  * AIS  250 kSps  -- airmaritime_decoder_live.py's GMSK demod assumes
-    //    ~5.2 samp/sym at 9600 baud, which only holds from a 250 kSps source.
+    //  * AIS  250 kSps  -- airmaritime_decoder_live.py decimates by 5 to 50 kSps
+    //    and its GMSK demod uses AIS_SPS = 250000/5/9600 (5.208 samp/sym).
     //    Centre is 162.000 MHz, NOT 162.025: airmaritime_decoder_live.py
     //    demodulates two channels at -/+25 kHz from the tuned centre
     //    (freq_xlating +-25000), i.e. AIS 161.975 (87B) and 162.025 (88B).
-    //    Tuned to 162.025 (the reference's placeholder) its two channels land
+    //    Tuned to 162.025 (the reference's old value) its two channels land
     //    on 162.000 / 162.050 -- neither is an AIS channel, so nothing decodes.
     //  * ADS-B 2 MSps  -- 1090ES Mode-S needs real ~2 MHz instantaneous
     //    bandwidth; the GNU Radio side resamples the achieved rate to what its
