@@ -21,6 +21,13 @@ digitally, so the HackRF's own LO leakage lands outside the B210's 200 kHz windo
   python3 tools/hackrf_replay.py --file p25_capture.cf32 --freq 450.09375e6 --tx-gain 10
   python3 tools/hackrf_replay.py --file "NXDN96 IQ.wav" --freq 451.09375e6 --dry-run
 
+Wideband signals (ADS-B, 2.4 MSps recording): --hackrf-rate resamples the wav straight to that
+rate (no 200 kSps stage). Keep --offset larger than half the B210's window so the HackRF's LO
+leakage stays outside it (B210 ADS-B is 6 MSps = +-3 MHz):
+
+  python3 tools/hackrf_replay.py --file 1_ADS-B_LiveRecorded_2.4MSps.wav --freq 1090e6 \
+      --hackrf-rate 16e6 --offset 4e6 --tx-gain 20 --duration 90
+
 Band frequencies (must match module1/src/main.cpp):
   DMR446 446.118528e6   NXDN96 451.09375e6   P25 450.09375e6   TETRA 420.0e6
 """
@@ -43,6 +50,8 @@ INTERP = 10                # 200 kSps -> 2 MSps
 class Replay(gr.top_block):
     def __init__(self, a):
         gr.top_block.__init__(self, 'hackrf_replay')
+        wide = a.hackrf_rate != HACKRF_RATE
+        self.hackrf_rate = hackrf_rate = a.hackrf_rate
         if a.file.lower().endswith('.wav'):
             with wave.open(a.file) as w:
                 if w.getnchannels() != 2:
@@ -54,19 +63,29 @@ class Replay(gr.top_block):
             i_ch, q_ch = (1, 0) if a.swap_iq else (0, 1)
             self.connect((wav, i_ch), (iq, 0))
             self.connect((wav, q_ch), (iq, 1))
-            r = Fraction(int(BASE_RATE), wav_rate).limit_denominator(1000)
+            target = hackrf_rate if wide else BASE_RATE
+            r = Fraction(int(target), wav_rate).limit_denominator(1000)
             to_base = filter.rational_resampler_ccc(interpolation=r.numerator, decimation=r.denominator,
                                                      taps=[], fractional_bw=0.4)
-            self.connect(iq, to_base)
+            if wide:
+                # the recording's own DC (its receiver's LO leak) is not part of the signal
+                dc = filter.dc_blocker_cc(1024, True)
+                self.connect(iq, dc, to_base)
+            else:
+                self.connect(iq, to_base)
             src = to_base
-            print(f'{a.file}: stereo IQ wav at {wav_rate} Hz, resampled x{r.numerator}/{r.denominator} to 200 kSps')
+            print(f'{a.file}: stereo IQ wav at {wav_rate} Hz, resampled x{r.numerator}/{r.denominator} '
+                  f'to {target / 1e3:g} kSps')
         else:
+            if wide:
+                raise SystemExit('--hackrf-rate needs a .wav input (its sample rate is read from the file)')
             src = blocks.file_source(gr.sizeof_gr_complex, a.file, True)
         # keep peaks under full scale so the HackRF DAC never clips
         level = blocks.multiply_const_cc(a.scale)
-        up = filter.rational_resampler_ccc(interpolation=INTERP, decimation=1, taps=[], fractional_bw=0.4)
+        up = (blocks.copy(gr.sizeof_gr_complex) if wide else
+              filter.rational_resampler_ccc(interpolation=INTERP, decimation=1, taps=[], fractional_bw=0.4))
         # signal sits --offset above the HackRF's centre, i.e. exactly on --freq
-        shift = blocks.rotator_cc(2 * 3.141592653589793 * a.offset / HACKRF_RATE)
+        shift = blocks.rotator_cc(2 * 3.141592653589793 * a.offset / hackrf_rate)
         if a.dry_run:
             snk = blocks.null_sink(gr.sizeof_gr_complex)
             self.probe = blocks.probe_rate(gr.sizeof_gr_complex, 1000.0, 0.15)
@@ -74,13 +93,14 @@ class Replay(gr.top_block):
         else:
             import osmosdr
             snk = osmosdr.sink(args=f'numchan=1 {a.device}')
-            snk.set_sample_rate(HACKRF_RATE)
+            snk.set_sample_rate(hackrf_rate)
             # the HackRF's crystal is off by a.ppm; its samples come from the same clock, so
             # the whole output scales by (1 + ppm). Pre-scale the tuning to land on --freq.
             snk.set_center_freq(a.freq / (1 + a.ppm * 1e-6) - a.offset, 0)
             snk.set_gain(14 if a.amp else 0, 'RF', 0)      # HackRF TX amp: 0 = off, 14 dB = on
             snk.set_gain(a.tx_gain, 'IF', 0)              # TX VGA, 0-47 dB
-            snk.set_bandwidth(1.75e6, 0)
+            # baseband filter: must pass the signal at +offset (wideband: 0.75 x rate, HackRF's own default)
+            snk.set_bandwidth(0.75 * hackrf_rate if wide else 1.75e6, 0)
         self.connect(src, level, up, shift, snk)
 
 
@@ -99,6 +119,9 @@ def main():
     ap.add_argument('--swap-iq', action='store_true', help='wav stores Q left / I right (TETRA IQ.wav does)')
     ap.add_argument('--duration', type=float, default=0,
                     help='stop transmitting after this many seconds (0 = until Ctrl-C). Use it for over-the-air tests')
+    ap.add_argument('--hackrf-rate', type=float, default=HACKRF_RATE,
+                    help='HackRF sample rate (default 2e6, narrowband path via 200 kSps). Higher = wideband: '
+                         'the wav is resampled straight to this rate, e.g. 16e6 for ADS-B')
     ap.add_argument('--dry-run', action='store_true', help='build and run the chain into a null sink, no hardware')
     a = ap.parse_args()
 
@@ -115,7 +138,7 @@ def main():
     while not stop.is_set() and time.time() < t_end:
         time.sleep(0.2)
     if a.dry_run:
-        print(f'dry run OK: {tb.probe.rate() / 1e6:.2f} MSps through the chain (expect ~2 at full speed or more)')
+        print(f'dry run OK: {tb.probe.rate() / 1e6:.2f} MSps through the chain (needs >= {a.hackrf_rate / 1e6:g} for real time)')
 
     # Stopping the osmosdr HackRF sink can hang; a transmitter must never outlive its
     # time limit, so force the process out if a clean stop takes longer than 3 s.

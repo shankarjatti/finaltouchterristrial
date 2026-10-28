@@ -516,7 +516,7 @@ const cartoDarkUrl = 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
 const osmUrl       = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const esriSatUrl   = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 
-const mbtilesAttr = 'Offline Tactical MBTiles (Zoom 0-18) &copy; SecureCOM';
+const mbtilesAttr = 'Offline MBTiles (stored tiles only, zoom 0-12) &copy; SecureCOM';
 const cartoAttr   = '&copy; CARTO &copy; OpenStreetMap';
 const osmAttr     = '&copy; OpenStreetMap contributors';
 const esriAttr    = 'Tiles &copy; Esri &mdash; Earthstar Geographics';
@@ -1036,7 +1036,7 @@ const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).
 
 const AIRMAR_BANDS = [
   { key: 'ais',  name: 'AIS',   freq: 162.000,  samp_rate_hz: 250000  },
-  { key: 'adsb', name: 'ADS-B', freq: 1090.000, samp_rate_hz: 2000000 },
+  { key: 'adsb', name: 'ADS-B', freq: 1090.000, samp_rate_hz: 6000000 },
 ];
 const AIR_FFT_N = 512;
 const airSpecBins = {

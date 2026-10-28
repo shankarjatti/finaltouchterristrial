@@ -7,12 +7,12 @@ software chain (airmaritime_decoder_live.py -> ZMQ 9201/9202 -> airmaritime_brid
 Each port is a TCP server (server side, like Module 1). On a client connect it
 streams the file's complex64 IQ at the file's real-time rate, looping, so the
 decoder sees exactly the rate Module 1 configures for that band (AIS 250 kSps,
-ADS-B 2 MSps). Stereo-IQ .wav (I=left, Q=right) or raw .cf32 both work.
+ADS-B 6 MSps). Stereo-IQ .wav (I=left, Q=right) or raw .cf32 both work.
 
   # stop Module 1 first so 7009/7010 are free, then:
   python3 tools/replay_iq_tcp.py \
       --ais  "/path/ais_marine_vessel_tracking_250k.wav"      --ais-rate 250000 \
-      --adsb "/path/1_ADS-B_Synthetic_2.0MSps.wav"            --adsb-rate 2000000
+      --adsb "/path/adsb_real_6M.cf32"   --adsb-rate 6000000   # real recording resampled to 6 MSps
 """
 import argparse
 import socket
@@ -66,7 +66,7 @@ def main():
     ap.add_argument('--ais-rate', type=float, default=250000)
     ap.add_argument('--adsb')
     ap.add_argument('--adsb-port', type=int, default=7010)
-    ap.add_argument('--adsb-rate', type=float, default=2000000)
+    ap.add_argument('--adsb-rate', type=float, default=6000000)
     a = ap.parse_args()
     threads = []
     if a.ais:

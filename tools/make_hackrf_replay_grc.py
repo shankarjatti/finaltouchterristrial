@@ -15,6 +15,8 @@ Parameter block) or overridden on the command line of the generated script:
 
   python3 hackrf_replay.py --wav-file "NXDN96 IQ.wav" --in-rate 48000 \
       --freq 451.09375e6 --ppm -6.24 --tx-gain 20 --duration 60
+  python3 hackrf_replay.py --wav-file 1_ADS-B_LiveRecorded_2.4MSps.wav --in-rate 2400000 \
+      --freq 1090e6 --ppm -6.24 --hackrf-rate 16e6 --offset 4e6 --tx-gain 20 --duration 90
 
 Safe defaults: TX gain 0, RF amp off, stops by itself after `duration` seconds.
 Use a CABLE + 30-40 dB attenuator into the receiver, never an antenna.
@@ -72,14 +74,18 @@ def main():
               'TETRA IQ.wav stores Q left / I right -> 1'),
         param('offset', 'HackRF offset below the carrier (Hz)', '500e3', 'eng_float', 'o', 8, 660),
         param('scale', 'Digital level before the DAC', '0.5', 'eng_float', 'l', 8, 740),
+        param('hackrf_rate', 'HackRF sample rate (2e6 narrowband; e.g. 16e6 for ADS-B)', '2e6', 'eng_float', 'R', 8, 820,
+              'above 2e6 the wav goes straight to this rate (no 200 kSps stage); ADS-B: 16e6 with offset 4e6'),
     ]
     # ---- derived variables ----
     b += [
-        var('base_rate', '200000', 232, 100, 'rate the stage-1 resampler targets'),
-        var('hackrf_rate', '2000000', 232, 164, 'lowest rate a HackRF supports'),
+        var('base_rate', '200000 if hackrf_rate == 2e6 else int(hackrf_rate)', 232, 100,
+            'stage-1 target: 200 kSps (narrowband) or straight to hackrf_rate (wideband)'),
         var('r1', 'Fraction(int(base_rate), int(in_rate)).limit_denominator(1000)', 232, 228,
-            'stage-1 resample ratio: wav rate -> 200 kSps'),
-        var('interp2', 'int(hackrf_rate // base_rate)', 232, 292, 'stage-2 interpolation (200 kSps -> 2 MSps)'),
+            'stage-1 resample ratio: wav rate -> base_rate'),
+        var('interp2', 'int(hackrf_rate // base_rate)', 232, 292, 'stage-2 interpolation (x10 narrowband, x1 wideband)'),
+        var('tx_bw', '1.75e6 if hackrf_rate == 2e6 else 0.75 * hackrf_rate', 232, 420,
+            'HackRF baseband filter: must pass the signal at +offset'),
         var('tune_freq', 'freq / (1 + ppm * 1e-6) - offset', 232, 356,
             'HackRF centre: crystal-corrected and moved down by the offset'),
     ]
@@ -94,9 +100,9 @@ def main():
                                               'input_index': 'swap_iq', 'output_index': '0', 'vlen': '1',
                                               'showports': 'True', 'enabled': 'True', 'affinity': '', 'alias': '', 'comment': ''}, 720, y0),
         blk('to_200k', 'rational_resampler_xxx', {'type': 'ccc', 'interp': 'r1.numerator', 'decim': 'r1.denominator',
-                                                   'taps': '[]', 'fbw': '0.4', 'affinity': '', 'alias': '', 'comment': 'wav rate -> 200 kSps'}, 940, y0),
+                                                   'taps': '[]', 'fbw': '0.4', 'affinity': '', 'alias': '', 'comment': 'wav rate -> base_rate'}, 940, y0),
         blk('to_2M', 'rational_resampler_xxx', {'type': 'ccc', 'interp': 'interp2', 'decim': '1',
-                                                 'taps': '[]', 'fbw': '0.4', 'affinity': '', 'alias': '', 'comment': '200 kSps -> 2 MSps'}, 1170, y0),
+                                                 'taps': '[]', 'fbw': '0.4', 'affinity': '', 'alias': '', 'comment': 'base_rate -> hackrf_rate'}, 1170, y0),
         blk('shift', 'blocks_rotator_cc', {'phase_inc': '2 * math.pi * offset / hackrf_rate', 'tag_inc_update': 'False',
                                            'affinity': '', 'alias': '', 'comment': 'moves the signal up by `offset`'}, 1400, y0),
         blk('level', 'blocks_multiply_const_vxx', {'type': 'complex', 'const': 'scale', 'vlen': '1',
@@ -106,7 +112,7 @@ def main():
         blk('hackrf_tx', 'osmosdr_sink', {'args': '"hackrf=0"', 'sync': 'sync', 'num_mboards': '1', 'clock_source0': '',
                                           'time_source0': '', 'nchan': '1', 'sample_rate': 'hackrf_rate',
                                           'freq0': 'tune_freq', 'corr0': '0', 'gain0': '0', 'if_gain0': 'tx_gain',
-                                          'bb_gain0': '0', 'ant0': '', 'bw0': '1.75e6', 'affinity': '', 'alias': '',
+                                          'bb_gain0': '0', 'ant0': '', 'bw0': 'tx_bw', 'affinity': '', 'alias': '',
                                           'comment': 'RF (amp) gain 0 = OFF. IF gain = TX VGA.'}, 2050, y0),
     ]
     conns = [

@@ -6,7 +6,7 @@ options:
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: 'Air & Maritime Dual-Protocol Receiver (AIS on 9201, ADS-B on 9202)'
+    description: Air & Maritime Dual-Protocol Receiver (AIS on 9201, ADS-B on 9202)
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -28,21 +28,24 @@ options:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 8]
+    coordinate:
+    - 8
+    - 8
     rotation: 0
     state: enabled
-
 blocks:
 - name: fs
   id: variable
   parameters:
-    comment: ''
-    value: 2e6
+    comment: 'ADS-B rate: modes_demod needs an even number of samples per microsecond; 6 MSps = what Module 1 delivers live'
+    value: 6e6
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [128, 428.0]
+    coordinate:
+    - 128
+    - 428.0
     rotation: 0
     state: enabled
 - name: low_pass_taps
@@ -59,7 +62,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [408, 700.0]
+    coordinate:
+    - 408
+    - 700.0
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -71,7 +76,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 12]
+    coordinate:
+    - 184
+    - 12
     rotation: 0
     state: enabled
 - name: samp_rate_0
@@ -83,22 +90,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [288, 724.0]
-    rotation: 0
-    state: enabled
-- name: threshold
-  id: variable_qtgui_entry
-  parameters:
-    comment: ''
-    gui_hint: 0,0,1,1
-    label: Detection Threshold
-    type: real
-    value: '0.010'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [264, 412.0]
+    coordinate:
+    - 288
+    - 724.0
     rotation: 0
     state: enabled
 - name: adsb_decoder_0
@@ -116,40 +110,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1384, 444.0]
-    rotation: 0
-    state: enabled
-- name: adsb_demod_0
-  id: adsb_demod
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    fs: fs
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1048, 552.0]
-    rotation: 0
-    state: enabled
-- name: adsb_framer_1
-  id: adsb_framer
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    fs: fs
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    threshold: threshold
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [808, 500.0]
+    coordinate:
+    - 1384
+    - 444.0
     rotation: 0
     state: enabled
 - name: ais_invert_0
@@ -164,7 +127,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1152, 928.0]
+    coordinate:
+    - 1152
+    - 928.0
     rotation: 0
     state: enabled
 - name: ais_invert_1
@@ -179,7 +144,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1112, 1184.0]
+    coordinate:
+    - 1112
+    - 1184.0
     rotation: 0
     state: enabled
 - name: ais_pdu_to_nmea_0
@@ -195,7 +162,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1512, 952.0]
+    coordinate:
+    - 1512
+    - 952.0
     rotation: 0
     state: enabled
 - name: ais_pdu_to_nmea_1
@@ -211,24 +180,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1488, 1168.0]
-    rotation: 0
-    state: enabled
-- name: analog_const_source_x_0
-  id: analog_const_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    const: threshold
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    type: float
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1048, 708.0]
+    coordinate:
+    - 1488
+    - 1168.0
     rotation: 0
     state: enabled
 - name: blocks_complex_to_mag_squared_0
@@ -244,7 +198,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [672, 632.0]
+    coordinate:
+    - 672
+    - 632.0
     rotation: 0
     state: enabled
 - name: blocks_float_to_complex_0
@@ -260,7 +216,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [328, 584.0]
+    coordinate:
+    - 328
+    - 584.0
     rotation: 0
     state: enabled
 - name: blocks_float_to_complex_0_0
@@ -276,7 +234,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [288, 960.0]
+    coordinate:
+    - 288
+    - 960.0
     rotation: 0
     state: enabled
 - name: blocks_throttle_0_0
@@ -295,7 +255,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [512, 540.0]
+    coordinate:
+    - 512
+    - 540.0
     rotation: 0
     state: enabled
 - name: blocks_throttle_0_1
@@ -314,7 +276,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 948.0]
+    coordinate:
+    - 456
+    - 948.0
     rotation: 0
     state: enabled
 - name: blocks_wavfile_source_0
@@ -322,8 +286,8 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    comment: ''
-    file: /home/shankar/Downloads/tutorials/sigtel_protocol_wav_folders/1_ADS-B/1_ADS-B_Synthetic_2.0MSps.wav
+    comment: REAL 1090 MHz recording (2.4 MSps, 102 s, aircraft near London)
+    file: /home/shankar/Downloads/tutorials/sigtel_protocol_wav_folders/1_ADS-B/1_ADS-B_LiveRecorded_2.4MSps.wav
     maxoutbuf: '0'
     minoutbuf: '0'
     nchan: '2'
@@ -332,7 +296,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [48, 592.0]
+    coordinate:
+    - 48
+    - 592.0
     rotation: 0
     state: enabled
 - name: blocks_wavfile_source_0_0
@@ -350,7 +316,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [24, 960.0]
+    coordinate:
+    - 24
+    - 960.0
     rotation: 0
     state: enabled
 - name: ais_to_48k_0
@@ -370,7 +338,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 948.0]
+    coordinate:
+    - 760
+    - 948.0
     rotation: 0
     state: enabled
 - name: ais_to_48k_1
@@ -390,7 +360,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 1172.0]
+    coordinate:
+    - 760
+    - 1172.0
     rotation: 0
     state: enabled
 - name: ais_nrzi_0
@@ -407,7 +379,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 948.0]
+    coordinate:
+    - 1104
+    - 948.0
     rotation: 0
     state: enabled
 - name: ais_nrzi_1
@@ -424,7 +398,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 1172.0]
+    coordinate:
+    - 1104
+    - 1172.0
     rotation: 0
     state: enabled
 - name: digital_gmsk_demod_0
@@ -446,7 +422,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [912, 868.0]
+    coordinate:
+    - 912
+    - 868.0
     rotation: 0
     state: enabled
 - name: digital_gmsk_demod_1
@@ -468,7 +446,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [896, 1092.0]
+    coordinate:
+    - 896
+    - 1092.0
     rotation: 0
     state: enabled
 - name: digital_hdlc_deframer_bp_0
@@ -485,7 +465,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1280, 972.0]
+    coordinate:
+    - 1280
+    - 972.0
     rotation: 0
     state: enabled
 - name: digital_hdlc_deframer_bp_1
@@ -502,7 +484,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1280, 1196.0]
+    coordinate:
+    - 1280
+    - 1196.0
     rotation: 0
     state: enabled
 - name: freq_xlating_fir_filter_xxx_0
@@ -522,7 +506,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [624, 844.0]
+    coordinate:
+    - 624
+    - 844.0
     rotation: 0
     state: enabled
 - name: freq_xlating_fir_filter_xxx_1
@@ -542,7 +528,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [624, 1068.0]
+    coordinate:
+    - 624
+    - 1068.0
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -577,7 +565,7 @@ blocks:
     entags: 'True'
     grid: 'True'
     gui_hint: 1,0,1,2
-    label1: Demodulated Pulse
+    label1: Received |IQ|^2
     label10: ''
     label2: Threshold
     label3: ''
@@ -599,7 +587,7 @@ blocks:
     marker8: '-1'
     marker9: '-1'
     name: '"ADS-B Pulse Telemetry"'
-    nconnections: '2'
+    nconnections: '1'
     size: int(fs*150e-6)
     srate: int(fs)
     stemplot: 'False'
@@ -616,9 +604,9 @@ blocks:
     tr_chan: '0'
     tr_delay: '1.25e-6'
     tr_level: '0'
-    tr_mode: qtgui.TRIG_MODE_TAG
+    tr_mode: qtgui.TRIG_MODE_FREE
     tr_slope: qtgui.TRIG_SLOPE_POS
-    tr_tag: '"burst"'
+    tr_tag: '""'
     type: float
     update_time: 1.0/100.0
     width1: '1'
@@ -639,7 +627,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1328, 628.0]
+    coordinate:
+    - 1328
+    - 628.0
     rotation: 0
     state: enabled
 - name: zeromq_pub_msg_sink_0
@@ -649,13 +639,15 @@ blocks:
     affinity: ''
     alias: ''
     bind: 'True'
-    comment: 'ADS-B decoded messages out'
+    comment: ADS-B decoded messages out
     timeout: '10'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1672, 460.0]
+    coordinate:
+    - 1672
+    - 460.0
     rotation: 0
     state: enabled
 - name: zeromq_pub_msg_sink_0_0
@@ -665,46 +657,171 @@ blocks:
     affinity: ''
     alias: ''
     bind: 'True'
-    comment: 'AIS NMEA sentences out (Ch A + Ch B)'
+    comment: AIS NMEA sentences out (Ch A + Ch B)
     timeout: '10'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1704, 1076.0]
+    coordinate:
+    - 1704
+    - 1076.0
     rotation: 0
     state: enabled
-
+- name: adsb_to_6M
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 2.4 -> 6 MSps
+    decim: '2'
+    fbw: '0'
+    interp: '5'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 312
+    - 640.0
+    rotation: 0
+    state: enabled
+- name: modes_demod_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"Mode-S / ADS-B demodulator: preamble test against the measured noise floor, half-bit\nintegration, timing search, CRC-24 (DF17/18). The code lives in modes_demod.py next to this\nflowgraph; it replaces gr-adsb's framer + demod (32 of 173 frames passed CRC on a real\nrecording, 155 with this block).\"\"\"\nimport os\nimport sys\ntry:\n    from modes_demod import modes_demod\nexcept ImportError:\n    sys.path.insert(0, '/home/shankar/Downloads/tutorials/delhi_testing/coupled/secuecom/COUPLING/version1/airmaritime')\n    from modes_demod import modes_demod\n\n\nclass blk(modes_demod):\n    \"\"\"Mode-S demod (modes_demod.py)\"\"\"\n    def __init__(self, fs=6e6, snr_db=6.0):\n        modes_demod.__init__(self, fs=fs, snr_db=snr_db)\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    fs: fs
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    snr_db: '6.0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 712
+    - 640.0
+    rotation: 0
+    state: enabled
 connections:
-- [adsb_decoder_0, decoded, zeromq_pub_msg_sink_0, in]
-- [adsb_demod_0, '0', qtgui_time_sink_x_0, '0']
-- [adsb_demod_0, demodulated, adsb_decoder_0, demodulated]
-- [adsb_framer_1, '0', adsb_demod_0, '0']
-- [ais_invert_0, '0', digital_hdlc_deframer_bp_0, '0']
-- [ais_invert_1, '0', digital_hdlc_deframer_bp_1, '0']
-- [ais_pdu_to_nmea_0, out, zeromq_pub_msg_sink_0_0, in]
-- [ais_pdu_to_nmea_1, out, zeromq_pub_msg_sink_0_0, in]
-- [analog_const_source_x_0, '0', qtgui_time_sink_x_0, '1']
-- [blocks_complex_to_mag_squared_0, '0', adsb_framer_1, '0']
-- [blocks_float_to_complex_0, '0', blocks_throttle_0_0, '0']
-- [blocks_float_to_complex_0_0, '0', blocks_throttle_0_1, '0']
-- [blocks_throttle_0_0, '0', blocks_complex_to_mag_squared_0, '0']
-- [blocks_throttle_0_1, '0', freq_xlating_fir_filter_xxx_0, '0']
-- [blocks_throttle_0_1, '0', freq_xlating_fir_filter_xxx_1, '0']
-- [blocks_wavfile_source_0, '0', blocks_float_to_complex_0, '1']
-- [blocks_wavfile_source_0, '1', blocks_float_to_complex_0, '0']
-- [blocks_wavfile_source_0_0, '0', blocks_float_to_complex_0_0, '0']
-- [blocks_wavfile_source_0_0, '1', blocks_float_to_complex_0_0, '1']
-- [ais_nrzi_0, '0', ais_invert_0, '0']
-- [digital_gmsk_demod_0, '0', ais_nrzi_0, '0']
-- [ais_nrzi_1, '0', ais_invert_1, '0']
-- [digital_gmsk_demod_1, '0', ais_nrzi_1, '0']
-- [digital_hdlc_deframer_bp_0, out, ais_pdu_to_nmea_0, print]
-- [digital_hdlc_deframer_bp_1, out, ais_pdu_to_nmea_1, print]
-- [ais_to_48k_0, '0', digital_gmsk_demod_0, '0']
-- [freq_xlating_fir_filter_xxx_0, '0', ais_to_48k_0, '0']
-- [ais_to_48k_1, '0', digital_gmsk_demod_1, '0']
-- [freq_xlating_fir_filter_xxx_1, '0', ais_to_48k_1, '0']
-
+- - adsb_decoder_0
+  - decoded
+  - zeromq_pub_msg_sink_0
+  - in
+- - ais_invert_0
+  - '0'
+  - digital_hdlc_deframer_bp_0
+  - '0'
+- - ais_invert_1
+  - '0'
+  - digital_hdlc_deframer_bp_1
+  - '0'
+- - ais_pdu_to_nmea_0
+  - out
+  - zeromq_pub_msg_sink_0_0
+  - in
+- - ais_pdu_to_nmea_1
+  - out
+  - zeromq_pub_msg_sink_0_0
+  - in
+- - blocks_float_to_complex_0_0
+  - '0'
+  - blocks_throttle_0_1
+  - '0'
+- - blocks_throttle_0_0
+  - '0'
+  - blocks_complex_to_mag_squared_0
+  - '0'
+- - blocks_throttle_0_1
+  - '0'
+  - freq_xlating_fir_filter_xxx_0
+  - '0'
+- - blocks_throttle_0_1
+  - '0'
+  - freq_xlating_fir_filter_xxx_1
+  - '0'
+- - blocks_wavfile_source_0
+  - '0'
+  - blocks_float_to_complex_0
+  - '1'
+- - blocks_wavfile_source_0
+  - '1'
+  - blocks_float_to_complex_0
+  - '0'
+- - blocks_wavfile_source_0_0
+  - '0'
+  - blocks_float_to_complex_0_0
+  - '0'
+- - blocks_wavfile_source_0_0
+  - '1'
+  - blocks_float_to_complex_0_0
+  - '1'
+- - ais_nrzi_0
+  - '0'
+  - ais_invert_0
+  - '0'
+- - digital_gmsk_demod_0
+  - '0'
+  - ais_nrzi_0
+  - '0'
+- - ais_nrzi_1
+  - '0'
+  - ais_invert_1
+  - '0'
+- - digital_gmsk_demod_1
+  - '0'
+  - ais_nrzi_1
+  - '0'
+- - digital_hdlc_deframer_bp_0
+  - out
+  - ais_pdu_to_nmea_0
+  - print
+- - digital_hdlc_deframer_bp_1
+  - out
+  - ais_pdu_to_nmea_1
+  - print
+- - ais_to_48k_0
+  - '0'
+  - digital_gmsk_demod_0
+  - '0'
+- - freq_xlating_fir_filter_xxx_0
+  - '0'
+  - ais_to_48k_0
+  - '0'
+- - ais_to_48k_1
+  - '0'
+  - digital_gmsk_demod_1
+  - '0'
+- - freq_xlating_fir_filter_xxx_1
+  - '0'
+  - ais_to_48k_1
+  - '0'
+- - blocks_float_to_complex_0
+  - '0'
+  - adsb_to_6M
+  - '0'
+- - adsb_to_6M
+  - '0'
+  - blocks_throttle_0_0
+  - '0'
+- - blocks_throttle_0_0
+  - '0'
+  - modes_demod_0
+  - '0'
+- - modes_demod_0
+  - demodulated
+  - adsb_decoder_0
+  - demodulated
+- - blocks_complex_to_mag_squared_0
+  - '0'
+  - qtgui_time_sink_x_0
+  - '0'
 metadata:
   file_format: 1

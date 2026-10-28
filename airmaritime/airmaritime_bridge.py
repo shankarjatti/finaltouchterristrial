@@ -60,7 +60,7 @@ IQ_AIS_PORT = 7009
 IQ_ADSB_PORT = 7010
 AIRMAR_BANDS = [
     {'key': 'ais',  'name': 'AIS',   'freq_mhz': 162.000,  'port': IQ_AIS_PORT,  'samp_rate_hz': 250_000.0},
-    {'key': 'adsb', 'name': 'ADS-B', 'freq_mhz': 1090.000, 'port': IQ_ADSB_PORT, 'samp_rate_hz': 2_000_000.0},
+    {'key': 'adsb', 'name': 'ADS-B', 'freq_mhz': 1090.000, 'port': IQ_ADSB_PORT, 'samp_rate_hz': 6_000_000.0},
 ]
 IQ_FFT_N = 512
 IQ_ACTIVE_THRESH_DBFS = -60.0
@@ -234,6 +234,8 @@ def update_adsb_target(fields):
                 val = val.strip()
                 if not val:
                     continue
+            if dst_key == 'heading':
+                val = val % 360.0   # gr-adsb reports e.g. -169 for 191 degrees
             a[dst_key] = val
     a['last_seen'] = t_now
     return a
@@ -369,6 +371,10 @@ async def iq_spectrum_reader(band):
                 if not data:
                     break
                 buf += data
+                # Display only: never fall behind the live stream (ADS-B is 48 MB/s). Drop whole
+                # chunks of backlog -- a multiple of 8 bytes, so sample alignment is kept.
+                if len(buf) > 4 * chunk_bytes:
+                    buf = buf[(len(buf) // chunk_bytes - 1) * chunk_bytes:]
                 while len(buf) >= chunk_bytes:
                     chunk, buf = buf[:chunk_bytes], buf[chunk_bytes:]
                     now = time.time()

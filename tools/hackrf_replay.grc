@@ -203,11 +203,29 @@ blocks:
     - 740
     rotation: 0
     state: enabled
+- name: hackrf_rate
+  id: parameter
+  parameters:
+    label: HackRF sample rate (2e6 narrowband; e.g. 16e6 for ADS-B)
+    value: 2e6
+    type: eng_float
+    short_id: R
+    hide: none
+    comment: 'above 2e6 the wav goes straight to this rate (no 200 kSps stage); ADS-B: 16e6 with offset 4e6'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 820
+    rotation: 0
+    state: enabled
 - name: base_rate
   id: variable
   parameters:
-    value: '200000'
-    comment: rate the stage-1 resampler targets
+    value: 200000 if hackrf_rate == 2e6 else int(hackrf_rate)
+    comment: 'stage-1 target: 200 kSps (narrowband) or straight to hackrf_rate (wideband)'
   states:
     bus_sink: false
     bus_source: false
@@ -217,25 +235,11 @@ blocks:
     - 100
     rotation: 0
     state: enabled
-- name: hackrf_rate
-  id: variable
-  parameters:
-    value: '2000000'
-    comment: lowest rate a HackRF supports
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 232
-    - 164
-    rotation: 0
-    state: enabled
 - name: r1
   id: variable
   parameters:
     value: Fraction(int(base_rate), int(in_rate)).limit_denominator(1000)
-    comment: 'stage-1 resample ratio: wav rate -> 200 kSps'
+    comment: 'stage-1 resample ratio: wav rate -> base_rate'
   states:
     bus_sink: false
     bus_source: false
@@ -249,7 +253,7 @@ blocks:
   id: variable
   parameters:
     value: int(hackrf_rate // base_rate)
-    comment: stage-2 interpolation (200 kSps -> 2 MSps)
+    comment: stage-2 interpolation (x10 narrowband, x1 wideband)
   states:
     bus_sink: false
     bus_source: false
@@ -257,6 +261,20 @@ blocks:
     coordinate:
     - 232
     - 292
+    rotation: 0
+    state: enabled
+- name: tx_bw
+  id: variable
+  parameters:
+    value: 1.75e6 if hackrf_rate == 2e6 else 0.75 * hackrf_rate
+    comment: 'HackRF baseband filter: must pass the signal at +offset'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 232
+    - 420
     rotation: 0
     state: enabled
 - name: tune_freq
@@ -356,7 +374,7 @@ blocks:
     fbw: '0.4'
     affinity: ''
     alias: ''
-    comment: wav rate -> 200 kSps
+    comment: wav rate -> base_rate
   states:
     bus_sink: false
     bus_source: false
@@ -376,7 +394,7 @@ blocks:
     fbw: '0.4'
     affinity: ''
     alias: ''
-    comment: 200 kSps -> 2 MSps
+    comment: base_rate -> hackrf_rate
   states:
     bus_sink: false
     bus_source: false
@@ -455,7 +473,7 @@ blocks:
     if_gain0: tx_gain
     bb_gain0: '0'
     ant0: ''
-    bw0: 1.75e6
+    bw0: tx_bw
     affinity: ''
     alias: ''
     comment: RF (amp) gain 0 = OFF. IF gain = TX VGA.

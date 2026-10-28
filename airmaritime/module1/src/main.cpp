@@ -81,13 +81,14 @@ static const std::vector<BandConfig> BANDS = {
     //    (freq_xlating +-25000), i.e. AIS 161.975 (87B) and 162.025 (88B).
     //    Tuned to 162.025 (the reference's old value) its two channels land
     //    on 162.000 / 162.050 -- neither is an AIS channel, so nothing decodes.
-    //  * ADS-B 2 MSps  -- 1090ES Mode-S needs real ~2 MHz instantaneous
-    //    bandwidth; the GNU Radio side resamples the achieved rate to what its
-    //    adsb.* blocks expect (see airmaritime_decoder_live.py).
+    //  * ADS-B 6 MSps  -- Mode-S pulses are 0.5 us. On a real 1090 MHz recording
+    //    the decoder (modes_demod.py) got 12 CRC-valid frames / 10 s at 2 MSps,
+    //    116 at 4 MSps and 155 at 6 MSps; airmaritime_decoder_live.py expects
+    //    exactly this rate (ADSB_SOURCE_RATE_HZ).
     { "AIS",  env_or("SECURECOM_AIS_FREQ_HZ",  162.000e6), 7009, env_or("SECURECOM_AIS_DWELL_SEC",  1.0),
               env_or("SECURECOM_AIS_GAP_SEC",  GAP_DEFAULT), env_or("SECURECOM_AIS_SAMPRATE_HZ",  250e3) },
     { "ADSB", env_or("SECURECOM_ADSB_FREQ_HZ", 1090.00e6), 7010, env_or("SECURECOM_ADSB_DWELL_SEC", 1.0),
-              env_or("SECURECOM_ADSB_GAP_SEC", GAP_DEFAULT), env_or("SECURECOM_ADSB_SAMPRATE_HZ", 2e6)  },
+              env_or("SECURECOM_ADSB_GAP_SEC", GAP_DEFAULT), env_or("SECURECOM_ADSB_SAMPRATE_HZ", 6e6)  },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

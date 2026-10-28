@@ -15,8 +15,9 @@ Console: http://127.0.0.1:8790/airmaritime_console.html  ·  map tiles: http://1
 ## Pieces
 | File | Role |
 |---|---|
-| `module1/` | C++/UHD backend, **AIS + ADS-B only**, per-band hardware rate (AIS 250 kSps @ 162.000 MHz → TCP 7009; ADS-B 2 MSps @ 1090 MHz → TCP 7010) |
-| `airmaritime_decoder_live.py` | live decoder: reads 7009/7010, uses `gnuradio.ais` + `gnuradio.adsb`, publishes messages on ZMQ 9201 (AIS) / 9202 (ADS-B) |
+| `module1/` | C++/UHD backend, **AIS + ADS-B only**, per-band hardware rate (AIS 250 kSps @ 162.000 MHz → TCP 7009; ADS-B 6 MSps @ 1090 MHz → TCP 7010) |
+| `airmaritime_decoder_live.py` | live decoder: reads 7009/7010, uses `gnuradio.ais`, `modes_demod.py` + `gnuradio.adsb`'s decoder, publishes messages on ZMQ 9201 (AIS) / 9202 (ADS-B) |
+| `modes_demod.py` | Mode-S demodulator block (replaces gr-adsb's framer + demod) |
 | `airmaritime_decoder.py` | offline regression reference (reads bundled WAVs) |
 | `airmaritime_bridge.py` | tracks vessels/aircraft, serves WebSocket **8887**, spawns the live decoder |
 | `gui/airmaritime_console.html` | Leaflet map + RF spectrum console |
@@ -42,6 +43,12 @@ Console: http://127.0.0.1:8790/airmaritime_console.html  ·  map tiles: http://1
 - `airmaritime_decoder.py` regenerated from `airmarin.grc` (grcc); its AIS input is now
   `all_protocols_wav_samples/AIS_Marine/ais_b210_cable_capture_250k.wav` (real B210 capture).
 - `tools/replay_iq_tcp.py` added.
+- **ADS-B demod replaced** (`modes_demod.py`): gr-adsb's framer used a fixed absolute threshold
+  and its demod one sample per half-bit with no timing search (32 of 173 real frames passed CRC;
+  0 decoded at 2 MSps). The new block uses a noise-relative preamble test, half-bit integration,
+  timing search and CRC-24, and feeds gr-adsb's own decoder (CPR position, callsign, velocity).
+  ADS-B now runs at **6 MSps** (Module 1, live decoder, bridge, console, `airmarin.grc` via an
+  embedded Python block). Bridge spectrum reader skips backlog (48 MB/s); headings 0–360.
 
 ## Status
 - **AIS verified end to end over a cable**: real AIS recording → HackRF (161.975 MHz, VGA 40,
@@ -49,7 +56,11 @@ Console: http://127.0.0.1:8790/airmaritime_console.html  ·  map tiles: http://1
   85 s from 6 real vessels; markers and table checked in the console.
 - `ais_marine_vessel_tracking_250k.wav` contains **no AIS** (Q ≈ 0, no CRC-valid frame) — do
   not use it for AIS tests. Use `AIS IQ.wav` (48 kHz, real) or the B210 capture.
-- **ADS-B**: decodes the synthetic `1_ADS-B_Synthetic_2.0MSps.wav` only (61 offline, 83 TCP
-  replay). Not yet verified on a real recording or live 1090 MHz.
+- **ADS-B verified end to end over a cable**: real recording `1_ADS-B_LiveRecorded_2.4MSps.wav`
+  → HackRF (1090 MHz, `--hackrf-rate 16e6 --offset 4e6`, VGA 20, amp off) → SMA + attenuator →
+  B210 (6 MSps) → decoder → bridge → map: 501 messages / 80 s, 35 aircraft, 29 with position.
+  Live 1090 MHz reception (antenna, receive only) not yet tried.
+- `adsb_sample_iq.wav` / `1_ADS-B_Synthetic_2.0MSps.wav` are synthetic (one fake aircraft) — not
+  used anywhere now.
 - Bundled map tiles: real only to zoom 6 over India.
 - Hardware/Schedule tab needs the terrestrial bridge (8787); standalone it says "not connected".
