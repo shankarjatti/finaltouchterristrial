@@ -1,0 +1,632 @@
+options:
+  parameters:
+    author: ''
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: 'Air & Maritime Dual-Protocol Receiver (AIS on 9201, ADS-B on 9202)'
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: airmaritime_decoder
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Air & Maritime Dual-Protocol Decoder (AIS, ADS-B)
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: fs
+  id: variable
+  parameters:
+    comment: ''
+    value: 2e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [128, 428.0]
+    rotation: 0
+    state: enabled
+- name: low_pass_taps
+  id: variable_low_pass_filter_taps
+  parameters:
+    beta: '6.76'
+    comment: ''
+    cutoff_freq: '11000'
+    gain: '1.0'
+    samp_rate: samp_rate_0
+    width: '1000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [408, 700.0]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '1152000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [184, 12]
+    rotation: 0
+    state: enabled
+- name: samp_rate_0
+  id: variable
+  parameters:
+    comment: ''
+    value: '250000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [288, 724.0]
+    rotation: 0
+    state: enabled
+- name: threshold
+  id: variable_qtgui_entry
+  parameters:
+    comment: ''
+    gui_hint: 0,0,1,1
+    label: Detection Threshold
+    type: real
+    value: '0.010'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [264, 412.0]
+    rotation: 0
+    state: enabled
+- name: adsb_decoder_0
+  id: adsb_decoder
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    error_corr: '"None"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    msg_filter: '"Extended Squitter Only"'
+    print_level: '"Brief"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1384, 444.0]
+    rotation: 0
+    state: enabled
+- name: adsb_demod_0
+  id: adsb_demod
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    fs: fs
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1048, 552.0]
+    rotation: 0
+    state: enabled
+- name: adsb_framer_1
+  id: adsb_framer
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    fs: fs
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    threshold: threshold
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [808, 500.0]
+    rotation: 0
+    state: enabled
+- name: ais_invert_0
+  id: ais_invert
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1152, 928.0]
+    rotation: 0
+    state: enabled
+- name: ais_invert_1
+  id: ais_invert
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1112, 1184.0]
+    rotation: 0
+    state: enabled
+- name: ais_pdu_to_nmea_0
+  id: ais_pdu_to_nmea
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    designator: '"A"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1512, 952.0]
+    rotation: 0
+    state: enabled
+- name: ais_pdu_to_nmea_1
+  id: ais_pdu_to_nmea
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    designator: '"B"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1488, 1168.0]
+    rotation: 0
+    state: enabled
+- name: analog_const_source_x_0
+  id: analog_const_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: threshold
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1048, 708.0]
+    rotation: 0
+    state: enabled
+- name: blocks_complex_to_mag_squared_0
+  id: blocks_complex_to_mag_squared
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [672, 632.0]
+    rotation: 0
+    state: enabled
+- name: blocks_float_to_complex_0
+  id: blocks_float_to_complex
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [328, 584.0]
+    rotation: 0
+    state: enabled
+- name: blocks_float_to_complex_0_0
+  id: blocks_float_to_complex
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [288, 960.0]
+    rotation: 0
+    state: enabled
+- name: blocks_throttle_0_0
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: fs
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [512, 540.0]
+    rotation: 0
+    state: enabled
+- name: blocks_throttle_0_1
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate_0
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [456, 948.0]
+    rotation: 0
+    state: enabled
+- name: blocks_wavfile_source_0
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    file: /home/shankar/Downloads/tutorials/sigtel_protocol_wav_folders/1_ADS-B/1_ADS-B_Synthetic_2.0MSps.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [48, 592.0]
+    rotation: 0
+    state: enabled
+- name: blocks_wavfile_source_0_0
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    file: /home/shankar/Downloads/tutorials/usrp_ais_project/ais_marine_vessel_tracking_250k.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [24, 960.0]
+    rotation: 0
+    state: enabled
+- name: digital_gmsk_demod_0
+  id: digital_gmsk_demod
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    freq_error: '0.0'
+    gain_mu: '0.175'
+    log: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mu: '0.5'
+    omega_relative_limit: '0.005'
+    samples_per_symbol: '5'
+    verbose: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 868.0]
+    rotation: 0
+    state: enabled
+- name: digital_gmsk_demod_1
+  id: digital_gmsk_demod
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    freq_error: '0.0'
+    gain_mu: '0.175'
+    log: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mu: '0.5'
+    omega_relative_limit: '0.005'
+    samples_per_symbol: '5'
+    verbose: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [896, 1092.0]
+    rotation: 0
+    state: enabled
+- name: digital_hdlc_deframer_bp_0
+  id: digital_hdlc_deframer_bp
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    max: '64'
+    maxoutbuf: '0'
+    min: '11'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1280, 972.0]
+    rotation: 0
+    state: enabled
+- name: digital_hdlc_deframer_bp_1
+  id: digital_hdlc_deframer_bp
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    max: '64'
+    maxoutbuf: '0'
+    min: '11'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1280, 1196.0]
+    rotation: 0
+    state: enabled
+- name: freq_xlating_fir_filter_xxx_0
+  id: freq_xlating_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    center_freq: '-25000'
+    comment: ''
+    decim: '5'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate_0
+    taps: low_pass_taps
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [624, 844.0]
+    rotation: 0
+    state: enabled
+- name: freq_xlating_fir_filter_xxx_1
+  id: freq_xlating_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    center_freq: '25000'
+    comment: ''
+    decim: '5'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate_0
+    taps: low_pass_taps
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [624, 1068.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'True'
+    gui_hint: 1,0,1,2
+    label1: Demodulated Pulse
+    label10: ''
+    label2: Threshold
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'False'
+    marker1: '0'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"ADS-B Pulse Telemetry"'
+    nconnections: '2'
+    size: int(fs*150e-6)
+    srate: int(fs)
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '1.25e-6'
+    tr_level: '0'
+    tr_mode: qtgui.TRIG_MODE_TAG
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '"burst"'
+    type: float
+    update_time: 1.0/100.0
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '0'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1328, 628.0]
+    rotation: 0
+    state: enabled
+- name: zeromq_pub_msg_sink_0
+  id: zeromq_pub_msg_sink
+  parameters:
+    address: tcp://127.0.0.1:9202
+    affinity: ''
+    alias: ''
+    bind: 'True'
+    comment: 'ADS-B decoded messages out'
+    timeout: '10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1672, 460.0]
+    rotation: 0
+    state: enabled
+- name: zeromq_pub_msg_sink_0_0
+  id: zeromq_pub_msg_sink
+  parameters:
+    address: tcp://127.0.0.1:9201
+    affinity: ''
+    alias: ''
+    bind: 'True'
+    comment: 'AIS NMEA sentences out (Ch A + Ch B)'
+    timeout: '10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1704, 1076.0]
+    rotation: 0
+    state: enabled
+
+connections:
+- [adsb_decoder_0, decoded, zeromq_pub_msg_sink_0, in]
+- [adsb_demod_0, '0', qtgui_time_sink_x_0, '0']
+- [adsb_demod_0, demodulated, adsb_decoder_0, demodulated]
+- [adsb_framer_1, '0', adsb_demod_0, '0']
+- [ais_invert_0, '0', digital_hdlc_deframer_bp_0, '0']
+- [ais_invert_1, '0', digital_hdlc_deframer_bp_1, '0']
+- [ais_pdu_to_nmea_0, out, zeromq_pub_msg_sink_0_0, in]
+- [ais_pdu_to_nmea_1, out, zeromq_pub_msg_sink_0_0, in]
+- [analog_const_source_x_0, '0', qtgui_time_sink_x_0, '1']
+- [blocks_complex_to_mag_squared_0, '0', adsb_framer_1, '0']
+- [blocks_float_to_complex_0, '0', blocks_throttle_0_0, '0']
+- [blocks_float_to_complex_0_0, '0', blocks_throttle_0_1, '0']
+- [blocks_throttle_0_0, '0', blocks_complex_to_mag_squared_0, '0']
+- [blocks_throttle_0_1, '0', freq_xlating_fir_filter_xxx_0, '0']
+- [blocks_throttle_0_1, '0', freq_xlating_fir_filter_xxx_1, '0']
+- [blocks_wavfile_source_0, '0', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0, '1', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_0, '0', blocks_float_to_complex_0_0, '0']
+- [blocks_wavfile_source_0_0, '1', blocks_float_to_complex_0_0, '1']
+- [digital_gmsk_demod_0, '0', ais_invert_0, '0']
+- [digital_gmsk_demod_1, '0', ais_invert_1, '0']
+- [digital_hdlc_deframer_bp_0, out, ais_pdu_to_nmea_0, print]
+- [digital_hdlc_deframer_bp_1, out, ais_pdu_to_nmea_1, print]
+- [freq_xlating_fir_filter_xxx_0, '0', digital_gmsk_demod_0, '0']
+- [freq_xlating_fir_filter_xxx_1, '0', digital_gmsk_demod_1, '0']
+
+metadata:
+  file_format: 1

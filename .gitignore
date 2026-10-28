@@ -29,3 +29,7 @@ securecom_module2_decoder.py
 .DS_Store
 .~lock.*
 *~
+
+# air/maritime subsystem build output
+airmaritime/module1/build/
+airmaritime/__pycache__/
