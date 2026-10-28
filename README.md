@@ -549,6 +549,13 @@ be validated without a radio. `offline_decode_test.py` unpacks it automatically.
 
 ### 9.1 Testing NXDN / P25 / TETRA without their radios (HackRF over a cable)
 
+**GNU Radio Companion version:** `tools/hackrf_replay.grc` is the same replay as a flowgraph
+you can open and edit in GRC 3.10 (`grc310 tools/hackrf_replay.grc`). Everything adjustable is a
+Parameter block at the top: the .wav file and its sample rate, the on-air frequency, the HackRF
+crystal error (ppm), TX gain, run time, I/Q swap, offset and level. Defaults are safe: TX gain 0,
+RF amp off, stops by itself after 60 s. Regenerate it with `tools/make_hackrf_replay_grc.py`.
+Checked without RF: 2,000,000 samples for a 1 s run, signal at +500.1 kHz (= the offset).
+
 ```
 HackRF ANTENNA --SMA--[30-40 dB attenuator]--SMA-- B210 RX2 (RF A)      no antennas
 ```

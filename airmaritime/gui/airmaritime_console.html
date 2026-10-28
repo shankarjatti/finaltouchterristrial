@@ -377,7 +377,7 @@ input[type=number] {
       <button id="fAutoScale">Auto Scale</button>
       <label><input type="checkbox" id="fMaxHold"> MaxHold</label>
       <span class="sp"></span>
-      <span class="freq-read" id="freqRead">162.025000 / 1090.000000 MHz</span>
+      <span class="freq-read" id="freqRead">162.000000 / 1090.000000 MHz</span>
     </div>
 
   </div>
@@ -402,7 +402,7 @@ input[type=number] {
           <tr><th>Band</th><th>Freq MHz</th><th>State</th><th>Targets</th></tr>
         </thead>
         <tbody>
-          <tr><td style="color:#2563eb;font-weight:700;">AIS A+B</td><td>162.025</td><td style="color:var(--ok);">ACTIVE</td><td id="sig-ais-cnt">0</td></tr>
+          <tr><td style="color:#2563eb;font-weight:700;">AIS A+B</td><td>162.000</td><td style="color:var(--ok);">ACTIVE</td><td id="sig-ais-cnt">0</td></tr>
           <tr><td style="color:#d97706;font-weight:700;">ADS-B</td><td>1090.000</td><td style="color:var(--ok);">ACTIVE</td><td id="sig-adsb-cnt">0</td></tr>
         </tbody>
       </table>
@@ -453,7 +453,7 @@ input[type=number] {
       <div id="schedRows">
         <div class="sched-row">
           <div class="name" style="color:#2563eb;">AIS 162M</div>
-          <div class="sched-field"><input type="number" id="freq-ais" value="162.025" step="0.005"></div>
+          <div class="sched-field"><input type="number" id="freq-ais" value="162.000" step="0.005"></div>
           <div class="sched-field"><input type="number" id="dwell-ais" value="1.0" step="0.5"></div>
           <div class="sched-field"><input type="number" id="gap-ais" value="1.0" step="0.1"></div>
         </div>
@@ -964,7 +964,7 @@ function applySchedule() {
 }
 
 function resetSchedule() {
-  document.getElementById('freq-ais').value = '162.025000';
+  document.getElementById('freq-ais').value = '162.000000';
   document.getElementById('dwell-ais').value = 1.0;
   document.getElementById('gap-ais').value = 1.0;
   document.getElementById('freq-adsb').value = '1090.000000';
@@ -1006,7 +1006,7 @@ function copyJSONFeed() {
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
 const AIRMAR_BANDS = [
-  { key: 'ais',  name: 'AIS',   freq: 162.025,  samp_rate_hz: 250000  },
+  { key: 'ais',  name: 'AIS',   freq: 162.000,  samp_rate_hz: 250000  },
   { key: 'adsb', name: 'ADS-B', freq: 1090.000, samp_rate_hz: 2000000 },
 ];
 const AIR_FFT_N = 512;

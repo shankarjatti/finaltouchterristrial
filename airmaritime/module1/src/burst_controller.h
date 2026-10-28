@@ -61,6 +61,7 @@ public:
 
     // Return current band index (-1 = gap)
     int  current_band() const { return current_band_.load(); }
+    bool failed() const { return usb_errors_ >= 5; }   // gave up on the radio
 
 private:
     // rate-limits the zero-fill keep-alive sent to bands that are not the
@@ -76,6 +77,7 @@ private:
 
     std::atomic<bool>        running_{false};
     std::atomic<int>         current_band_{-1};
+    int                      usb_errors_{0};   // consecutive UHD/USB failures
 
     std::vector<std::complex<float>> sample_buf_;
 };

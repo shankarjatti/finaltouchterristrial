@@ -59,7 +59,7 @@ ZMQ_ADSB_PORT = 9202
 IQ_AIS_PORT = 7009
 IQ_ADSB_PORT = 7010
 AIRMAR_BANDS = [
-    {'key': 'ais',  'name': 'AIS',   'freq_mhz': 162.025,  'port': IQ_AIS_PORT,  'samp_rate_hz': 250_000.0},
+    {'key': 'ais',  'name': 'AIS',   'freq_mhz': 162.000,  'port': IQ_AIS_PORT,  'samp_rate_hz': 250_000.0},
     {'key': 'adsb', 'name': 'ADS-B', 'freq_mhz': 1090.000, 'port': IQ_ADSB_PORT, 'samp_rate_hz': 2_000_000.0},
 ]
 IQ_FFT_N = 512

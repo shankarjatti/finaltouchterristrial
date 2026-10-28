@@ -3,6 +3,7 @@
 #include <thread>
 #include <chrono>
 #include <cstring>
+#include <uhd/exception.hpp>
 
 BurstController::BurstController(UsrpController&          usrp,
                                  std::vector<BandConfig>& bands,
@@ -39,9 +40,29 @@ void BurstController::run()
         std::cout << "[BURST] ── Cycle #" << cycle << " ──────────────────────────\n";
 
         for (int i = 0; i < static_cast<int>(bands_.size()) && running_; ++i) {
-            do_dwell(i);
-            if (!running_) break;
-            do_gap(i);
+            // A USB hiccup (uhd::io_error / LIBUSB_TRANSFER_OVERFLOW, e.g. ADS-B's
+            // 2 MSps on a marginal link) used to escape here and std::terminate()
+            // the whole process, killing AIS along with it. Drop that band's dwell
+            // and move on; only repeated failures with NO good dwell in between
+            // (a radio that is really gone) stop Module 1.
+            try {
+                do_dwell(i);
+                if (!running_) break;
+                do_gap(i);
+                usb_errors_ = 0;
+            } catch (const uhd::exception& e) {
+                ++usb_errors_;
+                std::cerr << "[BURST] USB/UHD error on band " << bands_[i].name
+                          << " (" << usb_errors_ << "/5): " << e.what() << "\n";
+                try { usrp_.stop_stream(); } catch (...) {}
+                if (usb_errors_ >= 5) {
+                    std::cerr << "[BURST] FATAL: radio keeps failing — put the B210 on a USB 3 port "
+                                 "with a short USB 3 cable (no hub)\n";
+                    running_ = false;
+                    break;
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            }
         }
     }
 

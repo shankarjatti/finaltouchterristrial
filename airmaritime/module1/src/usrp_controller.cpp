@@ -145,6 +145,21 @@ void UsrpController::stop_stream()
     uhd::stream_cmd_t cmd(uhd::stream_cmd_t::STREAM_MODE_STOP_CONTINUOUS);
     rx_stream_->issue_stream_cmd(cmd);
     streaming_ = false;
+
+    // Drain packets still in flight after STOP. Left in the USB pipe they hit the
+    // NEXT dwell's fresh streamer and fail it with LIBUSB_TRANSFER_OVERFLOW (seen on
+    // a USB 2.0 link; the terrestrial Module 1 has the same fix).
+    std::vector<std::complex<float>> junk(4096);
+    uhd::rx_metadata_t md;
+    for (int i = 0; i < 200; ++i) {
+        try {
+            if (rx_stream_->recv(junk.data(), junk.size(), md, 0.05) == 0 &&
+                md.error_code == uhd::rx_metadata_t::ERROR_CODE_TIMEOUT)
+                break;
+        } catch (const uhd::exception&) {
+            // a bad packet during the drain is exactly what we are flushing
+        }
+    }
     std::cout << "[USRP] RX stream STOPPED\n";
 }
 

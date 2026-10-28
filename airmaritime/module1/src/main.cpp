@@ -76,12 +76,15 @@ static const std::vector<BandConfig> BANDS = {
     // Each band gets its OWN hardware sample rate (not the shared 200 kSps):
     //  * AIS  250 kSps  -- airmaritime_decoder_live.py's GMSK demod assumes
     //    ~5.2 samp/sym at 9600 baud, which only holds from a 250 kSps source.
-    //    162.025 MHz is AIS channel B (87B/88B are 25 kHz apart, both inside
-    //    the 250 kHz window).
+    //    Centre is 162.000 MHz, NOT 162.025: airmaritime_decoder_live.py
+    //    demodulates two channels at -/+25 kHz from the tuned centre
+    //    (freq_xlating +-25000), i.e. AIS 161.975 (87B) and 162.025 (88B).
+    //    Tuned to 162.025 (the reference's placeholder) its two channels land
+    //    on 162.000 / 162.050 -- neither is an AIS channel, so nothing decodes.
     //  * ADS-B 2 MSps  -- 1090ES Mode-S needs real ~2 MHz instantaneous
     //    bandwidth; the GNU Radio side resamples the achieved rate to what its
     //    adsb.* blocks expect (see airmaritime_decoder_live.py).
-    { "AIS",  env_or("SECURECOM_AIS_FREQ_HZ",  162.025e6), 7009, env_or("SECURECOM_AIS_DWELL_SEC",  1.0),
+    { "AIS",  env_or("SECURECOM_AIS_FREQ_HZ",  162.000e6), 7009, env_or("SECURECOM_AIS_DWELL_SEC",  1.0),
               env_or("SECURECOM_AIS_GAP_SEC",  GAP_DEFAULT), env_or("SECURECOM_AIS_SAMPRATE_HZ",  250e3) },
     { "ADSB", env_or("SECURECOM_ADSB_FREQ_HZ", 1090.00e6), 7010, env_or("SECURECOM_ADSB_DWELL_SEC", 1.0),
               env_or("SECURECOM_ADSB_GAP_SEC", GAP_DEFAULT), env_or("SECURECOM_ADSB_SAMPRATE_HZ", 2e6)  },
@@ -251,6 +254,11 @@ int main(int argc, char* argv[])
     std::cout << "[MAIN] Stopping TCP servers...\n";
     for (auto& s : servers) s->stop();
 
+    if (burst.failed()) {
+        // non-zero so a supervisor can tell the radio failing from a normal Stop
+        std::cout << "[MAIN] Module 1 exited: radio failed (USB).\n";
+        return 3;
+    }
     std::cout << "[MAIN] Module 1 exited cleanly.\n";
     return 0;
 }

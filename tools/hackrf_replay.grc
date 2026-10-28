@@ -1,0 +1,535 @@
+options:
+  parameters:
+    id: hackrf_replay
+    title: HackRF IQ replay (TX)
+    author: SecureCOM
+    description: Replay a recorded IQ .wav through a HackRF on a chosen frequency. Use a cable + 30-40 dB attenuator, never an antenna. Amp off, stops after `duration`.
+    category: '[SecureCOM]'
+    generate_options: no_gui
+    run_options: run
+    output_language: python
+    realtime_scheduling: ''
+    thread_safe_setters: ''
+    max_nouts: '0'
+    catch_exceptions: 'True'
+    window_size: (1000,1000)
+    placement: (0,0)
+    sizing_mode: fixed
+    title_: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 8
+    rotation: 0
+    state: enabled
+blocks:
+- name: imp_fractions
+  id: import
+  parameters:
+    imports: 'from fractions import Fraction
+
+      import math'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 200
+    - 12
+    rotation: 0
+    state: enabled
+- name: wav_file
+  id: parameter
+  parameters:
+    label: 'IQ .wav file (stereo: I=left, Q=right)'
+    value: /home/shankar/Downloads/tutorials/delhi_testing/all_protocols_wav_samples/NXDN/NXDN96 IQ.wav
+    type: str
+    short_id: f
+    hide: none
+    comment: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 100
+    rotation: 0
+    state: enabled
+- name: in_rate
+  id: parameter
+  parameters:
+    label: Sample rate of the .wav (Hz)
+    value: '48000'
+    type: intx
+    short_id: r
+    hide: none
+    comment: NXDN96/NXDN48/TETRA IQ.wav = 48000, AIS sample = 250000, DMR/P25 72k files = 72125
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 180
+    rotation: 0
+    state: enabled
+- name: freq
+  id: parameter
+  parameters:
+    label: On-air frequency (Hz)
+    value: 451.09375e6
+    type: eng_float
+    short_id: F
+    hide: none
+    comment: NXDN96 451.09375e6, P25 450.09375e6, TETRA 420e6, AIS centre 162.000e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 260
+    rotation: 0
+    state: enabled
+- name: ppm
+  id: parameter
+  parameters:
+    label: HackRF crystal error (ppm)
+    value: '-6.24'
+    type: eng_float
+    short_id: p
+    hide: none
+    comment: measured on this bench's HackRF; 0 for no correction
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 340
+    rotation: 0
+    state: enabled
+- name: tx_gain
+  id: parameter
+  parameters:
+    label: HackRF TX VGA gain (dB, 0-47)
+    value: '0'
+    type: intx
+    short_id: g
+    hide: none
+    comment: start at 0 and raise; the +14 dB RF amp is permanently OFF
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 420
+    rotation: 0
+    state: enabled
+- name: duration
+  id: parameter
+  parameters:
+    label: Stop after (seconds)
+    value: '60'
+    type: eng_float
+    short_id: d
+    hide: none
+    comment: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 500
+    rotation: 0
+    state: enabled
+- name: swap_iq
+  id: parameter
+  parameters:
+    label: Swap I/Q (0 = no, 1 = yes)
+    value: '0'
+    type: intx
+    short_id: s
+    hide: none
+    comment: TETRA IQ.wav stores Q left / I right -> 1
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 580
+    rotation: 0
+    state: enabled
+- name: offset
+  id: parameter
+  parameters:
+    label: HackRF offset below the carrier (Hz)
+    value: 500e3
+    type: eng_float
+    short_id: o
+    hide: none
+    comment: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 660
+    rotation: 0
+    state: enabled
+- name: scale
+  id: parameter
+  parameters:
+    label: Digital level before the DAC
+    value: '0.5'
+    type: eng_float
+    short_id: l
+    hide: none
+    comment: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 740
+    rotation: 0
+    state: enabled
+- name: base_rate
+  id: variable
+  parameters:
+    value: '200000'
+    comment: rate the stage-1 resampler targets
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 232
+    - 100
+    rotation: 0
+    state: enabled
+- name: hackrf_rate
+  id: variable
+  parameters:
+    value: '2000000'
+    comment: lowest rate a HackRF supports
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 232
+    - 164
+    rotation: 0
+    state: enabled
+- name: r1
+  id: variable
+  parameters:
+    value: Fraction(int(base_rate), int(in_rate)).limit_denominator(1000)
+    comment: 'stage-1 resample ratio: wav rate -> 200 kSps'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 232
+    - 228
+    rotation: 0
+    state: enabled
+- name: interp2
+  id: variable
+  parameters:
+    value: int(hackrf_rate // base_rate)
+    comment: stage-2 interpolation (200 kSps -> 2 MSps)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 232
+    - 292
+    rotation: 0
+    state: enabled
+- name: tune_freq
+  id: variable
+  parameters:
+    value: freq / (1 + ppm * 1e-6) - offset
+    comment: 'HackRF centre: crystal-corrected and moved down by the offset'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 232
+    - 356
+    rotation: 0
+    state: enabled
+- name: wav
+  id: blocks_wavfile_source
+  parameters:
+    file: wav_file
+    repeat: 'True'
+    nchan: '2'
+    affinity: ''
+    alias: ''
+    comment: loops forever; Head stops it
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 232
+    - 460
+    rotation: 0
+    state: enabled
+- name: iq_straight
+  id: blocks_float_to_complex
+  parameters:
+    vlen: '1'
+    affinity: ''
+    alias: ''
+    comment: I=left, Q=right
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 480
+    - 420
+    rotation: 0
+    state: enabled
+- name: iq_swapped
+  id: blocks_float_to_complex
+  parameters:
+    vlen: '1'
+    affinity: ''
+    alias: ''
+    comment: I=right, Q=left
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 480
+    - 580
+    rotation: 0
+    state: enabled
+- name: iq_select
+  id: blocks_selector
+  parameters:
+    type: complex
+    num_inputs: '2'
+    num_outputs: '1'
+    input_index: swap_iq
+    output_index: '0'
+    vlen: '1'
+    showports: 'True'
+    enabled: 'True'
+    affinity: ''
+    alias: ''
+    comment: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 720
+    - 460
+    rotation: 0
+    state: enabled
+- name: to_200k
+  id: rational_resampler_xxx
+  parameters:
+    type: ccc
+    interp: r1.numerator
+    decim: r1.denominator
+    taps: '[]'
+    fbw: '0.4'
+    affinity: ''
+    alias: ''
+    comment: wav rate -> 200 kSps
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 940
+    - 460
+    rotation: 0
+    state: enabled
+- name: to_2M
+  id: rational_resampler_xxx
+  parameters:
+    type: ccc
+    interp: interp2
+    decim: '1'
+    taps: '[]'
+    fbw: '0.4'
+    affinity: ''
+    alias: ''
+    comment: 200 kSps -> 2 MSps
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1170
+    - 460
+    rotation: 0
+    state: enabled
+- name: shift
+  id: blocks_rotator_cc
+  parameters:
+    phase_inc: 2 * math.pi * offset / hackrf_rate
+    tag_inc_update: 'False'
+    affinity: ''
+    alias: ''
+    comment: moves the signal up by `offset`
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1400
+    - 460
+    rotation: 0
+    state: enabled
+- name: level
+  id: blocks_multiply_const_vxx
+  parameters:
+    type: complex
+    const: scale
+    vlen: '1'
+    affinity: ''
+    alias: ''
+    comment: keeps the HackRF DAC from clipping
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1620
+    - 460
+    rotation: 0
+    state: enabled
+- name: stop_after
+  id: blocks_head
+  parameters:
+    type: complex
+    num_items: int(duration * hackrf_rate)
+    vlen: '1'
+    affinity: ''
+    alias: ''
+    comment: 'timed stop: the flowgraph ends by itself'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1830
+    - 460
+    rotation: 0
+    state: enabled
+- name: hackrf_tx
+  id: osmosdr_sink
+  parameters:
+    args: '"hackrf=0"'
+    sync: sync
+    num_mboards: '1'
+    clock_source0: ''
+    time_source0: ''
+    nchan: '1'
+    sample_rate: hackrf_rate
+    freq0: tune_freq
+    corr0: '0'
+    gain0: '0'
+    if_gain0: tx_gain
+    bb_gain0: '0'
+    ant0: ''
+    bw0: 1.75e6
+    affinity: ''
+    alias: ''
+    comment: RF (amp) gain 0 = OFF. IF gain = TX VGA.
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2050
+    - 460
+    rotation: 0
+    state: enabled
+- name: safety_note
+  id: note
+  parameters:
+    note: 'SAFETY: transmit only through a CABLE + 30-40 dB attenuator into the receiver. Never into an antenna. TX gain starts at 0, RF amp is off, the flowgraph stops itself after `duration` seconds.'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 8
+    - 820
+    rotation: 0
+    state: enabled
+connections:
+- - wav
+  - '0'
+  - iq_straight
+  - '0'
+- - wav
+  - '1'
+  - iq_straight
+  - '1'
+- - wav
+  - '1'
+  - iq_swapped
+  - '0'
+- - wav
+  - '0'
+  - iq_swapped
+  - '1'
+- - iq_straight
+  - '0'
+  - iq_select
+  - '0'
+- - iq_swapped
+  - '0'
+  - iq_select
+  - '1'
+- - iq_select
+  - '0'
+  - to_200k
+  - '0'
+- - to_200k
+  - '0'
+  - to_2M
+  - '0'
+- - to_2M
+  - '0'
+  - shift
+  - '0'
+- - shift
+  - '0'
+  - level
+  - '0'
+- - level
+  - '0'
+  - stop_after
+  - '0'
+- - stop_after
+  - '0'
+  - hackrf_tx
+  - '0'
+metadata:
+  file_format: 1
+  grc_version: 3.10.1.1
