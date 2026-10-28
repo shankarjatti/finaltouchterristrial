@@ -11,7 +11,7 @@ ADS-B 6 MSps). Stereo-IQ .wav (I=left, Q=right) or raw .cf32 both work.
 
   # stop Module 1 first so 7009/7010 are free, then:
   python3 tools/replay_iq_tcp.py \
-      --ais  "/path/ais_marine_vessel_tracking_250k.wav"      --ais-rate 250000 \
+      --ais  "/path/ais_b210_cable_capture_250k.wav"          --ais-rate 250000 \
       --adsb "/path/adsb_real_6M.cf32"   --adsb-rate 6000000   # real recording resampled to 6 MSps
 """
 import argparse
