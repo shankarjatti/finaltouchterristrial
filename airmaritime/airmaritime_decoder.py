@@ -88,6 +88,7 @@ class airmaritime_decoder(gr.top_block, Qt.QWidget):
         ##################################################
         # Blocks
         ##################################################
+        self.zeromq_pub_raw_adsb = zeromq.pub_msg_sink('tcp://127.0.0.1:9203', 10, True)
         self.zeromq_pub_msg_sink_0_0 = zeromq.pub_msg_sink('tcp://127.0.0.1:9201', 10, True)
         self.zeromq_pub_msg_sink_0 = zeromq.pub_msg_sink('tcp://127.0.0.1:9202', 10, True)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
@@ -201,6 +202,7 @@ class airmaritime_decoder(gr.top_block, Qt.QWidget):
         self.msg_connect((self.digital_hdlc_deframer_bp_0, 'out'), (self.ais_pdu_to_nmea_0, 'print'))
         self.msg_connect((self.digital_hdlc_deframer_bp_1, 'out'), (self.ais_pdu_to_nmea_1, 'print'))
         self.msg_connect((self.modes_demod_0, 'demodulated'), (self.adsb_decoder_0, 'demodulated'))
+        self.msg_connect((self.modes_demod_0, 'demodulated'), (self.zeromq_pub_raw_adsb, 'in'))
         self.connect((self.adsb_to_6M, 0), (self.blocks_throttle_0_0, 0))
         self.connect((self.ais_invert_0, 0), (self.digital_hdlc_deframer_bp_0, 0))
         self.connect((self.ais_invert_1, 0), (self.digital_hdlc_deframer_bp_1, 0))
@@ -213,8 +215,8 @@ class airmaritime_decoder(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_throttle_0_0, 0), (self.modes_demod_0, 0))
         self.connect((self.blocks_throttle_0_1, 0), (self.freq_xlating_fir_filter_xxx_0, 0))
         self.connect((self.blocks_throttle_0_1, 0), (self.freq_xlating_fir_filter_xxx_1, 0))
-        self.connect((self.blocks_wavfile_source_0, 1), (self.blocks_float_to_complex_0, 0))
         self.connect((self.blocks_wavfile_source_0, 0), (self.blocks_float_to_complex_0, 1))
+        self.connect((self.blocks_wavfile_source_0, 1), (self.blocks_float_to_complex_0, 0))
         self.connect((self.blocks_wavfile_source_0_0, 0), (self.blocks_float_to_complex_0_0, 0))
         self.connect((self.blocks_wavfile_source_0_0, 1), (self.blocks_float_to_complex_0_0, 1))
         self.connect((self.digital_gmsk_demod_0, 0), (self.ais_nrzi_0, 0))

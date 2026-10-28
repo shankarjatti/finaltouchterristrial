@@ -147,7 +147,8 @@ void TcpServer::accept_loop()
         // 256 kB = ~0.16 s, which keeps enough slack to absorb a scheduler
         // hiccup while staying real-time. Do NOT raise this to "be safe":
         // every extra megabyte is another 0.65 s of delay.
-        int sndbuf = 256 * 1024;
+        // (per band: set_send_buffer_bytes(), sized from the band's rate in main.cpp)
+        int sndbuf = sndbuf_bytes_;
         setsockopt(client_fd, SOL_SOCKET, SO_SNDBUF, &sndbuf, sizeof(sndbuf));
 
         std::string addr = peer_addr(client_fd);
@@ -183,6 +184,22 @@ int TcpServer::broadcast(const uint8_t* data, size_t len)
         const uint8_t* ptr = data;
         int stalls = 0;
 
+        // finish a sample left half-sent by an earlier drop before anything new goes out
+        std::vector<uint8_t>& pend = pending_[fd];
+        if (!pend.empty()) {
+            ssize_t n = send(fd, pend.data(), pend.size(), MSG_NOSIGNAL | MSG_DONTWAIT);
+            if (n > 0)
+                pend.erase(pend.begin(), pend.begin() + n);
+            else if (n < 0 && errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR) {
+                dead.push_back(fd);
+                continue;
+            }
+            if (!pend.empty()) {          // still blocked: skip this whole buffer (stays aligned)
+                dropped_bytes_ += len;
+                continue;
+            }
+        }
+
         // NON-BLOCKING send, dropping the remainder if the client cannot keep up.
         //
         // This was previously a blocking send() looped "until all bytes are
@@ -205,6 +222,13 @@ int TcpServer::broadcast(const uint8_t* data, size_t len)
             if (n < 0 && errno == EINTR) continue;
             if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
                 if (++stalls > 2) {                 // brief grace, then drop
+                    // drop whole samples only: keep the bytes that complete the current one
+                    size_t frag = (len - remaining) % ITEM_BYTES;
+                    if (frag) {
+                        size_t need = ITEM_BYTES - frag;
+                        pend.assign(ptr, ptr + need);
+                        remaining -= need;
+                    }
                     dropped_bytes_ += remaining;
                     if (++drop_events_ % 200 == 1) {
                         std::cout << "[TCP:" << port_ << "] slow client "
@@ -234,6 +258,7 @@ int TcpServer::broadcast(const uint8_t* data, size_t len)
     for (int fd : dead) {
         close(fd);
         client_fds_.erase(fd);
+        pending_.erase(fd);
     }
 
     return reached;

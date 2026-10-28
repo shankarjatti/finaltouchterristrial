@@ -78,7 +78,7 @@ fi
 
 step 2 "Clearing stale processes and ports"
 kill_air; sleep 1
-for p in 7009 7010 9201 9202 "$WS_PORT" "$HTTP_PORT" "$TILE_PORT"; do
+for p in 7009 7010 9201 9202 9203 "$WS_PORT" "$HTTP_PORT" "$TILE_PORT"; do
   [ "$(count_ports "$p")" -ge 1 ] && warn "port $p still busy"
 done
 ok "ports clear"

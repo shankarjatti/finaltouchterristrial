@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "usrp_controller.h"
 #include "burst_controller.h"
 #include "tcp_server.h"
@@ -163,6 +164,8 @@ int main(int argc, char* argv[])
     std::cout << "[MAIN] Starting TCP servers...\n";
     for (const auto& band : BANDS) {
         auto s = std::make_unique<TcpServer>(band.tcp_port, band.name);
+        // ~0.16 s of complex64 IQ at this band's rate (AIS 320 kB, ADS-B 7.7 MB)
+        s->set_send_buffer_bytes(std::max(256 * 1024, static_cast<int>(band.samp_rate_hz * 8 * 0.16)));
         if (!s->start()) {
             std::cerr << "[MAIN] FATAL: Could not start TCP server on port "
                       << band.tcp_port << "\n";

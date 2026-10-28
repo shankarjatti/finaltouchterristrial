@@ -131,6 +131,8 @@ class airmaritime_decoder_live(gr.top_block, Qt.QWidget):
         ##################################################
         self.zeromq_pub_msg_sink_0_0 = zeromq.pub_msg_sink('tcp://127.0.0.1:9201', 10, True)
         self.zeromq_pub_msg_sink_0 = zeromq.pub_msg_sink('tcp://127.0.0.1:9202', 10, True)
+        # every CRC-valid Mode-S frame (meta . 112 bits): the bridge decodes positions from these (adsb_cpr.py)
+        self.zeromq_pub_raw_adsb = zeromq.pub_msg_sink('tcp://127.0.0.1:9203', 10, True)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
             int(fs*150e-6), #size
             int(fs), #samp_rate
@@ -226,8 +228,11 @@ class airmaritime_decoder_live(gr.top_block, Qt.QWidget):
             taps=[],
             fractional_bw=0.4)
 
-        self.blocks_throttle_0_1 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate_0,True)
-        self.blocks_throttle_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, fs,True)
+        # No Throttle on live sources: Module 1 already paces the IQ in real time. A throttle
+        # (copied from the file-based flowgraph) stopped the decoder catching up after any stall,
+        # so Module 1 kept dropping its data. Plain pass-throughs keep the existing block names.
+        self.blocks_throttle_0_1 = blocks.copy(gr.sizeof_gr_complex*1)
+        self.blocks_throttle_0_0 = blocks.copy(gr.sizeof_gr_complex*1)
         self.ais_pdu_to_nmea_1 = ais.pdu_to_nmea("B")
         self.ais_pdu_to_nmea_0 = ais.pdu_to_nmea("A")
         self.ais_invert_1 = ais.invert()
@@ -243,6 +248,7 @@ class airmaritime_decoder_live(gr.top_block, Qt.QWidget):
         ##################################################
         self.msg_connect((self.adsb_decoder_0, 'decoded'), (self.zeromq_pub_msg_sink_0, 'in'))
         self.msg_connect((self.adsb_modes_demod, 'demodulated'), (self.adsb_decoder_0, 'demodulated'))
+        self.msg_connect((self.adsb_modes_demod, 'demodulated'), (self.zeromq_pub_raw_adsb, 'in'))
         self.msg_connect((self.ais_pdu_to_nmea_0, 'out'), (self.zeromq_pub_msg_sink_0_0, 'in'))
         self.msg_connect((self.ais_pdu_to_nmea_1, 'out'), (self.zeromq_pub_msg_sink_0_0, 'in'))
         self.msg_connect((self.digital_hdlc_deframer_bp_0, 'out'), (self.ais_pdu_to_nmea_0, 'print'))
@@ -302,7 +308,6 @@ class airmaritime_decoder_live(gr.top_block, Qt.QWidget):
     def set_samp_rate_0(self, samp_rate_0):
         self.samp_rate_0 = samp_rate_0
         self.set_low_pass_taps(firdes.low_pass(1.0, self.samp_rate_0, 11000, 1000, window.WIN_HAMMING, 6.76))
-        self.blocks_throttle_0_1.set_sample_rate(self.samp_rate_0)
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -323,7 +328,6 @@ class airmaritime_decoder_live(gr.top_block, Qt.QWidget):
 
     def set_fs(self, fs):
         self.fs = fs
-        self.blocks_throttle_0_0.set_sample_rate(self.fs)
         self.qtgui_time_sink_x_0.set_samp_rate(int(self.fs))
 
     def get_adsb_source_rate(self):

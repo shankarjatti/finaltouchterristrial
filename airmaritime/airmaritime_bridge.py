@@ -31,6 +31,8 @@ import zmq
 import zmq.asyncio
 import numpy as np
 
+from adsb_cpr import CprTracker, bits_to_int
+
 # PMT (GNU Radio's polymorphic type) is how gnuradio.ais / gnuradio.adsb hand
 # decoded messages to this bridge. Import is guarded so a missing GNU Radio
 # install fails at first real use (inside the listeners' own try/except)
@@ -50,6 +52,7 @@ except ImportError:
 WS_PORT = 8887
 ZMQ_AIS_PORT = 9201
 ZMQ_ADSB_PORT = 9202
+ZMQ_ADSB_RAW_PORT = 9203   # every CRC-valid Mode-S frame; positions are decoded here from these
 
 # Module 1's own raw-IQ TCP ports for these two bands (module1/src/main.cpp
 # BANDS table -- same ports airmaritime_decoder_live.py's tcp_source blocks
@@ -69,6 +72,24 @@ IQ_ACTIVE_THRESH_DBFS = -60.0
 CLIENTS = set()
 AIS_VESSELS = {}    # mmsi -> dict
 ADSB_AIRCRAFT = {}  # icao -> dict
+CPR = CprTracker()  # validated airborne positions (adsb_cpr.py)
+# An address is shown only after 2 CRC-valid frames within ADSB_CONFIRM_S. A single frame can
+# pass the 24-bit CRC by chance: two such ICAOs (34440B, 4008E6) appeared on the map that exist
+# nowhere in the real recording, each from one velocity message. A real aircraft sends several
+# messages a second, so it is confirmed almost at once.
+ADSB_CONFIRM_S = 10.0
+ADSB_FIRST_FRAME = {}   # icao -> time of its first, not yet confirmed, frame
+ADSB_CONFIRMED = set()
+# Same rule for AIS: its frame check is a 16-bit CRC run on 10 carrier-offset branches, so a
+# lone noise frame can pass. A vessel is shown after 2 messages within AIS_CONFIRM_S (a moored
+# class A ship reports every 3 min).
+AIS_CONFIRM_S = 600.0
+AIS_FIRST_MSG = {}
+AIS_CONFIRMED = set()
+# A target not heard for this long is removed from the map and tables, as a real display does
+# (dump1090: 60 s). AIS class A reports every 2 s - 3 min, static data every 6 min.
+ADSB_STALE_S = 60.0
+AIS_STALE_S = 600.0
 
 proc_flowgraph = None
 
@@ -201,6 +222,13 @@ def update_ais_target(parsed):
         return None
     t_now = time.time()
     mmsi = str(parsed['mmsi'])
+    if mmsi not in AIS_CONFIRMED:
+        first = AIS_FIRST_MSG.get(mmsi)
+        if first is None or t_now - first > AIS_CONFIRM_S:
+            AIS_FIRST_MSG[mmsi] = t_now
+            return None
+        AIS_FIRST_MSG.pop(mmsi, None)
+        AIS_CONFIRMED.add(mmsi)
     v = AIS_VESSELS.setdefault(mmsi, {'mmsi': mmsi})
     for field in ('lat', 'lon', 'speed', 'course', 'heading', 'nav_status',
                   'callsign', 'name'):
@@ -223,9 +251,12 @@ def update_adsb_target(fields):
         return None
     t_now = time.time()
     icao = str(fields['icao']).upper()
+    if icao not in ADSB_CONFIRMED:
+        return None
     a = ADSB_AIRCRAFT.setdefault(icao, {'icao': icao})
-    for src_key, dst_key in (('callsign', 'callsign'), ('longitude', 'lon'),
-                              ('latitude', 'lat'), ('altitude', 'alt'),
+    # gr-adsb's own latitude/longitude are NOT used: its CPR pairing lets wrong positions through
+    # (see adsb_cpr.py); lat/lon come only from zmq_adsb_raw_listener's validated decode.
+    for src_key, dst_key in (('callsign', 'callsign'), ('altitude', 'alt'),
                               ('speed', 'speed'), ('heading', 'heading'),
                               ('vertical_rate', 'vertical_rate')):
         val = fields.get(src_key)
@@ -338,6 +369,57 @@ async def zmq_adsb_listener(ctx):
             break
         except Exception as e:
             await asyncio.sleep(0.5)
+
+
+async def zmq_adsb_raw_listener(ctx):
+    """Raw CRC-valid frames from modes_demod -> validated CPR positions (adsb_cpr.CprTracker)."""
+    sub = ctx.socket(zmq.SUB)
+    sub.connect(f"tcp://127.0.0.1:{ZMQ_ADSB_RAW_PORT}")
+    sub.subscribe(b"")
+    print(f"[ZMQ] Subscribed to raw ADS-B frames on tcp://127.0.0.1:{ZMQ_ADSB_RAW_PORT}")
+    while True:
+        try:
+            p = pmt.deserialize_str(await sub.recv())
+            meta = pmt.to_python(pmt.car(p))
+            bits = list(pmt.u8vector_elements(pmt.cdr(p)))
+            icao = '%06X' % bits_to_int(bits, 8, 24)
+            t_msg = float(meta['timestamp'])
+            pos = CPR.feed(icao, bits, t_msg)
+            if icao not in ADSB_CONFIRMED:
+                first = ADSB_FIRST_FRAME.get(icao)
+                if first is None or t_msg - first > ADSB_CONFIRM_S:
+                    ADSB_FIRST_FRAME[icao] = t_msg
+                    continue
+                ADSB_FIRST_FRAME.pop(icao, None)
+                ADSB_CONFIRMED.add(icao)
+            a = ADSB_AIRCRAFT.setdefault(icao, {'icao': icao})
+            a['msgs'] = a.get('msgs', 0) + 1
+            a['last_seen'] = time.time()
+            if pos:
+                a['lat'], a['lon'] = pos
+                await broadcast({"type": "adsb_update", "target": a})
+        except asyncio.CancelledError:
+            break
+        except Exception:
+            await asyncio.sleep(0.1)
+
+
+async def prune_stale():
+    """Remove targets that are no longer being heard."""
+    while True:
+        await asyncio.sleep(5.0)
+        now = time.time()
+        if len(ADSB_FIRST_FRAME) > 5000:
+            ADSB_FIRST_FRAME.clear()
+        for icao in [k for k, a in ADSB_AIRCRAFT.items() if now - a.get('last_seen', now) > ADSB_STALE_S]:
+            del ADSB_AIRCRAFT[icao]
+            CPR.forget(icao)
+            ADSB_CONFIRMED.discard(icao)
+            await broadcast({"type": "adsb_remove", "icao": icao})
+        for mmsi in [k for k, v in AIS_VESSELS.items() if now - v.get('last_seen', now) > AIS_STALE_S]:
+            del AIS_VESSELS[mmsi]
+            AIS_CONFIRMED.discard(mmsi)
+            await broadcast({"type": "ais_remove", "mmsi": mmsi})
 
 
 # -----------------------------------------------------------------------------
@@ -481,6 +563,8 @@ async def main():
     
     t_ais = asyncio.create_task(zmq_ais_listener(ctx))
     t_adsb = asyncio.create_task(zmq_adsb_listener(ctx))
+    t_adsb_raw = asyncio.create_task(zmq_adsb_raw_listener(ctx))
+    t_prune = asyncio.create_task(prune_stale())
     t_spec_ais = asyncio.create_task(iq_spectrum_reader(AIRMAR_BANDS[0]))
     t_spec_adsb = asyncio.create_task(iq_spectrum_reader(AIRMAR_BANDS[1]))
 

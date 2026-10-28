@@ -692,6 +692,24 @@ blocks:
     - 640.0
     rotation: 0
     state: enabled
+- name: zeromq_pub_raw_adsb
+  id: zeromq_pub_msg_sink
+  parameters:
+    address: '''tcp://127.0.0.1:9203'''
+    affinity: ''
+    alias: ''
+    bind: 'True'
+    comment: 'every CRC-valid Mode-S frame: the bridge decodes positions from these'
+    timeout: '10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1672
+    - 550.0
+    rotation: 0
+    state: enabled
 connections:
 - - adsb_decoder_0
   - decoded
@@ -801,5 +819,9 @@ connections:
   - '0'
   - qtgui_time_sink_x_0
   - '0'
+- - modes_demod_0
+  - demodulated
+  - zeromq_pub_raw_adsb
+  - in
 metadata:
   file_format: 1

@@ -729,6 +729,14 @@ function connectWS() {
         pulseStream('adsb');
         appendJSONPayload('ADSB_FLIGHT', 9202, msg.target);
         logConsole(`ADS-B Flight ICAO ${msg.target.icao} (${msg.target.callsign || 'FLT'}) updated`, 'adsb');
+      } else if (msg.type === 'adsb_remove' || msg.type === 'ais_remove') {
+        // the bridge stopped hearing this target (ADS-B 60 s, AIS 10 min): take it off the display
+        const id = msg.type === 'adsb_remove' ? msg.icao : msg.mmsi;
+        const markers = msg.type === 'adsb_remove' ? adsbMarkers : aisMarkers;
+        const data = msg.type === 'adsb_remove' ? adsbData : aisData;
+        if (markers[id]) { mapUnified.removeLayer(markers[id]); delete markers[id]; }
+        delete data[id];
+        renderTables();
       } else if (msg.type === 'spectrum') {
         handleAirSpectrum(msg);
       }
@@ -867,7 +875,10 @@ function renderTables() {
     ...adsbList.map(a => ({ id: a.icao, symbol: '✈️', type: 'ADS-B Aircraft', speed: a.speed != null ? `${a.speed} kts` : '—', hdg: a.heading != null ? `${a.heading}°` : '—', color: '#fbbf24' }))
   ];
 
-  if (allTargets.length === 0) return;
+  if (allTargets.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-mute);">No active targets decoded yet</td></tr>';
+    return;
+  }
 
   tbody.innerHTML = allTargets.map(t => `
     <tr onclick="focusTarget('${t.id}')">
