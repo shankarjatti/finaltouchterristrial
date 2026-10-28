@@ -66,6 +66,7 @@ AIRMAR_BANDS = [
     {'key': 'adsb', 'name': 'ADS-B', 'freq_mhz': 1090.000, 'port': IQ_ADSB_PORT, 'samp_rate_hz': 6_000_000.0},
 ]
 IQ_FFT_N = 512
+SPEC_WINDOW_S = 0.1   # one spectrum update per 0.1 s of IQ, computed from ALL of it
 IQ_ACTIVE_THRESH_DBFS = -60.0
 
 # Global State
@@ -449,53 +450,54 @@ async def iq_spectrum_reader(band):
             await asyncio.sleep(1.0)
             continue
 
-        buf = b''
-        last_send = 0.0
+        # Every sample of each SPEC_WINDOW_S window is analysed (Welch): ~1170 FFTs per update at
+        # 6 MSps. One 512-sample snapshot per 0.1 s (the old way) saw 85 us out of 100 ms and missed
+        # nearly every 120 us Mode-S frame, so the plot looked like pure noise while decoding.
+        #   spectrum = mean power per bin (noise floor, continuous signals)
+        #   peak     = max power per bin in the window (bursts: ADS-B frames, AIS slots)
+        buf = bytearray()
+        win_samps = max(IQ_FFT_N, int(band['samp_rate_hz'] * SPEC_WINDOW_S) // IQ_FFT_N * IQ_FFT_N)
+        win_bytes = win_samps * bytes_per_samp
+        hann = np.hanning(IQ_FFT_N).astype(np.float32)
         last_idle_send = 0.0
         try:
             while True:
-                data = await reader.read(65536)
+                data = await reader.read(1 << 20)
                 if not data:
                     break
                 buf += data
-                # Display only: never fall behind the live stream (ADS-B is 48 MB/s). Drop whole
-                # chunks of backlog -- a multiple of 8 bytes, so sample alignment is kept.
-                if len(buf) > 4 * chunk_bytes:
-                    buf = buf[(len(buf) // chunk_bytes - 1) * chunk_bytes:]
-                while len(buf) >= chunk_bytes:
-                    chunk, buf = buf[:chunk_bytes], buf[chunk_bytes:]
-                    now = time.time()
-                    samples = np.frombuffer(chunk, dtype=np.complex64)
-                    if not np.all(np.isfinite(samples)):
-                        continue  # never let corrupted data reach the display
-
-                    pwr = float(np.dot(samples.real, samples.real) +
-                                np.dot(samples.imag, samples.imag)) / max(1, len(samples))
-                    rms = pwr ** 0.5
-                    rms_db = 20 * np.log10(rms) if rms > 1e-12 else -120.0
-                    is_zerofill = rms <= 1e-12  # Module 1's keep-alive to a band it isn't tuned to
-
-                    if is_zerofill:
-                        if now - last_idle_send > 0.5:
-                            last_idle_send = now
-                            await broadcast({'type': 'spectrum', 'band': key, 'active': False,
-                                              'spectrum': None, 'rms_db': round(rms_db, 1)})
-                        continue
-
-                    if now - last_send < 0.1:
-                        continue
-                    last_send = now
-
-                    win = samples * np.hanning(len(samples))
-                    spec = np.fft.fftshift(np.fft.fft(win, IQ_FFT_N))
-                    spec_db = 10 * np.log10(np.maximum(np.abs(spec) ** 2, 1e-18))
-
-                    await broadcast({
-                        'type': 'spectrum', 'band': key,
-                        'active': bool(rms_db > IQ_ACTIVE_THRESH_DBFS),
-                        'spectrum': [round(float(x), 1) for x in spec_db],
-                        'rms_db': round(rms_db, 1),
-                    })
+                if len(buf) < win_bytes:
+                    continue
+                # display only: keep the newest window, drop older backlog in whole FFT chunks
+                # (multiples of 8 bytes, so sample alignment is kept)
+                if len(buf) > 2 * win_bytes:
+                    del buf[:(len(buf) // chunk_bytes) * chunk_bytes - win_bytes]
+                x = np.frombuffer(bytes(buf[:win_bytes]), dtype=np.complex64).reshape(-1, IQ_FFT_N)
+                del buf[:win_bytes]
+                now = time.time()
+                # rows of Module 1's zero-fill keep-alive (band not tuned) or corrupted data are not signal
+                good = np.isfinite(x).all(axis=1) & (np.abs(x).max(axis=1) > 0)
+                if not good.any():
+                    if now - last_idle_send > 0.5:
+                        last_idle_send = now
+                        await broadcast({'type': 'spectrum', 'band': key, 'active': False,
+                                         'spectrum': None, 'peak': None, 'rms_db': -120.0})
+                    continue
+                x = x[good]
+                pwr = float(np.mean(x.real * x.real + x.imag * x.imag))
+                rms_db = 10 * np.log10(pwr) if pwr > 1e-24 else -120.0
+                F = np.fft.fftshift(np.fft.fft(x * hann, axis=1), axes=1)
+                P = F.real * F.real + F.imag * F.imag
+                avg_db = 10 * np.log10(np.maximum(P.mean(axis=0), 1e-18))
+                peak_db = 10 * np.log10(np.maximum(P.max(axis=0), 1e-18))
+                await broadcast({
+                    'type': 'spectrum', 'band': key,
+                    'active': bool(rms_db > IQ_ACTIVE_THRESH_DBFS),
+                    'spectrum': [round(float(v), 1) for v in avg_db],
+                    'peak': [round(float(v), 1) for v in peak_db],
+                    'ffts': int(len(x)),
+                    'rms_db': round(rms_db, 1),
+                })
         except (ConnectionResetError, OSError):
             pass
         finally:
