@@ -9,8 +9,9 @@ Atlantic, Germany and Italy.
 Rules here (ICAO Doc 9871 / DO-260B, as dump1090 and pyModeS apply them):
   * global decode only from an even + odd pair received within 10 s of each other (message
     time, not wall clock) whose latitudes fall in the same NL zone;
-  * a new aircraft's position is only CONFIRMED when two independent global decodes agree
-    within what the aircraft could have flown between them;
+  * a new aircraft's position is only CONFIRMED when two independent global decodes of the same
+    parity (both anchored on an even frame, or both on an odd one) agree within what the
+    aircraft could have flown between them;
   * after that, each frame is decoded locally against the last confirmed position and is
     accepted only if the move is physically possible (<= MAX_SPEED_KT plus a margin);
   * REJECT_LIMIT implausible frames in a row drop the reference, and the aircraft has to be
@@ -110,7 +111,7 @@ class CprTracker:
         odd = bits_to_int(bits, 53, 1)
         lat_cpr = bits_to_int(bits, 54, 17)
         lon_cpr = bits_to_int(bits, 71, 17)
-        s = self.ac.setdefault(icao, {'frames': [None, None], 'cand': None, 'ref': None, 'rej': 0})
+        s = self.ac.setdefault(icao, {'frames': [None, None], 'cand': [None, None], 'ref': None, 'rej': 0})
         s['frames'][odd] = (lat_cpr, lon_cpr, t)
 
         ref = s['ref']
@@ -123,7 +124,7 @@ class CprTracker:
             s['rej'] += 1
             if s['rej'] >= REJECT_LIMIT:   # track lost: confirm again from scratch
                 s['ref'] = None
-                s['cand'] = None
+                s['cand'] = [None, None]
                 s['rej'] = 0
             return None
         s['ref'] = None
@@ -134,13 +135,13 @@ class CprTracker:
         pos = global_decode(ev[:2], od[:2], odd)
         if pos is None:
             return None
-        cand = s['cand']
+        cand = s['cand'][odd]          # compare like with like: decodes anchored on the same parity
         if (cand and t - cand[2] <= CONFIRM_WINDOW_S and t > cand[2]
                 and dist_km(cand[0], cand[1], pos[0], pos[1]) <= reachable_km(t - cand[2])):
             s['ref'] = (pos[0], pos[1], t)
-            s['cand'] = None
+            s['cand'] = [None, None]
             return pos
-        s['cand'] = (pos[0], pos[1], t)
+        s['cand'][odd] = (pos[0], pos[1], t)
         return None
 
     def forget(self, icao):

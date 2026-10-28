@@ -102,7 +102,9 @@ async def broadcast(data):
         return
     msg = json.dumps(data)
     dead = set()
-    for ws in CLIENTS:
+    # iterate a copy: consoles connect/disconnect during the awaits, and changing the set mid-loop
+    # raised RuntimeError -- which silently killed prune_stale(), so old targets were never removed
+    for ws in list(CLIENTS):
         try:
             await ws.send(msg)
         except Exception:
@@ -408,18 +410,21 @@ async def prune_stale():
     """Remove targets that are no longer being heard."""
     while True:
         await asyncio.sleep(5.0)
-        now = time.time()
-        if len(ADSB_FIRST_FRAME) > 5000:
-            ADSB_FIRST_FRAME.clear()
-        for icao in [k for k, a in ADSB_AIRCRAFT.items() if now - a.get('last_seen', now) > ADSB_STALE_S]:
-            del ADSB_AIRCRAFT[icao]
-            CPR.forget(icao)
-            ADSB_CONFIRMED.discard(icao)
-            await broadcast({"type": "adsb_remove", "icao": icao})
-        for mmsi in [k for k, v in AIS_VESSELS.items() if now - v.get('last_seen', now) > AIS_STALE_S]:
-            del AIS_VESSELS[mmsi]
-            AIS_CONFIRMED.discard(mmsi)
-            await broadcast({"type": "ais_remove", "mmsi": mmsi})
+        try:
+            now = time.time()
+            if len(ADSB_FIRST_FRAME) > 5000:
+                ADSB_FIRST_FRAME.clear()
+            for icao in [k for k, a in ADSB_AIRCRAFT.items() if now - a.get('last_seen', now) > ADSB_STALE_S]:
+                ADSB_AIRCRAFT.pop(icao, None)
+                CPR.forget(icao)
+                ADSB_CONFIRMED.discard(icao)
+                await broadcast({"type": "adsb_remove", "icao": icao})
+            for mmsi in [k for k, v in AIS_VESSELS.items() if now - v.get('last_seen', now) > AIS_STALE_S]:
+                AIS_VESSELS.pop(mmsi, None)
+                AIS_CONFIRMED.discard(mmsi)
+                await broadcast({"type": "ais_remove", "mmsi": mmsi})
+        except Exception as e:      # never let one bad pass stop the expiry for good
+            print(f"[PRUNE] error: {e!r}", flush=True)
 
 
 # -----------------------------------------------------------------------------
