@@ -12,8 +12,12 @@ Magnitude is integrated over each half-bit (0.5 us), a vectorised preamble test 
 absolute threshold -- then 112 PPM bits are sliced at a few sub-bit timing offsets and only
 frames whose DF is 17/18 and whose CRC-24 remainder is 0 are published.
 
-Output: message port 'demodulated', the same PDU gr-adsb's demod emits --
-(dict(timestamp, snr) . u8vector of 112 bits) -- so adsb.decoder parses it unchanged.
+Outputs:
+  * message port 'demodulated': the same PDU gr-adsb's demod emits --
+    (dict(timestamp, snr) . u8vector of 112 bits) -- so adsb.decoder parses it unchanged.
+  * stream 0 (float): the received amplitude |IQ|, delayed by `self.delay` samples, with a
+    'burst' tag (value = (frame number, SNR dB)) at the preamble of every CRC-valid frame --
+    trigger a time sink on it to see the real PPM pulses of decoded frames.
 """
 import datetime
 
@@ -36,15 +40,19 @@ def crc24_remainder(bits):
 
 class modes_demod(gr.sync_block):
     def __init__(self, fs=4e6, snr_db=6.0):
-        gr.sync_block.__init__(self, name='modes_demod', in_sig=[np.complex64], out_sig=None)
+        gr.sync_block.__init__(self, name='modes_demod', in_sig=[np.complex64], out_sig=[np.float32])
         self.fs = float(fs)
         sps = self.fs / 1e6
         assert sps == int(sps) and int(sps) % 2 == 0, 'modes_demod needs an even number of samples per microsecond'
         self.h = int(sps) // 2                          # samples per half-bit (0.5 us)
         self.frame_len = 16 * self.h + 2 * self.h * NBITS + 4 * self.h   # preamble + data + margin
         self.min_ratio = 10 ** (snr_db / 10.0)          # preamble pulses vs noise floor (power)
-        self.tail = np.zeros(0, dtype=np.float32)       # carried over so frames across work() calls are seen
-        self.tail_start = 0                             # absolute sample index of tail[0]
+        # Look-behind window carried between work() calls so a frame split across calls is still
+        # seen. The output is delayed by exactly this many samples, so every frame is found while
+        # its samples are still about to be written and can be tagged in place.
+        self.delay = self.frame_len + 32 * self.h
+        self.tail = np.zeros(self.delay, dtype=np.float32)
+        self.burst_key = pmt.intern('burst')
         self.last_frame_abs = -10 ** 12
         self.start_ts = (datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)).total_seconds()
         self.port = pmt.intern('demodulated')
@@ -55,17 +63,13 @@ class modes_demod(gr.sync_block):
         x = input_items[0]
         n_in = len(x)
         m = np.concatenate([self.tail, (x.real * x.real + x.imag * x.imag).astype(np.float32)])
-        base_abs = self.tail_start
-        if len(m) >= self.frame_len + 32 * self.h:
-            self._scan(m, base_abs)
-            keep = self.frame_len + 32 * self.h
-            self.tail = m[-keep:]
-            self.tail_start = base_abs + len(m) - keep
-        else:
-            self.tail = m
+        # m[0] is the next sample to be written: output index nitems_written(0) + i <-> m[i]
+        self._scan(m, self.nitems_written(0), n_in)
+        output_items[0][:] = np.sqrt(m[:n_in])
+        self.tail = m[n_in:]
         return n_in
 
-    def _scan(self, m, base_abs):
+    def _scan(self, m, base_abs, n_out):
         h = self.h
         # s[i]: power integrated over the half-bit starting at i
         c = np.concatenate([[0.0], np.cumsum(m, dtype=np.float64)])
@@ -106,6 +110,8 @@ class modes_demod(gr.sync_block):
                     best[key] = (b, t0)
         for key in sorted(best):
             b, t0 = best[key]
+            if t0 >= n_out:          # not written yet: found again (and published) on a later call
+                continue
             abs_t = base_abs + int(t0)
             if abs_t - self.last_frame_abs < 16 * h + 2 * h * NBITS:   # same frame seen again via the tail overlap
                 continue
@@ -113,4 +119,5 @@ class modes_demod(gr.sync_block):
             snr = 10 * np.log10(max(float(s[t0]), 1e-20) / noise)
             meta = pmt.to_pmt({'timestamp': self.start_ts + abs_t / self.fs, 'snr': float(snr)})
             self.message_port_pub(self.port, pmt.cons(meta, pmt.to_pmt(b)))
+            self.add_item_tag(0, abs_t, self.burst_key, pmt.to_pmt((self.frames, float(snr))))
             self.frames += 1

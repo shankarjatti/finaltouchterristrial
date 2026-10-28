@@ -139,13 +139,14 @@ class airmaritime_decoder_live(gr.top_block, Qt.QWidget):
             None # parent
         )
         self.qtgui_time_sink_x_0.set_update_time(1.0/100.0)
-        self.qtgui_time_sink_x_0.set_y_axis(0, 1)
+        self.qtgui_time_sink_x_0.set_y_axis(0, 0.01)
 
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
         self.qtgui_time_sink_x_0.enable_tags(True)
-        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_0.enable_autoscale(False)
+        # one sweep per CRC-valid frame: modes_demod tags each decoded frame's preamble "burst"
+        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_TAG, qtgui.TRIG_SLOPE_POS, 0.0, 2e-6, 0, "burst")
+        self.qtgui_time_sink_x_0.enable_autoscale(True)   # B210 level depends on the RF chain
         self.qtgui_time_sink_x_0.enable_grid(True)
         self.qtgui_time_sink_x_0.enable_axis_labels(True)
         self.qtgui_time_sink_x_0.enable_control_panel(False)
@@ -153,7 +154,7 @@ class airmaritime_decoder_live(gr.top_block, Qt.QWidget):
 
         self.qtgui_time_sink_x_0.disable_legend()
 
-        labels = ['Received |IQ|^2', '', '', '', '',
+        labels = ['|IQ| of decoded frame', '', '', '', '',
             '', '', '', '', '']
         widths = [1, 1, 1, 1, 1,
             1, 1, 1, 1, 1]
@@ -227,7 +228,6 @@ class airmaritime_decoder_live(gr.top_block, Qt.QWidget):
 
         self.blocks_throttle_0_1 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate_0,True)
         self.blocks_throttle_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, fs,True)
-        self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(1)
         self.ais_pdu_to_nmea_1 = ais.pdu_to_nmea("B")
         self.ais_pdu_to_nmea_0 = ais.pdu_to_nmea("A")
         self.ais_invert_1 = ais.invert()
@@ -247,10 +247,9 @@ class airmaritime_decoder_live(gr.top_block, Qt.QWidget):
         self.msg_connect((self.ais_pdu_to_nmea_1, 'out'), (self.zeromq_pub_msg_sink_0_0, 'in'))
         self.msg_connect((self.digital_hdlc_deframer_bp_0, 'out'), (self.ais_pdu_to_nmea_0, 'print'))
         self.msg_connect((self.digital_hdlc_deframer_bp_1, 'out'), (self.ais_pdu_to_nmea_1, 'print'))
-        self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.qtgui_time_sink_x_0, 0))
+        self.connect((self.adsb_modes_demod, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.ais_invert_0, 0), (self.digital_hdlc_deframer_bp_0, 0))
         self.connect((self.ais_invert_1, 0), (self.digital_hdlc_deframer_bp_1, 0))
-        self.connect((self.blocks_throttle_0_0, 0), (self.blocks_complex_to_mag_squared_0, 0))
         self.connect((self.blocks_throttle_0_1, 0), (self.freq_xlating_fir_filter_xxx_0, 0))
         self.connect((self.blocks_throttle_0_1, 0), (self.freq_xlating_fir_filter_xxx_1, 0))
         self.connect((self.tcp_source_ais, 0), (self.blocks_throttle_0_1, 0))

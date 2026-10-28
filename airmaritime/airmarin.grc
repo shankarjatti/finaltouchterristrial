@@ -185,24 +185,6 @@ blocks:
     - 1168.0
     rotation: 0
     state: enabled
-- name: blocks_complex_to_mag_squared_0
-  id: blocks_complex_to_mag_squared
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 672
-    - 632.0
-    rotation: 0
-    state: enabled
 - name: blocks_float_to_complex_0
   id: blocks_float_to_complex
   parameters:
@@ -548,7 +530,7 @@ blocks:
     alpha7: '1.0'
     alpha8: '1.0'
     alpha9: '1.0'
-    autoscale: 'False'
+    autoscale: 'True'
     axislabels: 'True'
     color1: blue
     color10: dark blue
@@ -565,7 +547,7 @@ blocks:
     entags: 'True'
     grid: 'True'
     gui_hint: 1,0,1,2
-    label1: Received |IQ|^2
+    label1: '|IQ| of decoded frame'
     label10: ''
     label2: Threshold
     label3: ''
@@ -602,11 +584,11 @@ blocks:
     style8: '1'
     style9: '1'
     tr_chan: '0'
-    tr_delay: '1.25e-6'
+    tr_delay: 2e-6
     tr_level: '0'
-    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_mode: qtgui.TRIG_MODE_TAG
     tr_slope: qtgui.TRIG_SLOPE_POS
-    tr_tag: '""'
+    tr_tag: '"burst"'
     type: float
     update_time: 1.0/100.0
     width1: '1'
@@ -620,7 +602,7 @@ blocks:
     width8: '1'
     width9: '1'
     ylabel: Amplitude
-    ymax: '1'
+    ymax: '0.01'
     ymin: '0'
     yunit: '""'
   states:
@@ -735,10 +717,6 @@ connections:
   - '0'
   - blocks_throttle_0_1
   - '0'
-- - blocks_throttle_0_0
-  - '0'
-  - blocks_complex_to_mag_squared_0
-  - '0'
 - - blocks_throttle_0_1
   - '0'
   - freq_xlating_fir_filter_xxx_0
@@ -819,7 +797,7 @@ connections:
   - demodulated
   - adsb_decoder_0
   - demodulated
-- - blocks_complex_to_mag_squared_0
+- - modes_demod_0
   - '0'
   - qtgui_time_sink_x_0
   - '0'

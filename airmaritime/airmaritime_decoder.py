@@ -98,13 +98,13 @@ class airmaritime_decoder(gr.top_block, Qt.QWidget):
             None # parent
         )
         self.qtgui_time_sink_x_0.set_update_time(1.0/100.0)
-        self.qtgui_time_sink_x_0.set_y_axis(0, 1)
+        self.qtgui_time_sink_x_0.set_y_axis(0, 0.01)
 
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
         self.qtgui_time_sink_x_0.enable_tags(True)
-        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0, 1.25e-6, 0, "")
-        self.qtgui_time_sink_x_0.enable_autoscale(False)
+        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_TAG, qtgui.TRIG_SLOPE_POS, 0, 2e-6, 0, "burst")
+        self.qtgui_time_sink_x_0.enable_autoscale(True)
         self.qtgui_time_sink_x_0.enable_grid(True)
         self.qtgui_time_sink_x_0.enable_axis_labels(True)
         self.qtgui_time_sink_x_0.enable_control_panel(False)
@@ -112,7 +112,7 @@ class airmaritime_decoder(gr.top_block, Qt.QWidget):
 
         self.qtgui_time_sink_x_0.disable_legend()
 
-        labels = ['Received |IQ|^2', 'Threshold', '', '', '',
+        labels = ['|IQ| of decoded frame', 'Threshold', '', '', '',
             '', '', '', '', '']
         widths = [1, 1, 1, 1, 1,
             1, 1, 1, 1, 1]
@@ -168,7 +168,6 @@ class airmaritime_decoder(gr.top_block, Qt.QWidget):
         self.blocks_throttle_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, fs,True)
         self.blocks_float_to_complex_0_0 = blocks.float_to_complex(1)
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
-        self.blocks_complex_to_mag_squared_0 = blocks.complex_to_mag_squared(1)
         self.ais_to_48k_1 = filter.rational_resampler_ccc(
                 interpolation=24,
                 decimation=25,
@@ -209,10 +208,8 @@ class airmaritime_decoder(gr.top_block, Qt.QWidget):
         self.connect((self.ais_nrzi_1, 0), (self.ais_invert_1, 0))
         self.connect((self.ais_to_48k_0, 0), (self.digital_gmsk_demod_0, 0))
         self.connect((self.ais_to_48k_1, 0), (self.digital_gmsk_demod_1, 0))
-        self.connect((self.blocks_complex_to_mag_squared_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.blocks_float_to_complex_0, 0), (self.adsb_to_6M, 0))
         self.connect((self.blocks_float_to_complex_0_0, 0), (self.blocks_throttle_0_1, 0))
-        self.connect((self.blocks_throttle_0_0, 0), (self.blocks_complex_to_mag_squared_0, 0))
         self.connect((self.blocks_throttle_0_0, 0), (self.modes_demod_0, 0))
         self.connect((self.blocks_throttle_0_1, 0), (self.freq_xlating_fir_filter_xxx_0, 0))
         self.connect((self.blocks_throttle_0_1, 0), (self.freq_xlating_fir_filter_xxx_1, 0))
@@ -224,6 +221,7 @@ class airmaritime_decoder(gr.top_block, Qt.QWidget):
         self.connect((self.digital_gmsk_demod_1, 0), (self.ais_nrzi_1, 0))
         self.connect((self.freq_xlating_fir_filter_xxx_0, 0), (self.ais_to_48k_0, 0))
         self.connect((self.freq_xlating_fir_filter_xxx_1, 0), (self.ais_to_48k_1, 0))
+        self.connect((self.modes_demod_0, 0), (self.qtgui_time_sink_x_0, 0))
 
 
     def closeEvent(self, event):
