@@ -6,6 +6,7 @@
 #include <mutex>
 #include <atomic>
 #include <set>
+#include <map>
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  TcpServer
@@ -41,6 +42,10 @@ public:
     // Print current connection status table
     void print_status() const;
 
+    // Kernel send buffer for clients accepted from now on. Size it to the band's data rate
+    // (~0.16 s of IQ): 256 kB is 0.16 s at 200 kSps but only 5 ms at 6 MSps.
+    void set_send_buffer_bytes(int bytes) { sndbuf_bytes_ = bytes; }
+
 private:
     void accept_loop();
 
@@ -50,6 +55,17 @@ private:
 
     mutable std::mutex  clients_mutex_;
     std::set<int>       client_fds_;
+
+    // drop accounting for slow clients (see broadcast(): sends are
+    // non-blocking so a stalled consumer cannot freeze the burst scheduler)
+    mutable size_t      dropped_bytes_{0};
+    mutable size_t      drop_events_{0};
+
+    // Bytes that finish a partly-sent IQ sample, per client. A drop must never cut a sample in
+    // half: the client reads complex64 (8 bytes) and would be misaligned -- garbage -- forever.
+    static constexpr size_t ITEM_BYTES = 8;
+    std::map<int, std::vector<uint8_t>> pending_;
+    std::atomic<int>    sndbuf_bytes_{256 * 1024};
 
     std::thread         accept_thread_;
     std::atomic<bool>   running_{false};

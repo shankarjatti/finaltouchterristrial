@@ -1,4 +1,6 @@
 #include "tcp_server.h"
+#include <thread>
+#include <cerrno>
 #include <iostream>
 #include <cstring>
 #include <chrono>
@@ -136,8 +138,17 @@ void TcpServer::accept_loop()
         int flag = 1;
         setsockopt(client_fd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag));
 
-        // ── Large send buffer (4 MB) ──────────────────────────────────────────
-        int sndbuf = 4 * 1024 * 1024;
+        // ── Small send buffer (256 kB) ────────────────────────────────────────
+        // This buffer IS the audio latency. At 200 kSps complex64 the stream is
+        // 1.6 MB/s, so the old 4 MB request (which the kernel doubles to 8 MB)
+        // held ~5 s of IQ in flight before the decoder saw any of it -- which
+        // is exactly the reported symptom: "DMR gives sound after its dwell
+        // time is off". Measured send-Q sat pinned at 8123 kB.
+        // 256 kB = ~0.16 s, which keeps enough slack to absorb a scheduler
+        // hiccup while staying real-time. Do NOT raise this to "be safe":
+        // every extra megabyte is another 0.65 s of delay.
+        // (per band: set_send_buffer_bytes(), sized from the band's rate in main.cpp)
+        int sndbuf = sndbuf_bytes_;
         setsockopt(client_fd, SOL_SOCKET, SO_SNDBUF, &sndbuf, sizeof(sndbuf));
 
         std::string addr = peer_addr(client_fd);
@@ -169,27 +180,74 @@ int TcpServer::broadcast(const uint8_t* data, size_t len)
     int reached = 0;
 
     for (int fd : client_fds_) {
-        ssize_t sent = 0;
         size_t  remaining = len;
         const uint8_t* ptr = data;
+        int stalls = 0;
 
-        // Keep sending until all bytes are written or error
-        while (remaining > 0) {
-            ssize_t n = send(fd, ptr, remaining, MSG_NOSIGNAL);
-            if (n <= 0) {
-                // Client disconnected
-                std::string addr = peer_addr(fd);
-                std::cout << "\n[TCP:" << port_ << "] ╔══ CLIENT DISCONNECTED ═══════════\n";
-                std::cout << "[TCP:" << port_ << "] ║  Time   : " << timestamp_now() << "\n";
-                std::cout << "[TCP:" << port_ << "] ║  Client : " << addr << "\n";
-                std::cout << "[TCP:" << port_ << "] ║  Band   : " << band_name_ << "\n";
-                std::cout << "[TCP:" << port_ << "] ╚══════════════════════════════════\n\n";
+        // finish a sample left half-sent by an earlier drop before anything new goes out
+        std::vector<uint8_t>& pend = pending_[fd];
+        if (!pend.empty()) {
+            ssize_t n = send(fd, pend.data(), pend.size(), MSG_NOSIGNAL | MSG_DONTWAIT);
+            if (n > 0)
+                pend.erase(pend.begin(), pend.begin() + n);
+            else if (n < 0 && errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR) {
                 dead.push_back(fd);
-                break;
+                continue;
             }
-            ptr       += n;
-            remaining -= static_cast<size_t>(n);
-            sent      += n;
+            if (!pend.empty()) {          // still blocked: skip this whole buffer (stays aligned)
+                dropped_bytes_ += len;
+                continue;
+            }
+        }
+
+        // NON-BLOCKING send, dropping the remainder if the client cannot keep up.
+        //
+        // This was previously a blocking send() looped "until all bytes are
+        // written", which made the radio hostage to its slowest consumer: when
+        // the console bridge fell behind (it reads all 8 bands, ~12.8 MB/s
+        // total, through a single event loop) the socket buffer filled, send()
+        // blocked, and the ENTIRE burst scheduler froze mid-cycle -- observed as
+        // ~8 MB stuck in every send queue with Module 1 idling at 0.1% CPU.
+        //
+        // Dropping is correct here: these are live monitoring streams, so a
+        // late sample is worthless, and the dwell schedule must keep running.
+        // A consumer that keeps up still receives everything.
+        while (remaining > 0) {
+            ssize_t n = send(fd, ptr, remaining, MSG_NOSIGNAL | MSG_DONTWAIT);
+            if (n > 0) {
+                ptr       += n;
+                remaining -= static_cast<size_t>(n);
+                continue;
+            }
+            if (n < 0 && errno == EINTR) continue;
+            if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+                if (++stalls > 2) {                 // brief grace, then drop
+                    // drop whole samples only: keep the bytes that complete the current one
+                    size_t frag = (len - remaining) % ITEM_BYTES;
+                    if (frag) {
+                        size_t need = ITEM_BYTES - frag;
+                        pend.assign(ptr, ptr + need);
+                        remaining -= need;
+                    }
+                    dropped_bytes_ += remaining;
+                    if (++drop_events_ % 200 == 1) {
+                        std::cout << "[TCP:" << port_ << "] slow client "
+                                  << peer_addr(fd) << " -- dropped "
+                                  << (dropped_bytes_ / 1024)
+                                  << " kB so far (radio NOT stalled)\n";
+                    }
+                    break;
+                }
+                std::this_thread::sleep_for(std::chrono::microseconds(200));
+                continue;
+            }
+
+            // genuine error: the client is gone
+            std::string addr = peer_addr(fd);
+            std::cout << "\n[TCP:" << port_ << "] CLIENT DISCONNECTED  "
+                      << addr << "  band=" << band_name_ << "\n";
+            dead.push_back(fd);
+            break;
         }
 
         if (remaining == 0)
@@ -200,6 +258,7 @@ int TcpServer::broadcast(const uint8_t* data, size_t len)
     for (int fd : dead) {
         close(fd);
         client_fds_.erase(fd);
+        pending_.erase(fd);
     }
 
     return reached;
