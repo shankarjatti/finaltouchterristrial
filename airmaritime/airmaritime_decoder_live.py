@@ -60,6 +60,7 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import zeromq
 import gnuradio.adsb as adsb
 from modes_demod import modes_demod
+from iq_tcp_source import iq_tcp_source   # reconnects when the IQ source restarts (stock tcp_source never does)
 import gnuradio.ais as ais
 # AIS symbol timing: 250 kSps / decimation 5 = 50 kSps at 9600 baud = 5.208 samples/symbol.
 # (The copied flowgraph said 5; the clock recovery may only drift 0.5 %, so a 4 % error
@@ -211,10 +212,8 @@ class airmaritime_decoder_live(gr.top_block, Qt.QWidget):
         #    airmaritime_decoder.py. Both already deliver complex64 directly
         #    (Module 1's wire format, same as every other terrestrial port),
         #    so no float_to_complex recombination step is needed here.
-        self.tcp_source_ais = network.tcp_source.tcp_source(
-            itemsize=gr.sizeof_gr_complex, addr='127.0.0.1', port=AIS_TCP_PORT, server=False)
-        self.tcp_source_adsb = network.tcp_source.tcp_source(
-            itemsize=gr.sizeof_gr_complex, addr='127.0.0.1', port=ADSB_TCP_PORT, server=False)
+        self.tcp_source_ais = iq_tcp_source('127.0.0.1', AIS_TCP_PORT)
+        self.tcp_source_adsb = iq_tcp_source('127.0.0.1', ADSB_TCP_PORT)
 
         # Resample whatever Module 1's ADS-B dwell slot actually delivers
         # (adsb_source_rate) to exactly `fs`, the rate every adsb.* block

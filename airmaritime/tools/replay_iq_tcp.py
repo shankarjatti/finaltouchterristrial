@@ -4,7 +4,8 @@ same TCP ports the live decoder reads (AIS 7009, ADS-B 7010), so the whole
 software chain (airmaritime_decoder_live.py -> ZMQ 9201/9202 -> airmaritime_bridge
 -> map) can be proven with real sample data and no USRP/HackRF at all.
 
-Each port is a TCP server (server side, like Module 1). On a client connect it
+Each port is a TCP server (server side, like Module 1); every client gets its own
+thread and the full stream. On a client connect it
 streams the file's complex64 IQ at the file's real-time rate, looping, so the
 decoder sees exactly the rate Module 1 configures for that band (AIS 250 kSps,
 ADS-B 6 MSps). Stereo-IQ .wav (I=left, Q=right) or raw .cf32 both work.
@@ -37,26 +38,35 @@ def serve(port, iq, rate, label):
     srv = socket.socket()
     srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     srv.bind(('127.0.0.1', port))
-    srv.listen(4)
-    chunk = max(1, int(rate * CHUNK_MS / 1000))
+    srv.listen(8)
     print(f'{label}: serving {len(iq) / rate:.1f} s of IQ on 127.0.0.1:{port} at {rate} Sps', flush=True)
     while True:
         c, _ = srv.accept()
         print(f'{label}: client connected on {port}', flush=True)
-        pos = 0
-        start = time.time()
-        sent = 0
-        try:
-            while True:
-                block = np.take(iq, range(pos, pos + chunk), mode='wrap')
-                pos = (pos + chunk) % len(iq)
-                c.sendall(block.tobytes())
-                sent += chunk
-                ahead = start + sent / rate - time.time()
-                if ahead > 0:
-                    time.sleep(ahead)
-        except OSError:
-            print(f'{label}: client on {port} disconnected', flush=True)
+        # one thread per client: the decoder, the bridge's spectrum reader and a monitor all read the
+        # same port, exactly as with a real front end (each gets the full stream, paced in real time)
+        threading.Thread(target=stream, args=(c, port, iq, rate, label), daemon=True).start()
+
+
+def stream(c, port, iq, rate, label):
+    chunk = max(1, int(rate * CHUNK_MS / 1000))
+    pos = 0
+    start = time.time()
+    sent = 0
+    try:
+        while True:
+            end = pos + chunk
+            block = iq[pos:end] if end <= len(iq) else np.concatenate([iq[pos:], iq[:end - len(iq)]])
+            pos = end % len(iq)
+            c.sendall(block.tobytes())
+            sent += chunk
+            ahead = start + sent / rate - time.time()
+            if ahead > 0:
+                time.sleep(ahead)
+    except OSError:
+        print(f'{label}: client on {port} disconnected', flush=True)
+    finally:
+        c.close()
 
 
 def main():

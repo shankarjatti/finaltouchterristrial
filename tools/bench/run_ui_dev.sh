@@ -19,7 +19,7 @@ stop() {
   done
   sleep 1
   # allinone.py is started by the bridge: its pid is on the bridge's command list, not ours
-  while read -r pid; do kill "$pid" 2>/dev/null; done < <(pgrep -f "[a]llinone\.py" || true)
+  while read -r pid; do kill "$pid" 2>/dev/null; done < <(pgrep -f "^python3 .*allinone\.py\$" || true)   # anchored: never matches a shell that merely mentions the name
   echo "stopped"
 }
 

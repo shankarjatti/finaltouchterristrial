@@ -192,13 +192,21 @@ def spawn(coro):
     return t
 
 
+def _json_default(o):
+    """NumPy scalars (np.bool_, np.float32, np.int64 ...) become real JSON values. The old fallback
+    default=str sent np.bool_ as the TEXT 'True'/'False', which JavaScript treats as true."""
+    if hasattr(o, 'item'):
+        return o.item()
+    return str(o)
+
+
 async def broadcast(msg: dict):
     if not CLIENTS:
         return
     try:
         data = json.dumps(msg)
     except TypeError:
-        data = json.dumps(msg, default=str)
+        data = json.dumps(msg, default=_json_default)
     dead = []
     for ws in list(CLIENTS):  # snapshot -- CLIENTS mutates concurrently (new
                                # connections, disconnects) while many tasks
@@ -727,7 +735,7 @@ async def audio_tap_reader(band):
             # real samples, just fewer of them, to keep the browser link light
             step = 2 if cfg['rate'] >= 44100 else 1
             await broadcast({
-                'type': 'audio', 'band': band, 'rate': cfg['rate'] // step, 'active': hot,
+                'type': 'audio', 'band': band, 'rate': cfg['rate'] // step, 'active': voiced > 0,   # decoded voice present (DSD emits exact silence otherwise)
                 'rms_db': round(rms_db, 1),
                 'pcm16': base64.b64encode(pcm16[::step].tobytes()).decode('ascii'),
             })

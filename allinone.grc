@@ -1,12 +1,12 @@
 options:
   parameters:
-    author: "AVGARDE SYSTEMS \u2014 SecureCOM M1"
+    author: AVGARDE SYSTEMS — SecureCOM M1
     catch_exceptions: 'True'
     category: '[GRC Hier Blocks]'
     cmake_opt: ''
     comment: ''
     copyright: ''
-    description: "Module 2 \u2014 42-Channel Decoder with Combined Spectrum Analyzer"
+    description: Module 2 — 42-Channel Decoder with Combined Spectrum Analyzer
     gen_cmake: 'On'
     gen_linking: dynamic
     generate_options: qt_gui
@@ -22,7 +22,7 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: "SecureCOM Module 2 \u2014 Multiband Real-Time Receiver"
+    title: SecureCOM Module 2 — Multiband Real-Time Receiver
     window_size: (1200,800)
   states:
     bus_sink: false
@@ -154,6 +154,29 @@ blocks:
     - 146
     rotation: 0
     state: enabled
+- name: gain_demod_dstar
+  id: variable_qtgui_range
+  parameters:
+    comment: DMR FM demod gain 1.0 -- measured optimum, offline decode test on real captured IQ (3.93 gave silence)
+    gui_hint: ''
+    label: FM Demod Gain (D-STAR)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.05'
+    step: '0.01'
+    stop: '10.0'
+    value: '1.0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1216
+    - 146
+    rotation: 0
+    state: enabled
 - name: gain_demod_nxdn
   id: variable_qtgui_range
   parameters:
@@ -174,6 +197,29 @@ blocks:
     bus_structure: null
     coordinate:
     - 1516
+    - 146
+    rotation: 0
+    state: enabled
+- name: gain_demod_nxdn48
+  id: variable_qtgui_range
+  parameters:
+    comment: DMR FM demod gain 1.0 -- measured optimum, offline decode test on real captured IQ (3.93 gave silence)
+    gui_hint: ''
+    label: FM Demod Gain (NXDN48)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.05'
+    step: '0.01'
+    stop: '10.0'
+    value: '1.0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1816
     - 146
     rotation: 0
     state: enabled
@@ -198,6 +244,52 @@ blocks:
     coordinate:
     - 2116
     - 146
+    rotation: 0
+    state: enabled
+- name: gain_demod_provoice
+  id: variable_qtgui_range
+  parameters:
+    comment: DMR FM demod gain 1.0 -- measured optimum, offline decode test on real captured IQ (3.93 gave silence)
+    gui_hint: ''
+    label: FM Demod Gain (ProVoice)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.05'
+    step: '0.01'
+    stop: '10.0'
+    value: '1.0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 16
+    - 276
+    rotation: 0
+    state: enabled
+- name: gain_demod_x2tdma
+  id: variable_qtgui_range
+  parameters:
+    comment: DMR FM demod gain 1.0 -- measured optimum, offline decode test on real captured IQ (3.93 gave silence)
+    gui_hint: ''
+    label: FM Demod Gain (X2-TDMA)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.05'
+    step: '0.01'
+    stop: '10.0'
+    value: '1.0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 316
+    - 276
     rotation: 0
     state: enabled
 - name: nfilts
@@ -279,6 +371,167 @@ blocks:
     - 16
     rotation: 0
     state: enabled
+- name: squelch_thresh_dmr
+  id: variable_qtgui_range
+  parameters:
+    comment: Channel Squelch Threshold (dB) — mutes idle channels
+    gui_hint: ''
+    label: Squelch DMR (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-90'
+    step: '1'
+    stop: '-10'
+    value: '-73'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 916
+    - 276
+    rotation: 0
+    state: enabled
+- name: squelch_thresh_dstar
+  id: variable_qtgui_range
+  parameters:
+    comment: Channel Squelch Threshold (dB) — mutes idle channels
+    gui_hint: ''
+    label: Squelch D-STAR (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-90'
+    step: '1'
+    stop: '-10'
+    value: '-73'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1216
+    - 276
+    rotation: 0
+    state: enabled
+- name: squelch_thresh_nxdn
+  id: variable_qtgui_range
+  parameters:
+    comment: Channel Squelch Threshold (dB) — mutes idle channels
+    gui_hint: ''
+    label: Squelch NXDN (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-90'
+    step: '1'
+    stop: '-10'
+    value: '-73'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1516
+    - 276
+    rotation: 0
+    state: enabled
+- name: squelch_thresh_nxdn48
+  id: variable_qtgui_range
+  parameters:
+    comment: Channel Squelch Threshold (dB) — mutes idle channels
+    gui_hint: ''
+    label: Squelch NXDN48 (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-90'
+    step: '1'
+    stop: '-10'
+    value: '-73'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1816
+    - 276
+    rotation: 0
+    state: enabled
+- name: squelch_thresh_p25
+  id: variable_qtgui_range
+  parameters:
+    comment: Channel Squelch Threshold (dB) — mutes idle channels
+    gui_hint: ''
+    label: Squelch P25 (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-90'
+    step: '1'
+    stop: '-10'
+    value: '-73'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2116
+    - 276
+    rotation: 0
+    state: enabled
+- name: squelch_thresh_provoice
+  id: variable_qtgui_range
+  parameters:
+    comment: Channel Squelch Threshold (dB) — mutes idle channels
+    gui_hint: ''
+    label: Squelch ProVoice (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-90'
+    step: '1'
+    stop: '-10'
+    value: '-73'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 16
+    - 406
+    rotation: 0
+    state: enabled
+- name: squelch_thresh_x2tdma
+  id: variable_qtgui_range
+  parameters:
+    comment: Channel Squelch Threshold (dB) — mutes idle channels
+    gui_hint: ''
+    label: Squelch X2-TDMA (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-90'
+    step: '1'
+    stop: '-10'
+    value: '-73'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 316
+    - 406
+    rotation: 0
+    state: enabled
 - name: variable_adaptive_algorithm_0
   id: variable_adaptive_algorithm
   parameters:
@@ -298,6 +551,167 @@ blocks:
     - 16
     rotation: 0
     state: true
+- name: volume_dmr
+  id: variable_qtgui_range
+  parameters:
+    comment: Audio Speech Output Volume
+    gui_hint: ''
+    label: Volume DMR
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.01'
+    step: '0.01'
+    stop: '20.0'
+    value: '0.2'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 616
+    - 406
+    rotation: 0
+    state: enabled
+- name: volume_dstar
+  id: variable_qtgui_range
+  parameters:
+    comment: Audio Speech Output Volume
+    gui_hint: ''
+    label: Volume D-STAR
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.01'
+    step: '0.01'
+    stop: '20.0'
+    value: '0.5'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 916
+    - 406
+    rotation: 0
+    state: enabled
+- name: volume_nxdn
+  id: variable_qtgui_range
+  parameters:
+    comment: Audio Speech Output Volume
+    gui_hint: ''
+    label: Volume NXDN
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.01'
+    step: '0.01'
+    stop: '20.0'
+    value: '0.5'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1216
+    - 406
+    rotation: 0
+    state: enabled
+- name: volume_nxdn48
+  id: variable_qtgui_range
+  parameters:
+    comment: Audio Speech Output Volume
+    gui_hint: ''
+    label: Volume NXDN48
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.01'
+    step: '0.01'
+    stop: '20.0'
+    value: '3.0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1516
+    - 406
+    rotation: 0
+    state: enabled
+- name: volume_p25
+  id: variable_qtgui_range
+  parameters:
+    comment: Audio Speech Output Volume
+    gui_hint: ''
+    label: Volume P25
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.01'
+    step: '0.01'
+    stop: '20.0'
+    value: '0.5'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1816
+    - 406
+    rotation: 0
+    state: enabled
+- name: volume_provoice
+  id: variable_qtgui_range
+  parameters:
+    comment: Audio Speech Output Volume
+    gui_hint: ''
+    label: Volume ProVoice
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.01'
+    step: '0.01'
+    stop: '20.0'
+    value: '0.5'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2116
+    - 406
+    rotation: 0
+    state: enabled
+- name: volume_x2tdma
+  id: variable_qtgui_range
+  parameters:
+    comment: Audio Speech Output Volume
+    gui_hint: ''
+    label: Volume X2-TDMA
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.01'
+    step: '0.01'
+    stop: '20.0'
+    value: '0.5'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 16
+    - 536
+    rotation: 0
+    state: enabled
 - name: analog_feedforward_agc_cc_0
   id: analog_feedforward_agc_cc
   parameters:
@@ -339,6 +753,28 @@ blocks:
     - 786
     rotation: 0
     state: enabled
+- name: aresamp_dstar
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2416
+    - 4292
+    rotation: 0
+    state: enabled
 - name: aresamp_nxdn
   id: rational_resampler_xxx
   parameters:
@@ -359,6 +795,28 @@ blocks:
     coordinate:
     - 2416
     - 1328
+    rotation: 0
+    state: enabled
+- name: aresamp_nxdn48
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2416
+    - 3398
     rotation: 0
     state: enabled
 - name: aresamp_p25
@@ -383,6 +841,50 @@ blocks:
     - 1870
     rotation: 0
     state: enabled
+- name: aresamp_provoice
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2416
+    - 5376
+    rotation: 0
+    state: enabled
+- name: aresamp_x2tdma
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 DSD Speech 8k -> 48k Audio
+    decim: '1'
+    fbw: '0.4'
+    interp: '6'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: fff
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2416
+    - 4834
+    rotation: 0
+    state: enabled
 - name: audio_mix_tetra
   id: blocks_add_xx
   parameters:
@@ -401,6 +903,120 @@ blocks:
     coordinate:
     - 3616
     - 2280
+    rotation: 0
+    state: enabled
+- name: audio_sink_dmr
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: PulseAudio System Default Audio Sink
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'False'
+    samp_rate: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 3016
+    - 786
+    rotation: 0
+    state: enabled
+- name: audio_sink_dstar
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: PulseAudio System Default Audio Sink
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'False'
+    samp_rate: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 3016
+    - 4292
+    rotation: 0
+    state: enabled
+- name: audio_sink_nxdn
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: PulseAudio System Default Audio Sink
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'False'
+    samp_rate: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 3016
+    - 1328
+    rotation: 0
+    state: enabled
+- name: audio_sink_nxdn48
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: PulseAudio System Default Audio Sink
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'False'
+    samp_rate: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 3016
+    - 3398
+    rotation: 0
+    state: enabled
+- name: audio_sink_p25
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: PulseAudio System Default Audio Sink
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'False'
+    samp_rate: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 3016
+    - 1870
+    rotation: 0
+    state: enabled
+- name: audio_sink_provoice
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: PulseAudio System Default Audio Sink
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'False'
+    samp_rate: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 3016
+    - 5376
     rotation: 0
     state: enabled
 - name: audio_sink_tetra_combined
@@ -498,6 +1114,25 @@ blocks:
     - 2858
     rotation: 0
     state: enabled
+- name: audio_sink_x2tdma
+  id: audio_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: PulseAudio System Default Audio Sink
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'False'
+    samp_rate: '48000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 3016
+    - 4834
+    rotation: 0
+    state: enabled
 - name: blocks_message_debug_0
   id: blocks_message_debug
   parameters:
@@ -554,6 +1189,28 @@ blocks:
     - 926
     rotation: 0
     state: enabled
+- name: bridge_zmq_dstar
+  id: zeromq_pub_sink
+  parameters:
+    address: tcp://127.0.0.1:9107
+    affinity: ''
+    alias: ''
+    comment: 'bridge tap: real DMR combined audio @48k'
+    hwm: '-1'
+    key: ''
+    pass_tags: 'False'
+    timeout: '100'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 3016
+    - 4432
+    rotation: 0
+    state: enabled
 - name: bridge_zmq_nxdn
   id: zeromq_pub_sink
   parameters:
@@ -576,6 +1233,28 @@ blocks:
     - 1468
     rotation: 0
     state: enabled
+- name: bridge_zmq_nxdn48
+  id: zeromq_pub_sink
+  parameters:
+    address: tcp://127.0.0.1:9106
+    affinity: ''
+    alias: ''
+    comment: 'bridge tap: real DMR combined audio @48k'
+    hwm: '-1'
+    key: ''
+    pass_tags: 'False'
+    timeout: '100'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 3016
+    - 3538
+    rotation: 0
+    state: enabled
 - name: bridge_zmq_p25
   id: zeromq_pub_sink
   parameters:
@@ -596,6 +1275,28 @@ blocks:
     coordinate:
     - 3016
     - 2010
+    rotation: 0
+    state: enabled
+- name: bridge_zmq_provoice
+  id: zeromq_pub_sink
+  parameters:
+    address: tcp://127.0.0.1:9109
+    affinity: ''
+    alias: ''
+    comment: 'bridge tap: real DMR combined audio @48k'
+    hwm: '-1'
+    key: ''
+    pass_tags: 'False'
+    timeout: '100'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 3016
+    - 5516
     rotation: 0
     state: enabled
 - name: bridge_zmq_tetra
@@ -638,6 +1339,28 @@ blocks:
     - 3138
     rotation: 0
     state: enabled
+- name: bridge_zmq_x2tdma
+  id: zeromq_pub_sink
+  parameters:
+    address: tcp://127.0.0.1:9108
+    affinity: ''
+    alias: ''
+    comment: 'bridge tap: real DMR combined audio @48k'
+    hwm: '-1'
+    key: ''
+    pass_tags: 'False'
+    timeout: '100'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 3016
+    - 4974
+    rotation: 0
+    state: enabled
 - name: demod_dmr
   id: analog_quadrature_demod_cf
   parameters:
@@ -654,6 +1377,24 @@ blocks:
     coordinate:
     - 1816
     - 786
+    rotation: 0
+    state: enabled
+- name: demod_dstar
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 FM Demodulator (gain=0.2)
+    gain: gain_demod_dstar
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1816
+    - 4292
     rotation: 0
     state: enabled
 - name: demod_nxdn
@@ -674,6 +1415,24 @@ blocks:
     - 1328
     rotation: 0
     state: enabled
+- name: demod_nxdn48
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 FM Demodulator (gain=0.2)
+    gain: gain_demod_nxdn48
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1816
+    - 3398
+    rotation: 0
+    state: enabled
 - name: demod_p25
   id: analog_quadrature_demod_cf
   parameters:
@@ -690,6 +1449,42 @@ blocks:
     coordinate:
     - 1816
     - 1870
+    rotation: 0
+    state: enabled
+- name: demod_provoice
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 FM Demodulator (gain=0.2)
+    gain: gain_demod_provoice
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1816
+    - 5376
+    rotation: 0
+    state: enabled
+- name: demod_x2tdma
+  id: analog_quadrature_demod_cf
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 FM Demodulator (gain=0.2)
+    gain: gain_demod_x2tdma
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1816
+    - 4834
     rotation: 0
     state: enabled
 - name: digital_constellation_decoder_cb_0
@@ -837,6 +1632,28 @@ blocks:
     - 786
     rotation: 0
     state: enabled
+- name: dsd_dstar
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_DSTAR
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2116
+    - 4292
+    rotation: 0
+    state: enabled
 - name: dsd_nxdn
   id: dsd_block_ff
   parameters:
@@ -857,6 +1674,28 @@ blocks:
     coordinate:
     - 2116
     - 1328
+    rotation: 0
+    state: enabled
+- name: dsd_nxdn48
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_NXDN48_IDAS
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2116
+    - 3398
     rotation: 0
     state: enabled
 - name: dsd_p25
@@ -881,6 +1720,50 @@ blocks:
     - 1870
     rotation: 0
     state: enabled
+- name: dsd_provoice
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_PROVOICE
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_GFSK
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2116
+    - 5376
+    rotation: 0
+    state: enabled
+- name: dsd_x2tdma
+  id: dsd_block_ff
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 DSD Voice Decoder
+    errorbars: 'True'
+    frame: dsd.dsd_FRAME_X2_TDMA
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    mod: dsd.dsd_MOD_C4FM
+    uvquality: '3'
+    verbosity: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2116
+    - 4834
+    rotation: 0
+    state: enabled
 - name: freq_xlating_fir_filter_xxx_0
   id: freq_xlating_fir_filter_xxx
   parameters:
@@ -901,6 +1784,146 @@ blocks:
     coordinate:
     - 316
     - 2280
+    rotation: 0
+    state: enabled
+- name: iq_sum_dmr
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR446 16-ch audio mixer @ 48kSps
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    num_inputs: '16'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 616
+    - 786
+    rotation: 0
+    state: enabled
+- name: iq_sum_dstar
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR446 16-ch audio mixer @ 48kSps
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    num_inputs: '16'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 616
+    - 4292
+    rotation: 0
+    state: enabled
+- name: iq_sum_nxdn
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR446 16-ch audio mixer @ 48kSps
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    num_inputs: '16'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 616
+    - 1328
+    rotation: 0
+    state: enabled
+- name: iq_sum_nxdn48
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR446 16-ch audio mixer @ 48kSps
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    num_inputs: '32'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 616
+    - 3398
+    rotation: 0
+    state: enabled
+- name: iq_sum_p25
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR446 16-ch audio mixer @ 48kSps
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    num_inputs: '10'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 616
+    - 1870
+    rotation: 0
+    state: enabled
+- name: iq_sum_provoice
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR446 16-ch audio mixer @ 48kSps
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    num_inputs: '8'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 616
+    - 5376
+    rotation: 0
+    state: enabled
+- name: iq_sum_x2tdma
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR446 16-ch audio mixer @ 48kSps
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    num_inputs: '16'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 616
+    - 4834
     rotation: 0
     state: enabled
 - name: lpf_dmr
@@ -929,6 +1952,32 @@ blocks:
     - 786
     rotation: 0
     state: enabled
+- name: lpf_dstar
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch0 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1216
+    - 4292
+    rotation: 0
+    state: enabled
 - name: lpf_nxdn
   id: low_pass_filter
   parameters:
@@ -953,6 +2002,32 @@ blocks:
     coordinate:
     - 1216
     - 1328
+    rotation: 0
+    state: enabled
+- name: lpf_nxdn48
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch0 Channel LPF
+    cutoff_freq: '3000'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '1000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1216
+    - 3398
     rotation: 0
     state: enabled
 - name: lpf_p25
@@ -981,6 +2056,58 @@ blocks:
     - 1870
     rotation: 0
     state: enabled
+- name: lpf_provoice
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch0 Channel LPF
+    cutoff_freq: '9500'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1216
+    - 5376
+    rotation: 0
+    state: enabled
+- name: lpf_x2tdma
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: DMR ch0 Channel LPF
+    cutoff_freq: '6250'
+    decim: '1'
+    gain: '1.0'
+    interp: '1'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    samp_rate: '48000'
+    type: fir_filter_ccf
+    width: '2000'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1216
+    - 4834
+    rotation: 0
+    state: enabled
 - name: mmse_resampler_xx_0
   id: mmse_resampler_xx
   parameters:
@@ -1002,18 +2129,16 @@ blocks:
     rotation: 0
     state: enabled
 - name: network_tcp_source_dmr
-  id: network_tcp_source
+  id: iq_tcp_source
   parameters:
     addr: 127.0.0.1
+    port: '7001'
+    retry_s: '0.5'
     affinity: ''
     alias: ''
-    comment: "TCP 127.0.0.1:7001 \u2014 DMR446 446.09375MHz"
+    comment: TCP 127.0.0.1:7001 — DMR446 446.09375MHz
     maxoutbuf: '1024'
     minoutbuf: '0'
-    port: '7001'
-    server: 'False'
-    type: complex
-    vlen: '1'
   states:
     bus_sink: false
     bus_source: false
@@ -1023,19 +2148,37 @@ blocks:
     - 786
     rotation: 0
     state: enabled
-- name: network_tcp_source_nxdn
-  id: network_tcp_source
+- name: network_tcp_source_dstar
+  id: iq_tcp_source
   parameters:
     addr: 127.0.0.1
+    port: '7006'
+    retry_s: '0.5'
     affinity: ''
     alias: ''
-    comment: "TCP 127.0.0.1:7002 \u2014 NXDN96 451.09375MHz"
+    comment: TCP 127.0.0.1:7001 — DMR446 446.09375MHz
     maxoutbuf: '1024'
     minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 16
+    - 4292
+    rotation: 0
+    state: enabled
+- name: network_tcp_source_nxdn
+  id: iq_tcp_source
+  parameters:
+    addr: 127.0.0.1
     port: '7002'
-    server: 'False'
-    type: complex
-    vlen: '1'
+    retry_s: '0.5'
+    affinity: ''
+    alias: ''
+    comment: TCP 127.0.0.1:7002 — NXDN96 451.09375MHz
+    maxoutbuf: '1024'
+    minoutbuf: '0'
   states:
     bus_sink: false
     bus_source: false
@@ -1045,19 +2188,37 @@ blocks:
     - 1328
     rotation: 0
     state: enabled
-- name: network_tcp_source_p25
-  id: network_tcp_source
+- name: network_tcp_source_nxdn48
+  id: iq_tcp_source
   parameters:
     addr: 127.0.0.1
+    port: '7005'
+    retry_s: '0.5'
     affinity: ''
     alias: ''
-    comment: "TCP 127.0.0.1:7003 \u2014 P25 Phase 1 450.09375MHz"
+    comment: TCP 127.0.0.1:7001 — DMR446 446.09375MHz
     maxoutbuf: '1024'
     minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 16
+    - 3398
+    rotation: 0
+    state: enabled
+- name: network_tcp_source_p25
+  id: iq_tcp_source
+  parameters:
+    addr: 127.0.0.1
     port: '7003'
-    server: 'False'
-    type: complex
-    vlen: '1'
+    retry_s: '0.5'
+    affinity: ''
+    alias: ''
+    comment: TCP 127.0.0.1:7003 — P25 Phase 1 450.09375MHz
+    maxoutbuf: '1024'
+    minoutbuf: '0'
   states:
     bus_sink: false
     bus_source: false
@@ -1067,19 +2228,37 @@ blocks:
     - 1870
     rotation: 0
     state: enabled
-- name: network_tcp_source_tetra
-  id: network_tcp_source
+- name: network_tcp_source_provoice
+  id: iq_tcp_source
   parameters:
     addr: 127.0.0.1
+    port: '7008'
+    retry_s: '0.5'
     affinity: ''
     alias: ''
-    comment: "TCP 127.0.0.1:7004 \u2014 TETRA 420.0MHz"
+    comment: TCP 127.0.0.1:7001 — DMR446 446.09375MHz
     maxoutbuf: '1024'
     minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 16
+    - 5376
+    rotation: 0
+    state: enabled
+- name: network_tcp_source_tetra
+  id: iq_tcp_source
+  parameters:
+    addr: 127.0.0.1
     port: '7004'
-    server: 'False'
-    type: complex
-    vlen: '1'
+    retry_s: '0.5'
+    affinity: ''
+    alias: ''
+    comment: TCP 127.0.0.1:7004 — TETRA 420.0MHz
+    maxoutbuf: '1024'
+    minoutbuf: '0'
   states:
     bus_sink: false
     bus_source: false
@@ -1087,6 +2266,26 @@ blocks:
     coordinate:
     - 16
     - 2280
+    rotation: 0
+    state: enabled
+- name: network_tcp_source_x2tdma
+  id: iq_tcp_source
+  parameters:
+    addr: 127.0.0.1
+    port: '7007'
+    retry_s: '0.5'
+    affinity: ''
+    alias: ''
+    comment: TCP 127.0.0.1:7001 — DMR446 446.09375MHz
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 16
+    - 4834
     rotation: 0
     state: enabled
 - name: pfb_channelizer_ccf_0
@@ -1159,6 +2358,102 @@ blocks:
     coordinate:
     - 316
     - 1328
+    rotation: 0
+    state: enabled
+- name: pfb_channelizer_dstar
+  id: pfb_channelizer_ccf
+  parameters:
+    affinity: ''
+    alias: ''
+    atten: '100'
+    bus_structure_source: '[[0,],]'
+    ch_map: '[]'
+    comment: DMR446 16ch @ 12.5kSps/ch
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    nchans: '16'
+    osr: '1.0'
+    samp_delay: '0'
+    taps: firdes.low_pass(16.0, samp_rate, (samp_rate/16.0)/2.0, 1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 316
+    - 4292
+    rotation: 0
+    state: enabled
+- name: pfb_channelizer_nxdn48
+  id: pfb_channelizer_ccf
+  parameters:
+    affinity: ''
+    alias: ''
+    atten: '100'
+    bus_structure_source: '[[0,],]'
+    ch_map: '[]'
+    comment: DMR446 16ch @ 12.5kSps/ch
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    nchans: '32'
+    osr: '1.0'
+    samp_delay: '0'
+    taps: firdes.low_pass(32.0, samp_rate, (samp_rate/32.0)/2.0, 1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 296
+    - 3200.0
+    rotation: 0
+    state: enabled
+- name: pfb_channelizer_provoice
+  id: pfb_channelizer_ccf
+  parameters:
+    affinity: ''
+    alias: ''
+    atten: '100'
+    bus_structure_source: '[[0,],]'
+    ch_map: '[]'
+    comment: DMR446 16ch @ 12.5kSps/ch
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    nchans: '8'
+    osr: '1.0'
+    samp_delay: '0'
+    taps: firdes.low_pass(8.0, samp_rate, (samp_rate/8.0)/2.0, 1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 316
+    - 5376
+    rotation: 0
+    state: enabled
+- name: pfb_channelizer_x2tdma
+  id: pfb_channelizer_ccf
+  parameters:
+    affinity: ''
+    alias: ''
+    atten: '100'
+    bus_structure_source: '[[0,],]'
+    ch_map: '[]'
+    comment: DMR446 16ch @ 12.5kSps/ch
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    nchans: '16'
+    osr: '1.0'
+    samp_delay: '0'
+    taps: firdes.low_pass(16.0, samp_rate, (samp_rate/16.0)/2.0, 1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 316
+    - 4834
     rotation: 0
     state: enabled
 - name: qtgui_const_sink_x_0_0
@@ -1277,7 +2572,7 @@ blocks:
     color1: '"blue"'
     color10: '"blue"'
     color2: '"red"'
-    color3: '"green"'
+    color3: '"black"'
     color4: '"black"'
     color5: '"magenta"'
     color6: '"cyan"'
@@ -1305,7 +2600,7 @@ blocks:
     legend: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    name: "SecureCOM Live Spectrum \u2014 8 bands (colours match the console)"
+    name: SecureCOM Live Spectrum — 8 bands (colours match the console)
     nconnections: '8'
     norm_window: 'False'
     showports: 'False'
@@ -1334,8 +2629,8 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate:
-    - 16
-    - 5776
+    - 720
+    - 5760.0
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_dnp
@@ -1391,7 +2686,7 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: "Decoded Audio \u2014 7 DSD protocols (48 kHz)"
+    name: Decoded Audio — 7 DSD protocols (48 kHz)
     nconnections: '7'
     size: '1024'
     srate: '48000'
@@ -1433,8 +2728,8 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate:
-    - 616
-    - 5776
+    - 8152
+    - 2880.0
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_tetra
@@ -1490,7 +2785,7 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: "Audio Time Domain \u2014 TETRA"
+    name: Audio Time Domain — TETRA
     nconnections: '1'
     size: '1024'
     srate: samp_rate
@@ -1621,6 +2916,28 @@ blocks:
     - 786
     rotation: 0
     state: enabled
+- name: resamp_iq_dstar
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch0: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 916
+    - 4292
+    rotation: 0
+    state: enabled
 - name: resamp_iq_nxdn
   id: rational_resampler_xxx
   parameters:
@@ -1641,6 +2958,28 @@ blocks:
     coordinate:
     - 916
     - 1328
+    rotation: 0
+    state: enabled
+- name: resamp_iq_nxdn48
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch0: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '192'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 916
+    - 3398
     rotation: 0
     state: enabled
 - name: resamp_iq_p25
@@ -1665,6 +3004,50 @@ blocks:
     - 1870
     rotation: 0
     state: enabled
+- name: resamp_iq_provoice
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch0: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '48'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 916
+    - 5376
+    rotation: 0
+    state: enabled
+- name: resamp_iq_x2tdma
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'DMR ch0: PFB port -> 48 kHz IQ'
+    decim: '25'
+    fbw: '0.4'
+    interp: '96'
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 916
+    - 4834
+    rotation: 0
+    state: enabled
 - name: squelch_dmr
   id: analog_simple_squelch_cc
   parameters:
@@ -1682,6 +3065,25 @@ blocks:
     coordinate:
     - 1516
     - 786
+    rotation: 0
+    state: enabled
+- name: squelch_dstar
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch0 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh_dstar
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1516
+    - 4292
     rotation: 0
     state: enabled
 - name: squelch_nxdn
@@ -1703,6 +3105,25 @@ blocks:
     - 1328
     rotation: 0
     state: enabled
+- name: squelch_nxdn48
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch0 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh_nxdn48
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1516
+    - 3398
+    rotation: 0
+    state: enabled
 - name: squelch_p25
   id: analog_simple_squelch_cc
   parameters:
@@ -1720,6 +3141,44 @@ blocks:
     coordinate:
     - 1516
     - 1870
+    rotation: 0
+    state: enabled
+- name: squelch_provoice
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch0 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh_provoice
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1516
+    - 5376
+    rotation: 0
+    state: enabled
+- name: squelch_x2tdma
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.05'
+    comment: DMR ch0 Zero-Noise Channel Squelch Gate
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    threshold: squelch_thresh_x2tdma
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 1516
+    - 4834
     rotation: 0
     state: enabled
 - name: tetra_decoder_block_0
@@ -1763,6 +3222,26 @@ blocks:
     - 786
     rotation: 0
     state: enabled
+- name: vol_dstar
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: DMR ch0 Volume Boost
+    const: volume_dstar
+    maxoutbuf: '1024'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate:
+    - 2716
+    - 4292
+    rotation: 0
+    state: enabled
 - name: vol_nxdn
   id: blocks_multiply_const_vxx
   parameters:
@@ -1781,476 +3260,6 @@ blocks:
     coordinate:
     - 2716
     - 1328
-    rotation: 0
-    state: enabled
-- name: vol_p25
-  id: blocks_multiply_const_vxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: P25 ch0 Volume Boost
-    const: volume_p25
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    type: float
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2716
-    - 1870
-    rotation: 0
-    state: enabled
-- name: iq_sum_dmr
-  id: blocks_add_xx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR446 16-ch audio mixer @ 48kSps
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    num_inputs: '16'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 616
-    - 786
-    rotation: 0
-    state: enabled
-- name: squelch_thresh_dmr
-  id: variable_qtgui_range
-  parameters:
-    comment: "Channel Squelch Threshold (dB) \u2014 mutes idle channels"
-    gui_hint: ''
-    label: Squelch DMR (dB)
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '-90'
-    step: '1'
-    stop: '-10'
-    value: '-73'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 916
-    - 276
-    rotation: 0
-    state: enabled
-- name: volume_dmr
-  id: variable_qtgui_range
-  parameters:
-    comment: Audio Speech Output Volume
-    gui_hint: ''
-    label: Volume DMR
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0.01'
-    step: '0.01'
-    stop: '20.0'
-    value: '0.2'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 616
-    - 406
-    rotation: 0
-    state: enabled
-- name: iq_sum_nxdn
-  id: blocks_add_xx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR446 16-ch audio mixer @ 48kSps
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    num_inputs: '16'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 616
-    - 1328
-    rotation: 0
-    state: enabled
-- name: squelch_thresh_nxdn
-  id: variable_qtgui_range
-  parameters:
-    comment: "Channel Squelch Threshold (dB) \u2014 mutes idle channels"
-    gui_hint: ''
-    label: Squelch NXDN (dB)
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '-90'
-    step: '1'
-    stop: '-10'
-    value: '-73'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1516
-    - 276
-    rotation: 0
-    state: enabled
-- name: volume_nxdn
-  id: variable_qtgui_range
-  parameters:
-    comment: Audio Speech Output Volume
-    gui_hint: ''
-    label: Volume NXDN
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0.01'
-    step: '0.01'
-    stop: '20.0'
-    value: '0.5'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1216
-    - 406
-    rotation: 0
-    state: enabled
-- name: iq_sum_p25
-  id: blocks_add_xx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR446 16-ch audio mixer @ 48kSps
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    num_inputs: '10'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 616
-    - 1870
-    rotation: 0
-    state: enabled
-- name: squelch_thresh_p25
-  id: variable_qtgui_range
-  parameters:
-    comment: "Channel Squelch Threshold (dB) \u2014 mutes idle channels"
-    gui_hint: ''
-    label: Squelch P25 (dB)
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '-90'
-    step: '1'
-    stop: '-10'
-    value: '-73'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2116
-    - 276
-    rotation: 0
-    state: enabled
-- name: volume_p25
-  id: variable_qtgui_range
-  parameters:
-    comment: Audio Speech Output Volume
-    gui_hint: ''
-    label: Volume P25
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0.01'
-    step: '0.01'
-    stop: '20.0'
-    value: '0.5'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1816
-    - 406
-    rotation: 0
-    state: enabled
-- name: audio_sink_dmr
-  id: audio_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: PulseAudio System Default Audio Sink
-    device_name: ''
-    num_inputs: '1'
-    ok_to_block: 'False'
-    samp_rate: '48000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 3016
-    - 786
-    rotation: 0
-    state: enabled
-- name: audio_sink_nxdn
-  id: audio_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: PulseAudio System Default Audio Sink
-    device_name: ''
-    num_inputs: '1'
-    ok_to_block: 'False'
-    samp_rate: '48000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 3016
-    - 1328
-    rotation: 0
-    state: enabled
-- name: audio_sink_p25
-  id: audio_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: PulseAudio System Default Audio Sink
-    device_name: ''
-    num_inputs: '1'
-    ok_to_block: 'False'
-    samp_rate: '48000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 3016
-    - 1870
-    rotation: 0
-    state: enabled
-- name: network_tcp_source_nxdn48
-  id: network_tcp_source
-  parameters:
-    addr: 127.0.0.1
-    affinity: ''
-    alias: ''
-    comment: "TCP 127.0.0.1:7001 \u2014 DMR446 446.09375MHz"
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    port: '7005'
-    server: 'False'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 16
-    - 3398
-    rotation: 0
-    state: enabled
-- name: pfb_channelizer_nxdn48
-  id: pfb_channelizer_ccf
-  parameters:
-    affinity: ''
-    alias: ''
-    atten: '100'
-    bus_structure_source: '[[0,],]'
-    ch_map: '[]'
-    comment: DMR446 16ch @ 12.5kSps/ch
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    nchans: '32'
-    osr: '1.0'
-    samp_delay: '0'
-    taps: firdes.low_pass(32.0, samp_rate, (samp_rate/32.0)/2.0, 1000)
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 316
-    - 3398
-    rotation: 0
-    state: enabled
-- name: iq_sum_nxdn48
-  id: blocks_add_xx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR446 16-ch audio mixer @ 48kSps
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    num_inputs: '32'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 616
-    - 3398
-    rotation: 0
-    state: enabled
-- name: resamp_iq_nxdn48
-  id: rational_resampler_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: 'DMR ch0: PFB port -> 48 kHz IQ'
-    decim: '25'
-    fbw: '0.4'
-    interp: '192'
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    taps: '[]'
-    type: ccf
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 916
-    - 3398
-    rotation: 0
-    state: enabled
-- name: lpf_nxdn48
-  id: low_pass_filter
-  parameters:
-    affinity: ''
-    alias: ''
-    beta: '6.76'
-    comment: DMR ch0 Channel LPF
-    cutoff_freq: '3000'
-    decim: '1'
-    gain: '1.0'
-    interp: '1'
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    samp_rate: '48000'
-    type: fir_filter_ccf
-    width: '1000'
-    win: window.WIN_HAMMING
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1216
-    - 3398
-    rotation: 0
-    state: enabled
-- name: squelch_nxdn48
-  id: analog_simple_squelch_cc
-  parameters:
-    affinity: ''
-    alias: ''
-    alpha: '0.05'
-    comment: DMR ch0 Zero-Noise Channel Squelch Gate
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    threshold: squelch_thresh_nxdn48
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1516
-    - 3398
-    rotation: 0
-    state: enabled
-- name: demod_nxdn48
-  id: analog_quadrature_demod_cf
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR ch0 FM Demodulator (gain=0.2)
-    gain: gain_demod_nxdn48
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1816
-    - 3398
-    rotation: 0
-    state: enabled
-- name: dsd_nxdn48
-  id: dsd_block_ff
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR ch0 DSD Voice Decoder
-    errorbars: 'True'
-    frame: dsd.dsd_FRAME_NXDN48_IDAS
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    mod: dsd.dsd_MOD_GFSK
-    uvquality: '3'
-    verbosity: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2116
-    - 3398
-    rotation: 0
-    state: enabled
-- name: aresamp_nxdn48
-  id: rational_resampler_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR ch0 DSD Speech 8k -> 48k Audio
-    decim: '1'
-    fbw: '0.4'
-    interp: '6'
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    taps: '[]'
-    type: fff
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2416
-    - 3398
     rotation: 0
     state: enabled
 - name: vol_nxdn48
@@ -2273,318 +3282,13 @@ blocks:
     - 3398
     rotation: 0
     state: enabled
-- name: bridge_zmq_nxdn48
-  id: zeromq_pub_sink
-  parameters:
-    address: tcp://127.0.0.1:9106
-    affinity: ''
-    alias: ''
-    comment: 'bridge tap: real DMR combined audio @48k'
-    hwm: '-1'
-    key: ''
-    pass_tags: 'False'
-    timeout: '100'
-    type: float
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 3016
-    - 3538
-    rotation: 0
-    state: enabled
-- name: audio_sink_nxdn48
-  id: audio_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: PulseAudio System Default Audio Sink
-    device_name: ''
-    num_inputs: '1'
-    ok_to_block: 'False'
-    samp_rate: '48000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 3016
-    - 3398
-    rotation: 0
-    state: enabled
-- name: squelch_thresh_nxdn48
-  id: variable_qtgui_range
-  parameters:
-    comment: "Channel Squelch Threshold (dB) \u2014 mutes idle channels"
-    gui_hint: ''
-    label: Squelch NXDN48 (dB)
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '-90'
-    step: '1'
-    stop: '-10'
-    value: '-73'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1816
-    - 276
-    rotation: 0
-    state: enabled
-- name: volume_nxdn48
-  id: variable_qtgui_range
-  parameters:
-    comment: Audio Speech Output Volume
-    gui_hint: ''
-    label: Volume NXDN48
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0.01'
-    step: '0.01'
-    stop: '20.0'
-    value: '3.0'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1516
-    - 406
-    rotation: 0
-    state: enabled
-- name: gain_demod_nxdn48
-  id: variable_qtgui_range
-  parameters:
-    comment: DMR FM demod gain 1.0 -- measured optimum, offline decode test on real captured IQ (3.93 gave silence)
-    gui_hint: ''
-    label: FM Demod Gain (NXDN48)
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0.05'
-    step: '0.01'
-    stop: '10.0'
-    value: '1.0'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1816
-    - 146
-    rotation: 0
-    state: enabled
-- name: network_tcp_source_dstar
-  id: network_tcp_source
-  parameters:
-    addr: 127.0.0.1
-    affinity: ''
-    alias: ''
-    comment: "TCP 127.0.0.1:7001 \u2014 DMR446 446.09375MHz"
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    port: '7006'
-    server: 'False'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 16
-    - 4292
-    rotation: 0
-    state: enabled
-- name: pfb_channelizer_dstar
-  id: pfb_channelizer_ccf
-  parameters:
-    affinity: ''
-    alias: ''
-    atten: '100'
-    bus_structure_source: '[[0,],]'
-    ch_map: '[]'
-    comment: DMR446 16ch @ 12.5kSps/ch
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    nchans: '16'
-    osr: '1.0'
-    samp_delay: '0'
-    taps: firdes.low_pass(16.0, samp_rate, (samp_rate/16.0)/2.0, 1000)
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 316
-    - 4292
-    rotation: 0
-    state: enabled
-- name: iq_sum_dstar
-  id: blocks_add_xx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR446 16-ch audio mixer @ 48kSps
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    num_inputs: '16'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 616
-    - 4292
-    rotation: 0
-    state: enabled
-- name: resamp_iq_dstar
-  id: rational_resampler_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: 'DMR ch0: PFB port -> 48 kHz IQ'
-    decim: '25'
-    fbw: '0.4'
-    interp: '96'
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    taps: '[]'
-    type: ccf
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 916
-    - 4292
-    rotation: 0
-    state: enabled
-- name: lpf_dstar
-  id: low_pass_filter
-  parameters:
-    affinity: ''
-    alias: ''
-    beta: '6.76'
-    comment: DMR ch0 Channel LPF
-    cutoff_freq: '6250'
-    decim: '1'
-    gain: '1.0'
-    interp: '1'
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    samp_rate: '48000'
-    type: fir_filter_ccf
-    width: '2000'
-    win: window.WIN_HAMMING
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1216
-    - 4292
-    rotation: 0
-    state: enabled
-- name: squelch_dstar
-  id: analog_simple_squelch_cc
-  parameters:
-    affinity: ''
-    alias: ''
-    alpha: '0.05'
-    comment: DMR ch0 Zero-Noise Channel Squelch Gate
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    threshold: squelch_thresh_dstar
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1516
-    - 4292
-    rotation: 0
-    state: enabled
-- name: demod_dstar
-  id: analog_quadrature_demod_cf
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR ch0 FM Demodulator (gain=0.2)
-    gain: gain_demod_dstar
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1816
-    - 4292
-    rotation: 0
-    state: enabled
-- name: dsd_dstar
-  id: dsd_block_ff
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR ch0 DSD Voice Decoder
-    errorbars: 'True'
-    frame: dsd.dsd_FRAME_DSTAR
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    mod: dsd.dsd_MOD_GFSK
-    uvquality: '3'
-    verbosity: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2116
-    - 4292
-    rotation: 0
-    state: enabled
-- name: aresamp_dstar
-  id: rational_resampler_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR ch0 DSD Speech 8k -> 48k Audio
-    decim: '1'
-    fbw: '0.4'
-    interp: '6'
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    taps: '[]'
-    type: fff
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2416
-    - 4292
-    rotation: 0
-    state: enabled
-- name: vol_dstar
+- name: vol_p25
   id: blocks_multiply_const_vxx
   parameters:
     affinity: ''
     alias: ''
-    comment: DMR ch0 Volume Boost
-    const: volume_dstar
+    comment: P25 ch0 Volume Boost
+    const: volume_p25
     maxoutbuf: '1024'
     minoutbuf: '0'
     type: float
@@ -2595,637 +3299,7 @@ blocks:
     bus_structure: null
     coordinate:
     - 2716
-    - 4292
-    rotation: 0
-    state: enabled
-- name: bridge_zmq_dstar
-  id: zeromq_pub_sink
-  parameters:
-    address: tcp://127.0.0.1:9107
-    affinity: ''
-    alias: ''
-    comment: 'bridge tap: real DMR combined audio @48k'
-    hwm: '-1'
-    key: ''
-    pass_tags: 'False'
-    timeout: '100'
-    type: float
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 3016
-    - 4432
-    rotation: 0
-    state: enabled
-- name: audio_sink_dstar
-  id: audio_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: PulseAudio System Default Audio Sink
-    device_name: ''
-    num_inputs: '1'
-    ok_to_block: 'False'
-    samp_rate: '48000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 3016
-    - 4292
-    rotation: 0
-    state: enabled
-- name: squelch_thresh_dstar
-  id: variable_qtgui_range
-  parameters:
-    comment: "Channel Squelch Threshold (dB) \u2014 mutes idle channels"
-    gui_hint: ''
-    label: Squelch D-STAR (dB)
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '-90'
-    step: '1'
-    stop: '-10'
-    value: '-73'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1216
-    - 276
-    rotation: 0
-    state: enabled
-- name: volume_dstar
-  id: variable_qtgui_range
-  parameters:
-    comment: Audio Speech Output Volume
-    gui_hint: ''
-    label: Volume D-STAR
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0.01'
-    step: '0.01'
-    stop: '20.0'
-    value: '0.5'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 916
-    - 406
-    rotation: 0
-    state: enabled
-- name: gain_demod_dstar
-  id: variable_qtgui_range
-  parameters:
-    comment: DMR FM demod gain 1.0 -- measured optimum, offline decode test on real captured IQ (3.93 gave silence)
-    gui_hint: ''
-    label: FM Demod Gain (D-STAR)
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0.05'
-    step: '0.01'
-    stop: '10.0'
-    value: '1.0'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1216
-    - 146
-    rotation: 0
-    state: enabled
-- name: network_tcp_source_x2tdma
-  id: network_tcp_source
-  parameters:
-    addr: 127.0.0.1
-    affinity: ''
-    alias: ''
-    comment: "TCP 127.0.0.1:7001 \u2014 DMR446 446.09375MHz"
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    port: '7007'
-    server: 'False'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 16
-    - 4834
-    rotation: 0
-    state: enabled
-- name: pfb_channelizer_x2tdma
-  id: pfb_channelizer_ccf
-  parameters:
-    affinity: ''
-    alias: ''
-    atten: '100'
-    bus_structure_source: '[[0,],]'
-    ch_map: '[]'
-    comment: DMR446 16ch @ 12.5kSps/ch
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    nchans: '16'
-    osr: '1.0'
-    samp_delay: '0'
-    taps: firdes.low_pass(16.0, samp_rate, (samp_rate/16.0)/2.0, 1000)
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 316
-    - 4834
-    rotation: 0
-    state: enabled
-- name: iq_sum_x2tdma
-  id: blocks_add_xx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR446 16-ch audio mixer @ 48kSps
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    num_inputs: '16'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 616
-    - 4834
-    rotation: 0
-    state: enabled
-- name: resamp_iq_x2tdma
-  id: rational_resampler_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: 'DMR ch0: PFB port -> 48 kHz IQ'
-    decim: '25'
-    fbw: '0.4'
-    interp: '96'
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    taps: '[]'
-    type: ccf
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 916
-    - 4834
-    rotation: 0
-    state: enabled
-- name: lpf_x2tdma
-  id: low_pass_filter
-  parameters:
-    affinity: ''
-    alias: ''
-    beta: '6.76'
-    comment: DMR ch0 Channel LPF
-    cutoff_freq: '6250'
-    decim: '1'
-    gain: '1.0'
-    interp: '1'
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    samp_rate: '48000'
-    type: fir_filter_ccf
-    width: '2000'
-    win: window.WIN_HAMMING
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1216
-    - 4834
-    rotation: 0
-    state: enabled
-- name: squelch_x2tdma
-  id: analog_simple_squelch_cc
-  parameters:
-    affinity: ''
-    alias: ''
-    alpha: '0.05'
-    comment: DMR ch0 Zero-Noise Channel Squelch Gate
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    threshold: squelch_thresh_x2tdma
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1516
-    - 4834
-    rotation: 0
-    state: enabled
-- name: demod_x2tdma
-  id: analog_quadrature_demod_cf
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR ch0 FM Demodulator (gain=0.2)
-    gain: gain_demod_x2tdma
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1816
-    - 4834
-    rotation: 0
-    state: enabled
-- name: dsd_x2tdma
-  id: dsd_block_ff
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR ch0 DSD Voice Decoder
-    errorbars: 'True'
-    frame: dsd.dsd_FRAME_X2_TDMA
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    mod: dsd.dsd_MOD_C4FM
-    uvquality: '3'
-    verbosity: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2116
-    - 4834
-    rotation: 0
-    state: enabled
-- name: aresamp_x2tdma
-  id: rational_resampler_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR ch0 DSD Speech 8k -> 48k Audio
-    decim: '1'
-    fbw: '0.4'
-    interp: '6'
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    taps: '[]'
-    type: fff
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2416
-    - 4834
-    rotation: 0
-    state: enabled
-- name: vol_x2tdma
-  id: blocks_multiply_const_vxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR ch0 Volume Boost
-    const: volume_x2tdma
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    type: float
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2716
-    - 4834
-    rotation: 0
-    state: enabled
-- name: bridge_zmq_x2tdma
-  id: zeromq_pub_sink
-  parameters:
-    address: tcp://127.0.0.1:9108
-    affinity: ''
-    alias: ''
-    comment: 'bridge tap: real DMR combined audio @48k'
-    hwm: '-1'
-    key: ''
-    pass_tags: 'False'
-    timeout: '100'
-    type: float
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 3016
-    - 4974
-    rotation: 0
-    state: enabled
-- name: audio_sink_x2tdma
-  id: audio_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: PulseAudio System Default Audio Sink
-    device_name: ''
-    num_inputs: '1'
-    ok_to_block: 'False'
-    samp_rate: '48000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 3016
-    - 4834
-    rotation: 0
-    state: enabled
-- name: squelch_thresh_x2tdma
-  id: variable_qtgui_range
-  parameters:
-    comment: "Channel Squelch Threshold (dB) \u2014 mutes idle channels"
-    gui_hint: ''
-    label: Squelch X2-TDMA (dB)
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '-90'
-    step: '1'
-    stop: '-10'
-    value: '-73'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 316
-    - 406
-    rotation: 0
-    state: enabled
-- name: volume_x2tdma
-  id: variable_qtgui_range
-  parameters:
-    comment: Audio Speech Output Volume
-    gui_hint: ''
-    label: Volume X2-TDMA
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0.01'
-    step: '0.01'
-    stop: '20.0'
-    value: '0.5'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 16
-    - 536
-    rotation: 0
-    state: enabled
-- name: gain_demod_x2tdma
-  id: variable_qtgui_range
-  parameters:
-    comment: DMR FM demod gain 1.0 -- measured optimum, offline decode test on real captured IQ (3.93 gave silence)
-    gui_hint: ''
-    label: FM Demod Gain (X2-TDMA)
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0.05'
-    step: '0.01'
-    stop: '10.0'
-    value: '1.0'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 316
-    - 276
-    rotation: 0
-    state: enabled
-- name: network_tcp_source_provoice
-  id: network_tcp_source
-  parameters:
-    addr: 127.0.0.1
-    affinity: ''
-    alias: ''
-    comment: "TCP 127.0.0.1:7001 \u2014 DMR446 446.09375MHz"
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    port: '7008'
-    server: 'False'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 16
-    - 5376
-    rotation: 0
-    state: enabled
-- name: pfb_channelizer_provoice
-  id: pfb_channelizer_ccf
-  parameters:
-    affinity: ''
-    alias: ''
-    atten: '100'
-    bus_structure_source: '[[0,],]'
-    ch_map: '[]'
-    comment: DMR446 16ch @ 12.5kSps/ch
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    nchans: '8'
-    osr: '1.0'
-    samp_delay: '0'
-    taps: firdes.low_pass(8.0, samp_rate, (samp_rate/8.0)/2.0, 1000)
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 316
-    - 5376
-    rotation: 0
-    state: enabled
-- name: iq_sum_provoice
-  id: blocks_add_xx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR446 16-ch audio mixer @ 48kSps
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    num_inputs: '8'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 616
-    - 5376
-    rotation: 0
-    state: enabled
-- name: resamp_iq_provoice
-  id: rational_resampler_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: 'DMR ch0: PFB port -> 48 kHz IQ'
-    decim: '25'
-    fbw: '0.4'
-    interp: '48'
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    taps: '[]'
-    type: ccf
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 916
-    - 5376
-    rotation: 0
-    state: enabled
-- name: lpf_provoice
-  id: low_pass_filter
-  parameters:
-    affinity: ''
-    alias: ''
-    beta: '6.76'
-    comment: DMR ch0 Channel LPF
-    cutoff_freq: '9500'
-    decim: '1'
-    gain: '1.0'
-    interp: '1'
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    samp_rate: '48000'
-    type: fir_filter_ccf
-    width: '2000'
-    win: window.WIN_HAMMING
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1216
-    - 5376
-    rotation: 0
-    state: enabled
-- name: squelch_provoice
-  id: analog_simple_squelch_cc
-  parameters:
-    affinity: ''
-    alias: ''
-    alpha: '0.05'
-    comment: DMR ch0 Zero-Noise Channel Squelch Gate
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    threshold: squelch_thresh_provoice
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1516
-    - 5376
-    rotation: 0
-    state: enabled
-- name: demod_provoice
-  id: analog_quadrature_demod_cf
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR ch0 FM Demodulator (gain=0.2)
-    gain: gain_demod_provoice
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 1816
-    - 5376
-    rotation: 0
-    state: enabled
-- name: dsd_provoice
-  id: dsd_block_ff
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR ch0 DSD Voice Decoder
-    errorbars: 'True'
-    frame: dsd.dsd_FRAME_PROVOICE
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    mod: dsd.dsd_MOD_GFSK
-    uvquality: '3'
-    verbosity: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2116
-    - 5376
-    rotation: 0
-    state: enabled
-- name: aresamp_provoice
-  id: rational_resampler_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: DMR ch0 DSD Speech 8k -> 48k Audio
-    decim: '1'
-    fbw: '0.4'
-    interp: '6'
-    maxoutbuf: '1024'
-    minoutbuf: '0'
-    taps: '[]'
-    type: fff
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2416
-    - 5376
+    - 1870
     rotation: 0
     state: enabled
 - name: vol_provoice
@@ -3248,17 +3322,15 @@ blocks:
     - 5376
     rotation: 0
     state: enabled
-- name: bridge_zmq_provoice
-  id: zeromq_pub_sink
+- name: vol_x2tdma
+  id: blocks_multiply_const_vxx
   parameters:
-    address: tcp://127.0.0.1:9109
     affinity: ''
     alias: ''
-    comment: 'bridge tap: real DMR combined audio @48k'
-    hwm: '-1'
-    key: ''
-    pass_tags: 'False'
-    timeout: '100'
+    comment: DMR ch0 Volume Boost
+    const: volume_x2tdma
+    maxoutbuf: '1024'
+    minoutbuf: '0'
     type: float
     vlen: '1'
   states:
@@ -3266,96 +3338,8 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate:
-    - 3016
-    - 5516
-    rotation: 0
-    state: enabled
-- name: audio_sink_provoice
-  id: audio_sink
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: PulseAudio System Default Audio Sink
-    device_name: ''
-    num_inputs: '1'
-    ok_to_block: 'False'
-    samp_rate: '48000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 3016
-    - 5376
-    rotation: 0
-    state: enabled
-- name: squelch_thresh_provoice
-  id: variable_qtgui_range
-  parameters:
-    comment: "Channel Squelch Threshold (dB) \u2014 mutes idle channels"
-    gui_hint: ''
-    label: Squelch ProVoice (dB)
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '-90'
-    step: '1'
-    stop: '-10'
-    value: '-73'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 16
-    - 406
-    rotation: 0
-    state: enabled
-- name: volume_provoice
-  id: variable_qtgui_range
-  parameters:
-    comment: Audio Speech Output Volume
-    gui_hint: ''
-    label: Volume ProVoice
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0.01'
-    step: '0.01'
-    stop: '20.0'
-    value: '0.5'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 2116
-    - 406
-    rotation: 0
-    state: enabled
-- name: gain_demod_provoice
-  id: variable_qtgui_range
-  parameters:
-    comment: DMR FM demod gain 1.0 -- measured optimum, offline decode test on real captured IQ (3.93 gave silence)
-    gui_hint: ''
-    label: FM Demod Gain (ProVoice)
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '0.05'
-    step: '0.01'
-    stop: '10.0'
-    value: '1.0'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate:
-    - 16
-    - 276
+    - 2716
+    - 4834
     rotation: 0
     state: enabled
 connections:
@@ -3367,13 +3351,29 @@ connections:
   - '0'
   - vol_dmr
   - '0'
+- - aresamp_dstar
+  - '0'
+  - vol_dstar
+  - '0'
 - - aresamp_nxdn
   - '0'
   - vol_nxdn
   - '0'
+- - aresamp_nxdn48
+  - '0'
+  - vol_nxdn48
+  - '0'
 - - aresamp_p25
   - '0'
   - vol_p25
+  - '0'
+- - aresamp_provoice
+  - '0'
+  - vol_provoice
+  - '0'
+- - aresamp_x2tdma
+  - '0'
+  - vol_x2tdma
   - '0'
 - - audio_mix_tetra
   - '0'
@@ -3395,13 +3395,29 @@ connections:
   - '0'
   - dsd_dmr
   - '0'
+- - demod_dstar
+  - '0'
+  - dsd_dstar
+  - '0'
 - - demod_nxdn
   - '0'
   - dsd_nxdn
   - '0'
+- - demod_nxdn48
+  - '0'
+  - dsd_nxdn48
+  - '0'
 - - demod_p25
   - '0'
   - dsd_p25
+  - '0'
+- - demod_provoice
+  - '0'
+  - dsd_provoice
+  - '0'
+- - demod_x2tdma
+  - '0'
+  - dsd_x2tdma
   - '0'
 - - digital_constellation_decoder_cb_0
   - '0'
@@ -3435,29 +3451,89 @@ connections:
   - '0'
   - aresamp_dmr
   - '0'
+- - dsd_dstar
+  - '0'
+  - aresamp_dstar
+  - '0'
 - - dsd_nxdn
   - '0'
   - aresamp_nxdn
+  - '0'
+- - dsd_nxdn48
+  - '0'
+  - aresamp_nxdn48
   - '0'
 - - dsd_p25
   - '0'
   - aresamp_p25
   - '0'
+- - dsd_provoice
+  - '0'
+  - aresamp_provoice
+  - '0'
+- - dsd_x2tdma
+  - '0'
+  - aresamp_x2tdma
+  - '0'
 - - freq_xlating_fir_filter_xxx_0
   - '0'
   - mmse_resampler_xx_0
+  - '0'
+- - iq_sum_dmr
+  - '0'
+  - resamp_iq_dmr
+  - '0'
+- - iq_sum_dstar
+  - '0'
+  - resamp_iq_dstar
+  - '0'
+- - iq_sum_nxdn
+  - '0'
+  - resamp_iq_nxdn
+  - '0'
+- - iq_sum_nxdn48
+  - '0'
+  - resamp_iq_nxdn48
+  - '0'
+- - iq_sum_p25
+  - '0'
+  - resamp_iq_p25
+  - '0'
+- - iq_sum_provoice
+  - '0'
+  - resamp_iq_provoice
+  - '0'
+- - iq_sum_x2tdma
+  - '0'
+  - resamp_iq_x2tdma
   - '0'
 - - lpf_dmr
   - '0'
   - squelch_dmr
   - '0'
+- - lpf_dstar
+  - '0'
+  - squelch_dstar
+  - '0'
 - - lpf_nxdn
   - '0'
   - squelch_nxdn
   - '0'
+- - lpf_nxdn48
+  - '0'
+  - squelch_nxdn48
+  - '0'
 - - lpf_p25
   - '0'
   - squelch_p25
+  - '0'
+- - lpf_provoice
+  - '0'
+  - squelch_provoice
+  - '0'
+- - lpf_x2tdma
+  - '0'
+  - squelch_x2tdma
   - '0'
 - - mmse_resampler_xx_0
   - '0'
@@ -3471,41 +3547,577 @@ connections:
   - '0'
   - pfb_channelizer_ccf_0
   - '0'
+- - network_tcp_source_dmr
+  - '0'
+  - qtgui_freq_sink_combined
+  - '0'
+- - network_tcp_source_dstar
+  - '0'
+  - pfb_channelizer_dstar
+  - '0'
+- - network_tcp_source_dstar
+  - '0'
+  - qtgui_freq_sink_combined
+  - '5'
 - - network_tcp_source_nxdn
   - '0'
   - pfb_channelizer_ccf_0_1
   - '0'
+- - network_tcp_source_nxdn
+  - '0'
+  - qtgui_freq_sink_combined
+  - '1'
+- - network_tcp_source_nxdn48
+  - '0'
+  - pfb_channelizer_nxdn48
+  - '0'
+- - network_tcp_source_nxdn48
+  - '0'
+  - qtgui_freq_sink_combined
+  - '4'
 - - network_tcp_source_p25
   - '0'
   - pfb_channelizer_ccf_0_0
   - '0'
+- - network_tcp_source_p25
+  - '0'
+  - qtgui_freq_sink_combined
+  - '2'
+- - network_tcp_source_provoice
+  - '0'
+  - pfb_channelizer_provoice
+  - '0'
+- - network_tcp_source_provoice
+  - '0'
+  - qtgui_freq_sink_combined
+  - '7'
 - - network_tcp_source_tetra
   - '0'
   - freq_xlating_fir_filter_xxx_0
   - '0'
+- - network_tcp_source_tetra
+  - '0'
+  - qtgui_freq_sink_combined
+  - '3'
+- - network_tcp_source_x2tdma
+  - '0'
+  - pfb_channelizer_x2tdma
+  - '0'
+- - network_tcp_source_x2tdma
+  - '0'
+  - qtgui_freq_sink_combined
+  - '6'
+- - pfb_channelizer_ccf_0
+  - '0'
+  - iq_sum_dmr
+  - '0'
+- - pfb_channelizer_ccf_0
+  - '1'
+  - iq_sum_dmr
+  - '1'
+- - pfb_channelizer_ccf_0
+  - '10'
+  - iq_sum_dmr
+  - '10'
+- - pfb_channelizer_ccf_0
+  - '11'
+  - iq_sum_dmr
+  - '11'
+- - pfb_channelizer_ccf_0
+  - '12'
+  - iq_sum_dmr
+  - '12'
+- - pfb_channelizer_ccf_0
+  - '13'
+  - iq_sum_dmr
+  - '13'
+- - pfb_channelizer_ccf_0
+  - '14'
+  - iq_sum_dmr
+  - '14'
+- - pfb_channelizer_ccf_0
+  - '15'
+  - iq_sum_dmr
+  - '15'
+- - pfb_channelizer_ccf_0
+  - '2'
+  - iq_sum_dmr
+  - '2'
+- - pfb_channelizer_ccf_0
+  - '3'
+  - iq_sum_dmr
+  - '3'
+- - pfb_channelizer_ccf_0
+  - '4'
+  - iq_sum_dmr
+  - '4'
+- - pfb_channelizer_ccf_0
+  - '5'
+  - iq_sum_dmr
+  - '5'
+- - pfb_channelizer_ccf_0
+  - '6'
+  - iq_sum_dmr
+  - '6'
+- - pfb_channelizer_ccf_0
+  - '7'
+  - iq_sum_dmr
+  - '7'
+- - pfb_channelizer_ccf_0
+  - '8'
+  - iq_sum_dmr
+  - '8'
+- - pfb_channelizer_ccf_0
+  - '9'
+  - iq_sum_dmr
+  - '9'
+- - pfb_channelizer_ccf_0_0
+  - '0'
+  - iq_sum_p25
+  - '0'
+- - pfb_channelizer_ccf_0_0
+  - '1'
+  - iq_sum_p25
+  - '1'
+- - pfb_channelizer_ccf_0_0
+  - '2'
+  - iq_sum_p25
+  - '2'
+- - pfb_channelizer_ccf_0_0
+  - '3'
+  - iq_sum_p25
+  - '3'
+- - pfb_channelizer_ccf_0_0
+  - '4'
+  - iq_sum_p25
+  - '4'
+- - pfb_channelizer_ccf_0_0
+  - '5'
+  - iq_sum_p25
+  - '5'
+- - pfb_channelizer_ccf_0_0
+  - '6'
+  - iq_sum_p25
+  - '6'
+- - pfb_channelizer_ccf_0_0
+  - '7'
+  - iq_sum_p25
+  - '7'
+- - pfb_channelizer_ccf_0_0
+  - '8'
+  - iq_sum_p25
+  - '8'
+- - pfb_channelizer_ccf_0_0
+  - '9'
+  - iq_sum_p25
+  - '9'
+- - pfb_channelizer_ccf_0_1
+  - '0'
+  - iq_sum_nxdn
+  - '0'
+- - pfb_channelizer_ccf_0_1
+  - '1'
+  - iq_sum_nxdn
+  - '1'
+- - pfb_channelizer_ccf_0_1
+  - '10'
+  - iq_sum_nxdn
+  - '10'
+- - pfb_channelizer_ccf_0_1
+  - '11'
+  - iq_sum_nxdn
+  - '11'
+- - pfb_channelizer_ccf_0_1
+  - '12'
+  - iq_sum_nxdn
+  - '12'
+- - pfb_channelizer_ccf_0_1
+  - '13'
+  - iq_sum_nxdn
+  - '13'
+- - pfb_channelizer_ccf_0_1
+  - '14'
+  - iq_sum_nxdn
+  - '14'
+- - pfb_channelizer_ccf_0_1
+  - '15'
+  - iq_sum_nxdn
+  - '15'
+- - pfb_channelizer_ccf_0_1
+  - '2'
+  - iq_sum_nxdn
+  - '2'
+- - pfb_channelizer_ccf_0_1
+  - '3'
+  - iq_sum_nxdn
+  - '3'
+- - pfb_channelizer_ccf_0_1
+  - '4'
+  - iq_sum_nxdn
+  - '4'
+- - pfb_channelizer_ccf_0_1
+  - '5'
+  - iq_sum_nxdn
+  - '5'
+- - pfb_channelizer_ccf_0_1
+  - '6'
+  - iq_sum_nxdn
+  - '6'
+- - pfb_channelizer_ccf_0_1
+  - '7'
+  - iq_sum_nxdn
+  - '7'
+- - pfb_channelizer_ccf_0_1
+  - '8'
+  - iq_sum_nxdn
+  - '8'
+- - pfb_channelizer_ccf_0_1
+  - '9'
+  - iq_sum_nxdn
+  - '9'
+- - pfb_channelizer_dstar
+  - '0'
+  - iq_sum_dstar
+  - '0'
+- - pfb_channelizer_dstar
+  - '1'
+  - iq_sum_dstar
+  - '1'
+- - pfb_channelizer_dstar
+  - '10'
+  - iq_sum_dstar
+  - '10'
+- - pfb_channelizer_dstar
+  - '11'
+  - iq_sum_dstar
+  - '11'
+- - pfb_channelizer_dstar
+  - '12'
+  - iq_sum_dstar
+  - '12'
+- - pfb_channelizer_dstar
+  - '13'
+  - iq_sum_dstar
+  - '13'
+- - pfb_channelizer_dstar
+  - '14'
+  - iq_sum_dstar
+  - '14'
+- - pfb_channelizer_dstar
+  - '15'
+  - iq_sum_dstar
+  - '15'
+- - pfb_channelizer_dstar
+  - '2'
+  - iq_sum_dstar
+  - '2'
+- - pfb_channelizer_dstar
+  - '3'
+  - iq_sum_dstar
+  - '3'
+- - pfb_channelizer_dstar
+  - '4'
+  - iq_sum_dstar
+  - '4'
+- - pfb_channelizer_dstar
+  - '5'
+  - iq_sum_dstar
+  - '5'
+- - pfb_channelizer_dstar
+  - '6'
+  - iq_sum_dstar
+  - '6'
+- - pfb_channelizer_dstar
+  - '7'
+  - iq_sum_dstar
+  - '7'
+- - pfb_channelizer_dstar
+  - '8'
+  - iq_sum_dstar
+  - '8'
+- - pfb_channelizer_dstar
+  - '9'
+  - iq_sum_dstar
+  - '9'
+- - pfb_channelizer_nxdn48
+  - '0'
+  - iq_sum_nxdn48
+  - '0'
+- - pfb_channelizer_nxdn48
+  - '1'
+  - iq_sum_nxdn48
+  - '1'
+- - pfb_channelizer_nxdn48
+  - '10'
+  - iq_sum_nxdn48
+  - '10'
+- - pfb_channelizer_nxdn48
+  - '11'
+  - iq_sum_nxdn48
+  - '11'
+- - pfb_channelizer_nxdn48
+  - '12'
+  - iq_sum_nxdn48
+  - '12'
+- - pfb_channelizer_nxdn48
+  - '13'
+  - iq_sum_nxdn48
+  - '13'
+- - pfb_channelizer_nxdn48
+  - '14'
+  - iq_sum_nxdn48
+  - '14'
+- - pfb_channelizer_nxdn48
+  - '15'
+  - iq_sum_nxdn48
+  - '15'
+- - pfb_channelizer_nxdn48
+  - '16'
+  - iq_sum_nxdn48
+  - '16'
+- - pfb_channelizer_nxdn48
+  - '17'
+  - iq_sum_nxdn48
+  - '17'
+- - pfb_channelizer_nxdn48
+  - '18'
+  - iq_sum_nxdn48
+  - '18'
+- - pfb_channelizer_nxdn48
+  - '19'
+  - iq_sum_nxdn48
+  - '19'
+- - pfb_channelizer_nxdn48
+  - '2'
+  - iq_sum_nxdn48
+  - '2'
+- - pfb_channelizer_nxdn48
+  - '20'
+  - iq_sum_nxdn48
+  - '20'
+- - pfb_channelizer_nxdn48
+  - '21'
+  - iq_sum_nxdn48
+  - '21'
+- - pfb_channelizer_nxdn48
+  - '22'
+  - iq_sum_nxdn48
+  - '22'
+- - pfb_channelizer_nxdn48
+  - '23'
+  - iq_sum_nxdn48
+  - '23'
+- - pfb_channelizer_nxdn48
+  - '24'
+  - iq_sum_nxdn48
+  - '24'
+- - pfb_channelizer_nxdn48
+  - '25'
+  - iq_sum_nxdn48
+  - '25'
+- - pfb_channelizer_nxdn48
+  - '26'
+  - iq_sum_nxdn48
+  - '26'
+- - pfb_channelizer_nxdn48
+  - '27'
+  - iq_sum_nxdn48
+  - '27'
+- - pfb_channelizer_nxdn48
+  - '28'
+  - iq_sum_nxdn48
+  - '28'
+- - pfb_channelizer_nxdn48
+  - '29'
+  - iq_sum_nxdn48
+  - '29'
+- - pfb_channelizer_nxdn48
+  - '3'
+  - iq_sum_nxdn48
+  - '3'
+- - pfb_channelizer_nxdn48
+  - '30'
+  - iq_sum_nxdn48
+  - '30'
+- - pfb_channelizer_nxdn48
+  - '31'
+  - iq_sum_nxdn48
+  - '31'
+- - pfb_channelizer_nxdn48
+  - '4'
+  - iq_sum_nxdn48
+  - '4'
+- - pfb_channelizer_nxdn48
+  - '5'
+  - iq_sum_nxdn48
+  - '5'
+- - pfb_channelizer_nxdn48
+  - '6'
+  - iq_sum_nxdn48
+  - '6'
+- - pfb_channelizer_nxdn48
+  - '7'
+  - iq_sum_nxdn48
+  - '7'
+- - pfb_channelizer_nxdn48
+  - '8'
+  - iq_sum_nxdn48
+  - '8'
+- - pfb_channelizer_nxdn48
+  - '9'
+  - iq_sum_nxdn48
+  - '9'
+- - pfb_channelizer_provoice
+  - '0'
+  - iq_sum_provoice
+  - '0'
+- - pfb_channelizer_provoice
+  - '1'
+  - iq_sum_provoice
+  - '1'
+- - pfb_channelizer_provoice
+  - '2'
+  - iq_sum_provoice
+  - '2'
+- - pfb_channelizer_provoice
+  - '3'
+  - iq_sum_provoice
+  - '3'
+- - pfb_channelizer_provoice
+  - '4'
+  - iq_sum_provoice
+  - '4'
+- - pfb_channelizer_provoice
+  - '5'
+  - iq_sum_provoice
+  - '5'
+- - pfb_channelizer_provoice
+  - '6'
+  - iq_sum_provoice
+  - '6'
+- - pfb_channelizer_provoice
+  - '7'
+  - iq_sum_provoice
+  - '7'
+- - pfb_channelizer_x2tdma
+  - '0'
+  - iq_sum_x2tdma
+  - '0'
+- - pfb_channelizer_x2tdma
+  - '1'
+  - iq_sum_x2tdma
+  - '1'
+- - pfb_channelizer_x2tdma
+  - '10'
+  - iq_sum_x2tdma
+  - '10'
+- - pfb_channelizer_x2tdma
+  - '11'
+  - iq_sum_x2tdma
+  - '11'
+- - pfb_channelizer_x2tdma
+  - '12'
+  - iq_sum_x2tdma
+  - '12'
+- - pfb_channelizer_x2tdma
+  - '13'
+  - iq_sum_x2tdma
+  - '13'
+- - pfb_channelizer_x2tdma
+  - '14'
+  - iq_sum_x2tdma
+  - '14'
+- - pfb_channelizer_x2tdma
+  - '15'
+  - iq_sum_x2tdma
+  - '15'
+- - pfb_channelizer_x2tdma
+  - '2'
+  - iq_sum_x2tdma
+  - '2'
+- - pfb_channelizer_x2tdma
+  - '3'
+  - iq_sum_x2tdma
+  - '3'
+- - pfb_channelizer_x2tdma
+  - '4'
+  - iq_sum_x2tdma
+  - '4'
+- - pfb_channelizer_x2tdma
+  - '5'
+  - iq_sum_x2tdma
+  - '5'
+- - pfb_channelizer_x2tdma
+  - '6'
+  - iq_sum_x2tdma
+  - '6'
+- - pfb_channelizer_x2tdma
+  - '7'
+  - iq_sum_x2tdma
+  - '7'
+- - pfb_channelizer_x2tdma
+  - '8'
+  - iq_sum_x2tdma
+  - '8'
+- - pfb_channelizer_x2tdma
+  - '9'
+  - iq_sum_x2tdma
+  - '9'
 - - resamp_iq_dmr
   - '0'
   - lpf_dmr
+  - '0'
+- - resamp_iq_dstar
+  - '0'
+  - lpf_dstar
   - '0'
 - - resamp_iq_nxdn
   - '0'
   - lpf_nxdn
   - '0'
+- - resamp_iq_nxdn48
+  - '0'
+  - lpf_nxdn48
+  - '0'
 - - resamp_iq_p25
   - '0'
   - lpf_p25
+  - '0'
+- - resamp_iq_provoice
+  - '0'
+  - lpf_provoice
+  - '0'
+- - resamp_iq_x2tdma
+  - '0'
+  - lpf_x2tdma
   - '0'
 - - squelch_dmr
   - '0'
   - demod_dmr
   - '0'
+- - squelch_dstar
+  - '0'
+  - demod_dstar
+  - '0'
 - - squelch_nxdn
   - '0'
   - demod_nxdn
   - '0'
+- - squelch_nxdn48
+  - '0'
+  - demod_nxdn48
+  - '0'
 - - squelch_p25
   - '0'
   - demod_p25
+  - '0'
+- - squelch_provoice
+  - '0'
+  - demod_provoice
+  - '0'
+- - squelch_x2tdma
+  - '0'
+  - demod_x2tdma
   - '0'
 - - tetra_decoder_block_0
   - '0'
@@ -3547,473 +4159,21 @@ connections:
   - call_log
   - bridge_zmq_tetra_events
   - in
-- - pfb_channelizer_ccf_0
+- - vol_dmr
   - '0'
-  - iq_sum_dmr
-  - '0'
-- - pfb_channelizer_ccf_0
-  - '1'
-  - iq_sum_dmr
-  - '1'
-- - pfb_channelizer_ccf_0
-  - '2'
-  - iq_sum_dmr
-  - '2'
-- - pfb_channelizer_ccf_0
-  - '3'
-  - iq_sum_dmr
-  - '3'
-- - pfb_channelizer_ccf_0
-  - '4'
-  - iq_sum_dmr
-  - '4'
-- - pfb_channelizer_ccf_0
-  - '5'
-  - iq_sum_dmr
-  - '5'
-- - pfb_channelizer_ccf_0
-  - '6'
-  - iq_sum_dmr
-  - '6'
-- - pfb_channelizer_ccf_0
-  - '7'
-  - iq_sum_dmr
-  - '7'
-- - pfb_channelizer_ccf_0
-  - '8'
-  - iq_sum_dmr
-  - '8'
-- - pfb_channelizer_ccf_0
-  - '9'
-  - iq_sum_dmr
-  - '9'
-- - pfb_channelizer_ccf_0
-  - '10'
-  - iq_sum_dmr
-  - '10'
-- - pfb_channelizer_ccf_0
-  - '11'
-  - iq_sum_dmr
-  - '11'
-- - pfb_channelizer_ccf_0
-  - '12'
-  - iq_sum_dmr
-  - '12'
-- - pfb_channelizer_ccf_0
-  - '13'
-  - iq_sum_dmr
-  - '13'
-- - pfb_channelizer_ccf_0
-  - '14'
-  - iq_sum_dmr
-  - '14'
-- - pfb_channelizer_ccf_0
-  - '15'
-  - iq_sum_dmr
-  - '15'
-- - iq_sum_dmr
-  - '0'
-  - resamp_iq_dmr
+  - audio_sink_dmr
   - '0'
 - - vol_dmr
   - '0'
   - bridge_zmq_dmr
   - '0'
-- - pfb_channelizer_ccf_0_1
-  - '0'
-  - iq_sum_nxdn
-  - '0'
-- - pfb_channelizer_ccf_0_1
-  - '1'
-  - iq_sum_nxdn
-  - '1'
-- - pfb_channelizer_ccf_0_1
-  - '2'
-  - iq_sum_nxdn
-  - '2'
-- - pfb_channelizer_ccf_0_1
-  - '3'
-  - iq_sum_nxdn
-  - '3'
-- - pfb_channelizer_ccf_0_1
-  - '4'
-  - iq_sum_nxdn
-  - '4'
-- - pfb_channelizer_ccf_0_1
-  - '5'
-  - iq_sum_nxdn
-  - '5'
-- - pfb_channelizer_ccf_0_1
-  - '6'
-  - iq_sum_nxdn
-  - '6'
-- - pfb_channelizer_ccf_0_1
-  - '7'
-  - iq_sum_nxdn
-  - '7'
-- - pfb_channelizer_ccf_0_1
-  - '8'
-  - iq_sum_nxdn
-  - '8'
-- - pfb_channelizer_ccf_0_1
-  - '9'
-  - iq_sum_nxdn
-  - '9'
-- - pfb_channelizer_ccf_0_1
-  - '10'
-  - iq_sum_nxdn
-  - '10'
-- - pfb_channelizer_ccf_0_1
-  - '11'
-  - iq_sum_nxdn
-  - '11'
-- - pfb_channelizer_ccf_0_1
-  - '12'
-  - iq_sum_nxdn
-  - '12'
-- - pfb_channelizer_ccf_0_1
-  - '13'
-  - iq_sum_nxdn
-  - '13'
-- - pfb_channelizer_ccf_0_1
-  - '14'
-  - iq_sum_nxdn
-  - '14'
-- - pfb_channelizer_ccf_0_1
-  - '15'
-  - iq_sum_nxdn
-  - '15'
-- - iq_sum_nxdn
-  - '0'
-  - resamp_iq_nxdn
-  - '0'
-- - vol_nxdn
-  - '0'
-  - bridge_zmq_nxdn
-  - '0'
-- - pfb_channelizer_ccf_0_0
-  - '0'
-  - iq_sum_p25
-  - '0'
-- - pfb_channelizer_ccf_0_0
-  - '1'
-  - iq_sum_p25
-  - '1'
-- - pfb_channelizer_ccf_0_0
-  - '2'
-  - iq_sum_p25
-  - '2'
-- - pfb_channelizer_ccf_0_0
-  - '3'
-  - iq_sum_p25
-  - '3'
-- - pfb_channelizer_ccf_0_0
-  - '4'
-  - iq_sum_p25
-  - '4'
-- - pfb_channelizer_ccf_0_0
-  - '5'
-  - iq_sum_p25
-  - '5'
-- - pfb_channelizer_ccf_0_0
-  - '6'
-  - iq_sum_p25
-  - '6'
-- - pfb_channelizer_ccf_0_0
-  - '7'
-  - iq_sum_p25
-  - '7'
-- - pfb_channelizer_ccf_0_0
-  - '8'
-  - iq_sum_p25
-  - '8'
-- - pfb_channelizer_ccf_0_0
-  - '9'
-  - iq_sum_p25
-  - '9'
-- - iq_sum_p25
-  - '0'
-  - resamp_iq_p25
-  - '0'
-- - vol_p25
-  - '0'
-  - bridge_zmq_p25
-  - '0'
 - - vol_dmr
   - '0'
-  - audio_sink_dmr
+  - qtgui_time_sink_dnp
   - '0'
-- - vol_nxdn
+- - vol_dstar
   - '0'
-  - audio_sink_nxdn
-  - '0'
-- - vol_p25
-  - '0'
-  - audio_sink_p25
-  - '0'
-- - network_tcp_source_nxdn48
-  - '0'
-  - pfb_channelizer_nxdn48
-  - '0'
-- - pfb_channelizer_nxdn48
-  - '0'
-  - iq_sum_nxdn48
-  - '0'
-- - pfb_channelizer_nxdn48
-  - '1'
-  - iq_sum_nxdn48
-  - '1'
-- - pfb_channelizer_nxdn48
-  - '2'
-  - iq_sum_nxdn48
-  - '2'
-- - pfb_channelizer_nxdn48
-  - '3'
-  - iq_sum_nxdn48
-  - '3'
-- - pfb_channelizer_nxdn48
-  - '4'
-  - iq_sum_nxdn48
-  - '4'
-- - pfb_channelizer_nxdn48
-  - '5'
-  - iq_sum_nxdn48
-  - '5'
-- - pfb_channelizer_nxdn48
-  - '6'
-  - iq_sum_nxdn48
-  - '6'
-- - pfb_channelizer_nxdn48
-  - '7'
-  - iq_sum_nxdn48
-  - '7'
-- - pfb_channelizer_nxdn48
-  - '8'
-  - iq_sum_nxdn48
-  - '8'
-- - pfb_channelizer_nxdn48
-  - '9'
-  - iq_sum_nxdn48
-  - '9'
-- - pfb_channelizer_nxdn48
-  - '10'
-  - iq_sum_nxdn48
-  - '10'
-- - pfb_channelizer_nxdn48
-  - '11'
-  - iq_sum_nxdn48
-  - '11'
-- - pfb_channelizer_nxdn48
-  - '12'
-  - iq_sum_nxdn48
-  - '12'
-- - pfb_channelizer_nxdn48
-  - '13'
-  - iq_sum_nxdn48
-  - '13'
-- - pfb_channelizer_nxdn48
-  - '14'
-  - iq_sum_nxdn48
-  - '14'
-- - pfb_channelizer_nxdn48
-  - '15'
-  - iq_sum_nxdn48
-  - '15'
-- - pfb_channelizer_nxdn48
-  - '16'
-  - iq_sum_nxdn48
-  - '16'
-- - pfb_channelizer_nxdn48
-  - '17'
-  - iq_sum_nxdn48
-  - '17'
-- - pfb_channelizer_nxdn48
-  - '18'
-  - iq_sum_nxdn48
-  - '18'
-- - pfb_channelizer_nxdn48
-  - '19'
-  - iq_sum_nxdn48
-  - '19'
-- - pfb_channelizer_nxdn48
-  - '20'
-  - iq_sum_nxdn48
-  - '20'
-- - pfb_channelizer_nxdn48
-  - '21'
-  - iq_sum_nxdn48
-  - '21'
-- - pfb_channelizer_nxdn48
-  - '22'
-  - iq_sum_nxdn48
-  - '22'
-- - pfb_channelizer_nxdn48
-  - '23'
-  - iq_sum_nxdn48
-  - '23'
-- - pfb_channelizer_nxdn48
-  - '24'
-  - iq_sum_nxdn48
-  - '24'
-- - pfb_channelizer_nxdn48
-  - '25'
-  - iq_sum_nxdn48
-  - '25'
-- - pfb_channelizer_nxdn48
-  - '26'
-  - iq_sum_nxdn48
-  - '26'
-- - pfb_channelizer_nxdn48
-  - '27'
-  - iq_sum_nxdn48
-  - '27'
-- - pfb_channelizer_nxdn48
-  - '28'
-  - iq_sum_nxdn48
-  - '28'
-- - pfb_channelizer_nxdn48
-  - '29'
-  - iq_sum_nxdn48
-  - '29'
-- - pfb_channelizer_nxdn48
-  - '30'
-  - iq_sum_nxdn48
-  - '30'
-- - pfb_channelizer_nxdn48
-  - '31'
-  - iq_sum_nxdn48
-  - '31'
-- - iq_sum_nxdn48
-  - '0'
-  - resamp_iq_nxdn48
-  - '0'
-- - resamp_iq_nxdn48
-  - '0'
-  - lpf_nxdn48
-  - '0'
-- - lpf_nxdn48
-  - '0'
-  - squelch_nxdn48
-  - '0'
-- - squelch_nxdn48
-  - '0'
-  - demod_nxdn48
-  - '0'
-- - demod_nxdn48
-  - '0'
-  - dsd_nxdn48
-  - '0'
-- - dsd_nxdn48
-  - '0'
-  - aresamp_nxdn48
-  - '0'
-- - aresamp_nxdn48
-  - '0'
-  - vol_nxdn48
-  - '0'
-- - vol_nxdn48
-  - '0'
-  - bridge_zmq_nxdn48
-  - '0'
-- - vol_nxdn48
-  - '0'
-  - audio_sink_nxdn48
-  - '0'
-- - network_tcp_source_dstar
-  - '0'
-  - pfb_channelizer_dstar
-  - '0'
-- - pfb_channelizer_dstar
-  - '0'
-  - iq_sum_dstar
-  - '0'
-- - pfb_channelizer_dstar
-  - '1'
-  - iq_sum_dstar
-  - '1'
-- - pfb_channelizer_dstar
-  - '2'
-  - iq_sum_dstar
-  - '2'
-- - pfb_channelizer_dstar
-  - '3'
-  - iq_sum_dstar
-  - '3'
-- - pfb_channelizer_dstar
-  - '4'
-  - iq_sum_dstar
-  - '4'
-- - pfb_channelizer_dstar
-  - '5'
-  - iq_sum_dstar
-  - '5'
-- - pfb_channelizer_dstar
-  - '6'
-  - iq_sum_dstar
-  - '6'
-- - pfb_channelizer_dstar
-  - '7'
-  - iq_sum_dstar
-  - '7'
-- - pfb_channelizer_dstar
-  - '8'
-  - iq_sum_dstar
-  - '8'
-- - pfb_channelizer_dstar
-  - '9'
-  - iq_sum_dstar
-  - '9'
-- - pfb_channelizer_dstar
-  - '10'
-  - iq_sum_dstar
-  - '10'
-- - pfb_channelizer_dstar
-  - '11'
-  - iq_sum_dstar
-  - '11'
-- - pfb_channelizer_dstar
-  - '12'
-  - iq_sum_dstar
-  - '12'
-- - pfb_channelizer_dstar
-  - '13'
-  - iq_sum_dstar
-  - '13'
-- - pfb_channelizer_dstar
-  - '14'
-  - iq_sum_dstar
-  - '14'
-- - pfb_channelizer_dstar
-  - '15'
-  - iq_sum_dstar
-  - '15'
-- - iq_sum_dstar
-  - '0'
-  - resamp_iq_dstar
-  - '0'
-- - resamp_iq_dstar
-  - '0'
-  - lpf_dstar
-  - '0'
-- - lpf_dstar
-  - '0'
-  - squelch_dstar
-  - '0'
-- - squelch_dstar
-  - '0'
-  - demod_dstar
-  - '0'
-- - demod_dstar
-  - '0'
-  - dsd_dstar
-  - '0'
-- - dsd_dstar
-  - '0'
-  - aresamp_dstar
-  - '0'
-- - aresamp_dstar
-  - '0'
-  - vol_dstar
+  - audio_sink_dstar
   - '0'
 - - vol_dstar
   - '0'
@@ -4021,175 +4181,47 @@ connections:
   - '0'
 - - vol_dstar
   - '0'
-  - audio_sink_dstar
-  - '0'
-- - network_tcp_source_x2tdma
-  - '0'
-  - pfb_channelizer_x2tdma
-  - '0'
-- - pfb_channelizer_x2tdma
-  - '0'
-  - iq_sum_x2tdma
-  - '0'
-- - pfb_channelizer_x2tdma
-  - '1'
-  - iq_sum_x2tdma
-  - '1'
-- - pfb_channelizer_x2tdma
-  - '2'
-  - iq_sum_x2tdma
-  - '2'
-- - pfb_channelizer_x2tdma
-  - '3'
-  - iq_sum_x2tdma
-  - '3'
-- - pfb_channelizer_x2tdma
+  - qtgui_time_sink_dnp
   - '4'
-  - iq_sum_x2tdma
-  - '4'
-- - pfb_channelizer_x2tdma
-  - '5'
-  - iq_sum_x2tdma
-  - '5'
-- - pfb_channelizer_x2tdma
-  - '6'
-  - iq_sum_x2tdma
-  - '6'
-- - pfb_channelizer_x2tdma
-  - '7'
-  - iq_sum_x2tdma
-  - '7'
-- - pfb_channelizer_x2tdma
-  - '8'
-  - iq_sum_x2tdma
-  - '8'
-- - pfb_channelizer_x2tdma
-  - '9'
-  - iq_sum_x2tdma
-  - '9'
-- - pfb_channelizer_x2tdma
-  - '10'
-  - iq_sum_x2tdma
-  - '10'
-- - pfb_channelizer_x2tdma
-  - '11'
-  - iq_sum_x2tdma
-  - '11'
-- - pfb_channelizer_x2tdma
-  - '12'
-  - iq_sum_x2tdma
-  - '12'
-- - pfb_channelizer_x2tdma
-  - '13'
-  - iq_sum_x2tdma
-  - '13'
-- - pfb_channelizer_x2tdma
-  - '14'
-  - iq_sum_x2tdma
-  - '14'
-- - pfb_channelizer_x2tdma
-  - '15'
-  - iq_sum_x2tdma
-  - '15'
-- - iq_sum_x2tdma
+- - vol_nxdn
   - '0'
-  - resamp_iq_x2tdma
+  - audio_sink_nxdn
   - '0'
-- - resamp_iq_x2tdma
+- - vol_nxdn
   - '0'
-  - lpf_x2tdma
+  - bridge_zmq_nxdn
   - '0'
-- - lpf_x2tdma
+- - vol_nxdn
   - '0'
-  - squelch_x2tdma
-  - '0'
-- - squelch_x2tdma
-  - '0'
-  - demod_x2tdma
-  - '0'
-- - demod_x2tdma
-  - '0'
-  - dsd_x2tdma
-  - '0'
-- - dsd_x2tdma
-  - '0'
-  - aresamp_x2tdma
-  - '0'
-- - aresamp_x2tdma
-  - '0'
-  - vol_x2tdma
-  - '0'
-- - vol_x2tdma
-  - '0'
-  - bridge_zmq_x2tdma
-  - '0'
-- - vol_x2tdma
-  - '0'
-  - audio_sink_x2tdma
-  - '0'
-- - network_tcp_source_provoice
-  - '0'
-  - pfb_channelizer_provoice
-  - '0'
-- - pfb_channelizer_provoice
-  - '0'
-  - iq_sum_provoice
-  - '0'
-- - pfb_channelizer_provoice
+  - qtgui_time_sink_dnp
   - '1'
-  - iq_sum_provoice
-  - '1'
-- - pfb_channelizer_provoice
-  - '2'
-  - iq_sum_provoice
-  - '2'
-- - pfb_channelizer_provoice
+- - vol_nxdn48
+  - '0'
+  - audio_sink_nxdn48
+  - '0'
+- - vol_nxdn48
+  - '0'
+  - bridge_zmq_nxdn48
+  - '0'
+- - vol_nxdn48
+  - '0'
+  - qtgui_time_sink_dnp
   - '3'
-  - iq_sum_provoice
-  - '3'
-- - pfb_channelizer_provoice
-  - '4'
-  - iq_sum_provoice
-  - '4'
-- - pfb_channelizer_provoice
-  - '5'
-  - iq_sum_provoice
-  - '5'
-- - pfb_channelizer_provoice
-  - '6'
-  - iq_sum_provoice
-  - '6'
-- - pfb_channelizer_provoice
-  - '7'
-  - iq_sum_provoice
-  - '7'
-- - iq_sum_provoice
+- - vol_p25
   - '0'
-  - resamp_iq_provoice
+  - audio_sink_p25
   - '0'
-- - resamp_iq_provoice
+- - vol_p25
   - '0'
-  - lpf_provoice
+  - bridge_zmq_p25
   - '0'
-- - lpf_provoice
+- - vol_p25
   - '0'
-  - squelch_provoice
+  - qtgui_time_sink_dnp
+  - '2'
+- - vol_provoice
   - '0'
-- - squelch_provoice
-  - '0'
-  - demod_provoice
-  - '0'
-- - demod_provoice
-  - '0'
-  - dsd_provoice
-  - '0'
-- - dsd_provoice
-  - '0'
-  - aresamp_provoice
-  - '0'
-- - aresamp_provoice
-  - '0'
-  - vol_provoice
+  - audio_sink_provoice
   - '0'
 - - vol_provoice
   - '0'
@@ -4197,67 +4229,19 @@ connections:
   - '0'
 - - vol_provoice
   - '0'
-  - audio_sink_provoice
-  - '0'
-- - network_tcp_source_dmr
-  - '0'
-  - qtgui_freq_sink_combined
-  - '0'
-- - network_tcp_source_nxdn
-  - '0'
-  - qtgui_freq_sink_combined
-  - '1'
-- - network_tcp_source_p25
-  - '0'
-  - qtgui_freq_sink_combined
-  - '2'
-- - network_tcp_source_tetra
-  - '0'
-  - qtgui_freq_sink_combined
-  - '3'
-- - network_tcp_source_nxdn48
-  - '0'
-  - qtgui_freq_sink_combined
-  - '4'
-- - network_tcp_source_dstar
-  - '0'
-  - qtgui_freq_sink_combined
-  - '5'
-- - network_tcp_source_x2tdma
-  - '0'
-  - qtgui_freq_sink_combined
+  - qtgui_time_sink_dnp
   - '6'
-- - network_tcp_source_provoice
+- - vol_x2tdma
   - '0'
-  - qtgui_freq_sink_combined
-  - '7'
-- - vol_dmr
+  - audio_sink_x2tdma
   - '0'
-  - qtgui_time_sink_dnp
+- - vol_x2tdma
   - '0'
-- - vol_nxdn
+  - bridge_zmq_x2tdma
   - '0'
-  - qtgui_time_sink_dnp
-  - '1'
-- - vol_p25
-  - '0'
-  - qtgui_time_sink_dnp
-  - '2'
-- - vol_nxdn48
-  - '0'
-  - qtgui_time_sink_dnp
-  - '3'
-- - vol_dstar
-  - '0'
-  - qtgui_time_sink_dnp
-  - '4'
 - - vol_x2tdma
   - '0'
   - qtgui_time_sink_dnp
   - '5'
-- - vol_provoice
-  - '0'
-  - qtgui_time_sink_dnp
-  - '6'
 metadata:
   file_format: 1
