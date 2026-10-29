@@ -1,0 +1,35 @@
+id: iq_tcp_source
+label: IQ TCP Source (reconnecting)
+category: '[SecureCOM]'
+
+templates:
+  imports: |-
+    import sys, os
+    sys.path.insert(0, os.path.dirname(os.path.abspath(globals().get('__file__', os.path.join(os.getcwd(), '_')))))
+    from iq_tcp_source import iq_tcp_source
+  make: iq_tcp_source(addr=${addr}, port=${port}, retry_s=${retry_s})
+
+parameters:
+- id: addr
+  label: Address
+  dtype: string
+  default: 127.0.0.1
+- id: port
+  label: Port
+  dtype: int
+  default: '7000'
+- id: retry_s
+  label: Retry interval (s)
+  dtype: float
+  default: '0.5'
+
+outputs:
+- domain: stream
+  dtype: complex
+
+documentation: |-
+  complex64 IQ client for a front end that serves IQ over TCP (Module 1, a bigger USRP, a replay).
+  Unlike gnuradio's TCP source it reconnects by itself when the source restarts, and it only ever
+  delivers whole samples. Implementation: iq_tcp_source.py next to the flowgraph.
+
+file_format: 1
