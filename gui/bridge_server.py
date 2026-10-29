@@ -62,6 +62,12 @@ AUDIO_TAPS = {
 }
 TETRA_EVENTS_ADDR = 'tcp://127.0.0.1:9105'
 REC_ON_DBFS = -38.0   # audio RMS above this = decoded voice actually present
+# External IQ source (final system: a bigger USRP, not Module 1). SECURECOM_EXTERNAL_IQ=1 makes the
+# bridge a pure backend + UI feed: it does not start Module 1, it connects its own IQ readers to
+# ports 7001-7008 (every band streams continuously and at once), and the recorder saves one clip per
+# decoded voice transmission (the 'whole dwell' rule has no dwell to follow).
+EXTERNAL_IQ = os.environ.get('SECURECOM_EXTERNAL_IQ') == '1'
+VOICE_HANG_S = 1.5     # external mode: a clip ends after this long without decoded voice
 REC_MIN_VOICE_S = 0.5  # a recording is kept only if DSD decoded at least this much voice in it
                        # (only used to LABEL a recording now, not to gate it)
 REC_HANGTIME_S = 1.2  # legacy, kept for reference
@@ -112,6 +118,7 @@ CHANNELS_PER_BAND = {'dmr': 16, 'nxdn': 16, 'p25': 10, 'tetra': 1,
 CHAN_SNR_DB = 8.0            # channel counts as occupied this far above band median
 BAND_RF_ACTIVE = {b['key']: False for b in BANDS}
 BAND_RF_LAST = {b['key']: 0.0 for b in BANDS}
+VOICE_LAST = {b['key']: 0.0 for b in BANDS}   # external mode: last time decoded voice was heard
 BAND_LEVEL_HIST = {k: collections.deque(maxlen=NOISE_WIN) for k in BAND_RF_ACTIVE}
 BAND_FLOOR_DB = {k: None for k in BAND_RF_ACTIVE}
 
@@ -367,6 +374,10 @@ _m1_started_at = 0.0      # when the current Module 1 was started
 
 async def start_module1():
     global proc, _m1_generation, _m1_started_at
+    if EXTERNAL_IQ:
+        await broadcast({'type': 'log', 'band': None, 't': time.time(),
+                          'text': '[BRIDGE] external IQ source: Module 1 is not used (nothing to start)'})
+        return
     if STATE['running']:
         return
     _m1_generation += 1
@@ -661,8 +672,13 @@ async def audio_tap_reader(band):
             # decode, which is exactly what you need in order to tell whether a
             # dwell was silent or merely undecoded.
             now_t = time.time()
-            in_dwell = BAND_RF_ACTIVE.get(band, False) or \
-                (now_t - BAND_RF_LAST.get(band, 0.0) < DWELL_TAIL_S)
+            if EXTERNAL_IQ:
+                if voiced > 0:
+                    VOICE_LAST[band] = now_t
+                in_dwell = (now_t - VOICE_LAST.get(band, 0.0)) < VOICE_HANG_S
+            else:
+                in_dwell = BAND_RF_ACTIVE.get(band, False) or \
+                    (now_t - BAND_RF_LAST.get(band, 0.0) < DWELL_TAIL_S)
 
             pcm16 = np.clip(samples * 32767.0, -32768, 32767).astype('<i2')
             if in_dwell:
@@ -844,6 +860,10 @@ async def handler(ws):
             except json.JSONDecodeError:
                 continue
             cmd = msg.get('cmd')
+            if EXTERNAL_IQ and cmd in ('start', 'stop', 'apply_schedule', 'apply_gain'):
+                await broadcast({'type': 'log', 'band': None, 't': time.time(),
+                                  'text': f'[BRIDGE] external IQ source: "{cmd}" is a Module 1 control and is ignored'})
+                continue
             if cmd == 'start':
                 await start_module1()
             elif cmd == 'stop':
@@ -869,8 +889,17 @@ async def handler(ws):
 
 
 async def main():
+    global _m1_generation
     print('SecureCOM bridge — ws://127.0.0.1:8787')
-    print(f'Module 1 binary: {MODULE1_BIN}')
+    if EXTERNAL_IQ:
+        print('IQ source: EXTERNAL (SECURECOM_EXTERNAL_IQ=1) — Module 1 is not started; IQ readers on 7001-7008')
+        _m1_generation += 1
+        STATE['running'] = True
+        STATE['pid'] = None
+        for b in BANDS:
+            spawn(iq_reader(b, _m1_generation))
+    else:
+        print(f'Module 1 binary: {MODULE1_BIN}')
     async with websockets.serve(handler, '127.0.0.1', 8787):
         await asyncio.Future()
 
