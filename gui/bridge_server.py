@@ -832,12 +832,12 @@ async def delete_all_recordings():
 
 async def handler(ws):
     CLIENTS.add(ws)
-    await ws.send(json.dumps({'type': 'status', **STATE}))
-    await ws.send(json.dumps({'type': 'decoder_status', 'running': proc2 is not None}))
-    await send_recordings(ws)
-    await ws.send(json.dumps({'type': 'log', 'band': None, 't': time.time(),
-                               'text': '[BRIDGE] browser connected to live bridge'}))
     try:
+        await ws.send(json.dumps({'type': 'status', **STATE}))
+        await ws.send(json.dumps({'type': 'decoder_status', 'running': proc2 is not None}))
+        await send_recordings(ws)
+        await ws.send(json.dumps({'type': 'log', 'band': None, 't': time.time(),
+                                   'text': '[BRIDGE] browser connected to live bridge'}))
         async for raw in ws:
             try:
                 msg = json.loads(raw)
@@ -862,6 +862,8 @@ async def handler(ws):
                 await delete_recording(msg.get('file'))
             elif cmd == 'delete_all_recordings':
                 await delete_all_recordings()
+    except websockets.exceptions.ConnectionClosed:
+        pass    # a browser tab closed or crashed without a close frame: normal, not an error
     finally:
         CLIENTS.discard(ws)
 
