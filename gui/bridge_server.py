@@ -94,6 +94,14 @@ ACTIVE_THRESH_DBFS = -60.0   # fallback only, until a band has enough history (s
 NOISE_WIN = 1200            # frames of history per band (~110 s of that band's dwell time)
 NOISE_MARGIN_DB = 6.0       # active when this far above the band's own floor
 NOISE_MIN_FRAMES = 50       # below this much history, fall back to ACTIVE_THRESH_DBFS
+# A band's history only holds its own dwell frames (gaps are zero-fill and are skipped). In a long
+# dwell on a strong signal (D-STAR, 30 s, -41 dBFS vs -78 on every other band) that history is ALL
+# signal, so the 5th percentile climbed to the signal itself (floor -45 dB): the band read 'idle',
+# showed no DECODING and saved no recording while DSD was decoding voice. All bands share one
+# receiver, so a band's noise cannot sit far above the quietest band's: cap its floor there.
+CROSS_BAND_ALLOW_DB = 10.0
+CROSS_BAND_MIN_FRAMES = 10   # a band's level is a usable reference after ~1 dwell, not 50 frames
+BAND_REF_DB = {}             # band -> 5th percentile of its recent levels (reference for the others)
 
 # Channel counts must match allinone.grc's pfb.channelizer_ccf blocks exactly:
 # DMR 16, NXDN 16, P25 10. TETRA is not channelized (TDMA -- one carrier, 4
@@ -114,10 +122,19 @@ def band_active(key, rms_db):
         return False
     hist = BAND_LEVEL_HIST[key]
     hist.append(rms_db)
+    if len(hist) >= CROSS_BAND_MIN_FRAMES:
+        BAND_REF_DB[key] = float(np.percentile(hist, 5))
+    others = [v for k, v in BAND_REF_DB.items() if k != key]
     if len(hist) < NOISE_MIN_FRAMES:
-        return rms_db > ACTIVE_THRESH_DBFS
+        # not enough own history: a fixed threshold, but never above (quietest other band + margin)
+        thr = ACTIVE_THRESH_DBFS
+        if others:
+            thr = min(thr, min(others) + CROSS_BAND_ALLOW_DB + NOISE_MARGIN_DB)
+        return rms_db > thr
     floor = float(np.percentile(hist, 5))
     BAND_FLOOR_DB[key] = floor
+    if others:
+        floor = min(floor, min(others) + CROSS_BAND_ALLOW_DB)
     return rms_db > floor + NOISE_MARGIN_DB
 
 
